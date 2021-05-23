@@ -25,7 +25,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn @click="performLogin" color="primary" to="{ name: 'Dashboard' }">Login</v-btn>
+            <v-btn @click="performLogin" color="primary">Login</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
