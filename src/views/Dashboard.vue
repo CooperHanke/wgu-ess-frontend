@@ -1,7 +1,9 @@
 <template>
   <v-main>
     <navbar />
-    <component v-bind:is="this.activePage" />
+    <v-container>
+      <component v-bind:is="this.activePage" />
+    </v-container>
   </v-main>
 </template>
 
