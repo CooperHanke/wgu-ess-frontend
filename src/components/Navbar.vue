@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer app clipped>
+  <v-navigation-drawer app clipped permanent :mini-variant="mini">
     <v-list dense nav>
       <v-list-item v-for="item in items" :key="item.title" link @click="switchPageView(item.title)">
         <v-list-item-icon>
@@ -13,7 +13,12 @@
     </v-list>
 
     <template v-slot:append>
-      <div class="pa-3">
+      <div class="text-center pa-1" v-if="mini">
+        <v-btn color="primary" rounded small>
+          <v-icon> mdi-logout </v-icon>
+        </v-btn>
+      </div>
+      <div class="pa-3" v-else>
         <v-btn block color="primary">
           <v-icon left> mdi-logout </v-icon>
           Logout
@@ -25,6 +30,11 @@
 
 <script>
 export default {
+  computed: {
+    mini() {
+      return this.$vuetify.breakpoint.mobile
+    }
+  },
   data() {
     return {
       items: [
