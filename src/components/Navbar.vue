@@ -10,6 +10,8 @@
           <v-list-item-title>{{ item.title }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+
+      <v-divider class="mx-4"></v-divider>
     </v-list>
 
     <template v-slot:append>
@@ -42,6 +44,11 @@ export default {
         { title: "Contacts", icon: "mdi-contacts" },
         { title: "Reports", icon: "mdi-file-chart" },
       ],
+      reportTypes: [
+        {
+          title: "test"
+        }
+      ]
     };
   },
   methods: {
