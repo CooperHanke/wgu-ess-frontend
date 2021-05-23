@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer app clipped>
     <v-list dense nav>
-      <v-list-item v-for="item in items" :key="item.title" link>
+      <v-list-item v-for="item in items" :key="item.title" link @click="switchPageView(item.title)">
         <v-list-item-icon>
           <v-icon>{{ item.icon }}</v-icon>
         </v-list-item-icon>
@@ -32,8 +32,15 @@ export default {
         { title: "Contacts", icon: "mdi-contacts" },
         { title: "Reports", icon: "mdi-file-chart" },
       ],
-      right: null,
     };
+  },
+  methods: {
+    switchPageView(page) {
+      this.$store.commit('setActivePage', this.formatLink(page))
+    },
+    formatLink(link) {
+      return link.toLowerCase()
+    }
   },
 };
 </script>
