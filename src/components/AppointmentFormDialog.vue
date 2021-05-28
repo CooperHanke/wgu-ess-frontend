@@ -81,7 +81,7 @@
                     ></v-text-field>
                   </template>
                   <v-date-picker
-                    v-model="startDate"
+                    v-model="appointment.startDate"
                     no-title
                     @input="toggleStartDatePicker"
                   ></v-date-picker>
@@ -111,6 +111,58 @@
                     v-model="appointment.startTime"
                     full-width
                     @click:minute="toggleStartTimePicker"
+                  ></v-time-picker>
+                </v-menu>
+              </v-col>
+
+              <v-col cols="12" sm="6" md="4">
+                <v-menu
+                  v-model="endDatePicker"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="appointment.endDate"
+                      label="Ending Date"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="appointment.endDate"
+                    no-title
+                    @input="toggleEndDatePicker"
+                  ></v-date-picker>
+                </v-menu>
+              </v-col>
+
+              <v-col cols="12" sm="6" md="4">
+                <v-menu
+                  v-model="endTimePicker"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  max-width="290px"
+                  min-width="290px"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="appointment.endTime"
+                      label="End Time"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-time-picker
+                    v-if="endTimePicker"
+                    v-model="appointment.endTime"
+                    full-width
+                    @click:minute="toggleEndTimePicker"
                   ></v-time-picker>
                 </v-menu>
               </v-col>
@@ -164,7 +216,7 @@ export default {
     appointment: {
       get() {
         return this.$store.state.appointment.data;
-      },
+      }
     },
   },
 
@@ -174,11 +226,7 @@ export default {
       startDatePicker: false,
       startTimePicker: false,
       endDatePicker: false,
-      endTimePicker: false,
-      startDate: "",
-      startTime: "",
-      endDate: "",
-      endTime: "",
+      endTimePicker: false
     };
   },
 
@@ -237,11 +285,7 @@ export default {
     },
 
     save() {
-      if (this.appointment.id > -1) {
-        this.$store.commit("setAppointment", this.$store.state.appointment);
-      } else {
-        this.appointments.push(this.appointment);
-      }
+      this.$store.commit("saveAppointment");
       this.close();
     },
   },

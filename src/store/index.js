@@ -31,9 +31,6 @@ export default new Vuex.Store({
     initializeAppointments(state) {
       state.appointments = appointments
     },
-    updateAppointments(state) {
-      state.appointments = appointments
-    },
     setAuth(state) { // this should take a user object
       state.user.isAuthenticated = true
     },
@@ -68,11 +65,11 @@ export default new Vuex.Store({
         endDate: payload.endDate
       }
     },
-    saveAppointment(state, payload) {
+    saveAppointment(state) {
       // in real life, add this to the database, but for now, add it to the collection
       if (state.appointment.data.id > -1) {
-        const index = state.appointments.findIndex(a => a.id === payload.id)
-        Object.assign(state.appointments[index], payload)
+        const index = state.appointments.findIndex(a => a.id === state.appointment.data.id)
+        Object.assign(state.appointments[index], state.appointment.data)
       }
     },
     toggleDialog(state) {
