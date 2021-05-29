@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="showDialog" max-width="800px" close-delay="0">
+    <v-dialog v-model="showDialog" max-width="800px" close-delay="0" persistent>
       <template v-slot:activator="{ on, attrs }">
         <v-btn color="primary" class="mb-2" v-bind="attrs" v-on="on">
           New Appointment
@@ -15,10 +15,7 @@
           <v-container>
             <v-row>
               <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  v-model="appointment.name"
-                  label="Customer Name"
-                ></v-text-field>
+                <contact-selection-for-appointments />
               </v-col>
 
               <v-col cols="12" sm="6" md="4">
@@ -53,13 +50,6 @@
                 <v-text-field
                   v-model="appointment.url"
                   label="URL"
-                ></v-text-field>
-              </v-col>
-
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  v-model="appointment.type"
-                  label="Type"
                 ></v-text-field>
               </v-col>
 
@@ -197,7 +187,11 @@
 </template>
 
 <script>
+import ContactSelectionForAppointments from '@/components/ContactSelectionForAppointments.vue'
 export default {
+  components: {
+    ContactSelectionForAppointments
+  },
   computed: {
     dialogHeader() {
       return this.$store.state.appointment.data.id > -1
@@ -209,7 +203,7 @@ export default {
         return this.$store.state.appointment.showDialog;
       },
       set() {
-        this.$store.commit("toggleDialog");
+        this.$store.commit("toggleAppointmentDialog");
       },
     },
 
@@ -218,6 +212,13 @@ export default {
         return this.$store.state.appointment.data;
       }
     },
+
+    contacts: {
+      get() {
+        return this.$store.state.contacts
+      }
+    },
+
   },
 
   data() {
@@ -226,7 +227,7 @@ export default {
       startDatePicker: false,
       startTimePicker: false,
       endDatePicker: false,
-      endTimePicker: false
+      endTimePicker: false,
     };
   },
 
@@ -241,7 +242,7 @@ export default {
 
   methods: {
     close() {
-      this.$store.commit("toggleDialog"); // first, close the dialog box, so user doesn't see us change the dialog type
+      this.$store.commit("toggleAppointmentDialog"); // first, close the dialog box, so user doesn't see us change the dialog type
       this.$store.commit("initializeAppointment"); // next, set the appointment to be a blank one
     },
 

@@ -36,7 +36,7 @@ export default {
   data: () => ({
     headers: [
       {
-        text: "Customer Name",
+        text: "Contact Name",
         align: "start",
         sortable: false,
         value: "name",
@@ -82,10 +82,11 @@ export default {
       this.appointments = this.$store.state.appointments
     },
 
-    editAppointment(item) {
+    editAppointment(appointment) {
       const store = this.$store
-      store.commit('setAppointment', item); // set the appointment in state
-      store.commit('toggleDialog')
+      store.commit('setAppointment', appointment); // set the appointment in state
+      store.commit('setAppointmentContact', appointment.name) // set the contact for the appointment in question
+      store.commit('toggleAppointmentDialog')
     },
 
     // deleteItem(item) {

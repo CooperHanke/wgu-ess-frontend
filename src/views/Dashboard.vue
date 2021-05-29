@@ -19,6 +19,11 @@ export default {
     Navbar,
     Reports
   },
+  // since we are loading data, let's get the appointments and contacts sorted at this higher level
+  created() {
+    this.$store.commit('initializeAppointments')
+    this.$store.commit('initializeContacts')
+  },
   data() {
     return {
       activePage: 'Appointments'
