@@ -175,7 +175,7 @@
         >
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="toggleDeleteDialog">Cancel</v-btn>
           <v-btn color="blue darken-1" text @click="deleteItemConfirm"
             >OK</v-btn
           >
@@ -236,7 +236,7 @@ export default {
       val || this.close();
     },
     dialogDelete(val) {
-      val || this.closeDelete();
+      val || this.toggleDeleteDialog();
     },
   },
 
@@ -245,17 +245,6 @@ export default {
       this.$store.commit("toggleAppointmentDialog"); // first, close the dialog box, so user doesn't see us change the dialog type
       this.$store.commit("initializeAppointment"); // next, set the appointment to be a blank one
     },
-
-    // editItem(item) {
-    //   this.appointment = Object.assign({}, item);
-    //   this.dialog = true;
-    // },
-
-    // deleteItem(item) {
-    //   this.editedIndex = this.appointments.indexOf(item);
-    //   this.appointment = Object.assign({}, item);
-    //   this.dialogDelete = true;
-    // },
 
     toggleStartDatePicker() {
       this.startDatePicker = false;
@@ -278,11 +267,8 @@ export default {
       this.closeDelete();
     },
 
-    closeDelete() {
-      this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.appointment = Object.assign({}, this.defaultItem);
-      });
+    toggleDeleteDialog() {
+      this.dialogDelete = !this.dialogDelete
     },
 
     save() {

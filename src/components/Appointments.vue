@@ -18,7 +18,7 @@
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon small class="mr-2" @click="editAppointment(item)"> mdi-pencil </v-icon>
-        <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+        <v-icon small @click="deleteAppointment(item)"> mdi-delete </v-icon>
       </template>
       <template v-slot:no-data> <!-- v-slot:no-data is "No upcoming appointments now" -->
         No appointments are found
@@ -34,6 +34,7 @@ export default {
     AppointmentFormDialog
   },
   data: () => ({
+    dialogDelete: false,
     headers: [
       {
         text: "Contact Name",
@@ -89,11 +90,11 @@ export default {
       store.commit('toggleAppointmentDialog')
     },
 
-    // deleteItem(item) {
-    //   this.editedIndex = this.appointments.indexOf(item);
-    //   this.editedItem = Object.assign({}, item);
-    //   this.dialogDelete = true;
-    // },
+    deleteAppointment(appointment) {
+      const store = this.$store
+      store.commit('setAppointment', appointment)
+      this.dialogDelete = true;
+    },
 
     // deleteItemConfirm() {
     //   this.appointments.splice(this.editedIndex, 1);
