@@ -1,7 +1,13 @@
 <template>
   <v-navigation-drawer app clipped permanent :mini-variant="mini">
     <v-list dense nav>
-      <v-list-item v-for="item in items" :key="item.title" link @click="switchPageView(item.title)">
+      <!-- using a regular list, giving out regular links first -->
+      <v-list-item
+        v-for="item in menuItems"
+        :key="item.title"
+        link
+        @click="switchPageView(item)"
+      >
         <v-list-item-icon>
           <v-icon>{{ item.icon }}</v-icon>
         </v-list-item-icon>
@@ -10,6 +16,26 @@
           <v-list-item-title>{{ item.title }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+
+      <!-- now, here we have the special reports menu -->
+      <v-list-group prepend-icon="mdi-file-chart">
+        <template v-slot:activator>
+          <v-list-item-title>Reports</v-list-item-title>
+        </template>
+
+        <v-list-item
+          v-for="item in reportItems"
+          :key="item.title"
+          link
+        >
+        <v-list-item-action>
+              <v-icon></v-icon>
+            </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title v-text="item.title"></v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list-group>
 
       <v-divider class="mx-4"></v-divider>
     </v-list>
@@ -34,30 +60,48 @@
 export default {
   computed: {
     mini() {
-      return this.$vuetify.breakpoint.mobile
-    }
+      return this.$vuetify.breakpoint.mobile;
+    },
+    menuItems() {
+      return this.items.filter((item) => !item.availableReports);
+    },
+    reportItems() {
+      const reportItem = this.items.find((item) => item.availableReports);
+      return reportItem.availableReports;
+    },
   },
   data() {
     return {
       items: [
         { title: "Appointments", icon: "mdi-calendar" },
         { title: "Contacts", icon: "mdi-contacts" },
-        { title: "Reports", icon: "mdi-file-chart" },
-      ],
-      reportTypes: [
         {
-          title: "test"
-        }
-      ]
+          title: "Reports",
+          icon: "mdi-file-chart",
+          availableReports: [
+            {
+              title: "Report 1",
+            },
+            {
+              title: "Report 2",
+            },
+            {
+              title: "Report 3",
+            },
+          ],
+        },
+      ],
     };
   },
   methods: {
-    switchPageView(page) {
-      this.$store.commit('setActivePage', this.formatLink(page))
+    switchPageView(item) {
+      if (!item.availableReports) {
+        this.$store.commit("setActivePage", this.formatLink(item.title));
+      } else return;
     },
     formatLink(link) {
-      return link.toLowerCase()
-    }
+      return link.toLowerCase();
+    },
   },
 };
 </script>
