@@ -8,6 +8,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     user: {
+      username: "Test User",
       isAuthenticated: false
     },
     activeDashboardPage: '',
@@ -161,6 +162,9 @@ export default new Vuex.Store({
     },
     updateContacts(state) {
       state.contacts = contacts
+    },
+    logout(state) {
+      state.user.isAuthenticated = false
     }
   },
   actions: {

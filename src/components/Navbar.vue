@@ -48,7 +48,7 @@
         </v-btn>
       </div>
       <div class="pa-3" v-else>
-        <v-btn block color="primary">
+        <v-btn block color="primary" @click="logout">
           <v-icon left> mdi-logout </v-icon>
           Logout
         </v-btn>
@@ -108,6 +108,10 @@ export default {
     formatLink(link) {
       return link.toLowerCase();
     },
+    logout() {
+      this.$store.commit("logout")
+      this.$router.push({ name: 'Login' })
+    }
   },
 };
 </script>
