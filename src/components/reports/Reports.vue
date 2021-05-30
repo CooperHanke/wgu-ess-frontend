@@ -4,9 +4,13 @@
 
 <script>
 import AppointmentsByMonth from '@/components/reports/AppointmentsByMonth.vue'
+import UserSchedules from '@/components/reports/UserSchedules.vue'
+import TotalAppointmentsByContact from '@/components/reports/TotalAppointmentsByContact.vue'
 export default {
   components: {
-    AppointmentsByMonth
+    AppointmentsByMonth,
+    TotalAppointmentsByContact,
+    UserSchedules
   },
   computed: {
     reportPage: {

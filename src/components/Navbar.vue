@@ -27,7 +27,7 @@
           v-for="item in reportItems"
           :key="item.title"
           link
-          @click="switchPageView(item)"
+          @click="switchReportView(item)"
         >
         <v-list-item-action>
               <v-icon></v-icon>
@@ -68,10 +68,11 @@ export default {
     },
     reportItems() {
       const reportItem = this.items.find(item => item.availableReports);
-      console.log(reportItem)
-      console.log(reportItem.availableReports.filter(r => r.userGroup === this.userType))
-      return reportItem.availableReports.filter(r => r.userGroup === this.userType)
-      // return reportItem.availableReports.filter(report => report.userGroup === this.userType());
+      if (this.userType === "manager") {
+        return reportItem.availableReports
+      } else {
+        return reportItem.availableReports.filter(r => r.userGroup === this.userType)
+      }
     },
     userType() {
       return this.$store.state.user.type
@@ -93,12 +94,12 @@ export default {
             },
             {
               title: "Total Appointments By Contact",
-              location: "report2",
+              location: "total-appointments-by-contact",
               userGroup: "standard"
             },
             {
-              title: "Report 3",
-              location: "report3",
+              title: "User Schedules",
+              location: "user-schedules",
               userGroup: "manager"
             },
           ],
@@ -110,10 +111,13 @@ export default {
     switchPageView(item) {
       if (!item.location) {
         this.$store.commit("setActivePage", this.formatLink(item.title));
-      } else {
+      } else return
+    },
+    switchReportView(item) {
+      if (item.location) {
         this.$store.commit("setActivePage", 'reports')
         this.$store.commit("setReportPage", item.location)
-      }
+      } else return
     },
     formatLink(link) {
       return link.toLowerCase();
