@@ -27,9 +27,10 @@
           v-for="item in reportItems"
           :key="item.title"
           link
+          @click="switchPageView(item)"
         >
         <v-list-item-action>
-              <v-icon></v-icon>
+              <v-icon>-</v-icon>
             </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title v-text="item.title"></v-list-item-title>
@@ -81,12 +82,15 @@ export default {
           availableReports: [
             {
               title: "Report 1",
+              location: "report1"
             },
             {
               title: "Report 2",
+              location: "report2"
             },
             {
               title: "Report 3",
+              location: "report3"
             },
           ],
         },
@@ -95,9 +99,11 @@ export default {
   },
   methods: {
     switchPageView(item) {
-      if (!item.availableReports) {
+      if (!item.location) {
         this.$store.commit("setActivePage", this.formatLink(item.title));
-      } else return;
+      } else {
+        this.$store.commit("setActivePage", 'reports')
+      }
     },
     formatLink(link) {
       return link.toLowerCase();
