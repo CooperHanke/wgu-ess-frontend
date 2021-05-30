@@ -136,13 +136,17 @@ export default new Vuex.Store({
         appointments.push(state.appointment.data)
       }
     },
+    deleteAppointment(state) {
+      const index = state.appointments.findIndex(a => a.id === state.appointment.data.id)
+      state.appointments.splice(index, 1)
+      this.commit("initializeAppointment")
+    },
     saveContact(state) {
       // in real life, add this to the database, but for now, add it to the collection
       if (state.contact.data.id > -1) {
         const index = state.contacts.findIndex(a => a.id === state.contact.data.id)
         // before making the contact details completely different, make a backup of the existing contact
         const contactBeforeEdit = state.contacts[index].name
-        console.log(contactBeforeEdit)
         Object.assign(state.contacts[index], state.contact.data)
         // if they are an existing contact, we need to ensure that appointments have the newly updated contact info
         // right now, since we are only tracking for name with layout, use the name and change in entries
