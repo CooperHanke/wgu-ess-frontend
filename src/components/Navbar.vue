@@ -67,9 +67,15 @@ export default {
       return this.items.filter((item) => !item.availableReports);
     },
     reportItems() {
-      const reportItem = this.items.find((item) => item.availableReports);
-      return reportItem.availableReports;
+      const reportItem = this.items.find(item => item.availableReports);
+      console.log(reportItem)
+      console.log(reportItem.availableReports.filter(r => r.userGroup === this.userType))
+      return reportItem.availableReports.filter(r => r.userGroup === this.userType)
+      // return reportItem.availableReports.filter(report => report.userGroup === this.userType());
     },
+    userType() {
+      return this.$store.state.user.type
+    }
   },
   data() {
     return {
@@ -82,15 +88,18 @@ export default {
           availableReports: [
             {
               title: "Appointments By Month",
-              location: "appointments-by-month"
+              location: "appointments-by-month",
+              userGroup: "standard"
             },
             {
               title: "Total Appointments By Contact",
-              location: "report2"
+              location: "report2",
+              userGroup: "standard"
             },
             {
               title: "Report 3",
-              location: "report3"
+              location: "report3",
+              userGroup: "manager"
             },
           ],
         },

@@ -9,7 +9,8 @@ export default new Vuex.Store({
   state: {
     user: {
       username: "Test User",
-      isAuthenticated: false
+      isAuthenticated: false,
+      type: 'not-set'
     },
     activeDashboardPage: '',
     activeReportPage: '',
@@ -54,6 +55,8 @@ export default new Vuex.Store({
       state.contacts = contacts
     },
     setAuth(state) { // this should take a user object
+      state.user.type = 'standard' // mock being normal user
+      // manager is another type
       state.user.isAuthenticated = true
     },
     setActivePage(state, page) {
