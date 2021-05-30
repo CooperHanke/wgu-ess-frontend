@@ -12,6 +12,7 @@ export default new Vuex.Store({
       isAuthenticated: false
     },
     activeDashboardPage: '',
+    activeReportPage: '',
     appointment: {
       data: {
         id: -1,
@@ -57,6 +58,9 @@ export default new Vuex.Store({
     },
     setActivePage(state, page) {
       state.activeDashboardPage = page
+    },
+    setReportPage(state, page) {
+      state.activeReportPage = page
     },
     initializeAppointment(state) {
       state.appointment.data = {

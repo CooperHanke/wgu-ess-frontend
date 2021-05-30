@@ -81,11 +81,11 @@ export default {
           icon: "mdi-file-chart",
           availableReports: [
             {
-              title: "Report 1",
-              location: "report1"
+              title: "Appointments By Month",
+              location: "appointments-by-month"
             },
             {
-              title: "Report 2",
+              title: "Total Appointments By Contact",
               location: "report2"
             },
             {
@@ -103,6 +103,7 @@ export default {
         this.$store.commit("setActivePage", this.formatLink(item.title));
       } else {
         this.$store.commit("setActivePage", 'reports')
+        this.$store.commit("setReportPage", item.location)
       }
     },
     formatLink(link) {
