@@ -9,9 +9,9 @@
 
 <script>
 import Navbar from '@/components/Navbar.vue'
-import Appointments from '@/components/Appointments.vue'
-import Contacts from '@/components/Contacts.vue'
-import Reports from '@/components/Reports.vue'
+import Appointments from '@/components/appointments/Appointments.vue'
+import Contacts from '@/components/contacts/Contacts.vue'
+import Reports from '@/components/reports/Reports.vue'
 export default {
   components: {
     Appointments,

@@ -187,7 +187,7 @@
 </template>
 
 <script>
-import ContactSelectionForAppointments from '@/components/ContactSelectionForAppointments.vue'
+import ContactSelectionForAppointments from '@/components/appointments/ContactSelectionForAppointments.vue'
 export default {
   components: {
     ContactSelectionForAppointments

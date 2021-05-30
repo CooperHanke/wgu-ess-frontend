@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import ContactFormDialog from "@/components/ContactFormDialog.vue"
+import ContactFormDialog from "@/components/contacts/ContactFormDialog.vue"
 export default {
   components: {
     ContactFormDialog

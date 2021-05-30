@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import AppointmentFormDialog from "@/components/AppointmentFormDialog.vue"
+import AppointmentFormDialog from "@/components/appointments/AppointmentFormDialog.vue"
 export default {
   components: {
     AppointmentFormDialog
