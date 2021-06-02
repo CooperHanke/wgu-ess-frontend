@@ -4,7 +4,7 @@
       <img class="wgu-icon" src="@/assets/wgu-logo.jpg" alt="wgu-logo"/>
       <v-toolbar-title class="white--text" v-show="!isMobile"> WGU Enhanced Scheduling System</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn v-show="this.$store.state.user.isAuthenticated" icon class="white--text">
+      <v-btn v-show="authenticated" icon class="white--text">
         <v-icon>mdi-bell-outline</v-icon>
       </v-btn>
   </v-app-bar>
@@ -17,15 +17,14 @@
 export default {
   name: 'App',
   computed: {
-    isMobile: {
-      get() {
-        return this.$vuetify.breakpoint.mobile
-      }
+    isMobile() {
+      return this.$vuetify.breakpoint.mobile
     },
-    username: {
-      get() {
-        return this.$store.state.user.username
-      }
+    username() {
+      return this.$store.state.user.username
+    },
+    authenticated() {
+      return this.$store.state.user.isAuthenticated
     }
   }
 };
