@@ -4,7 +4,6 @@
       <img class="wgu-icon" src="@/assets/wgu-logo.jpg" alt="wgu-logo"/>
       <v-toolbar-title class="white--text" v-show="!isMobile"> WGU Enhanced Scheduling System</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-title v-show="this.$store.state.user.isAuthenticated" class="white--text">{{ username }}</v-toolbar-title>
       <v-btn v-show="this.$store.state.user.isAuthenticated" icon class="white--text">
         <v-icon>mdi-bell-outline</v-icon>
       </v-btn>
