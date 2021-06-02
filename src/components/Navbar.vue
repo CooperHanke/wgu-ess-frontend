@@ -2,6 +2,9 @@
   <v-navigation-drawer app clipped permanent :mini-variant="mini">
     <v-list dense nav>
       <v-list-item-group>
+
+        <user-menu-item />
+
         <!-- using a regular list, giving out regular links first -->
         <v-list-item
           v-for="item in menuItems"
@@ -61,7 +64,11 @@
 </template>
 
 <script>
+import UserMenuItem from '@/components/interface/UserMenuItem.vue'
 export default {
+  components: {
+    UserMenuItem
+  },
   computed: {
     mini() {
       return this.$vuetify.breakpoint.mobile;
@@ -85,6 +92,7 @@ export default {
   },
   data() {
     return {
+      darkMode: true,
       items: [
         { title: "Appointments", icon: "mdi-calendar" },
         { title: "Contacts", icon: "mdi-contacts" },
@@ -110,6 +118,7 @@ export default {
           ],
         },
       ],
+      settingsMenu: false,
     };
   },
   methods: {
@@ -131,6 +140,10 @@ export default {
       this.$store.commit("logout");
       this.$router.push({ name: "Login" });
     },
+    changePassword() {
+      this.$data.changePassword = !this.$data.changePassword
+      console.log('would have changed the password')
+    }
   },
 };
 </script>
