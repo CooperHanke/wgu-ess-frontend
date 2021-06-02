@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import Navbar from '@/components/Navbar.vue'
+import Navbar from '@/components/navbar/Navbar.vue'
 import Appointments from '@/components/appointments/Appointments.vue'
 import Contacts from '@/components/contacts/Contacts.vue'
 import Reports from '@/components/reports/Reports.vue'
