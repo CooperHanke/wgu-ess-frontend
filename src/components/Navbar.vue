@@ -93,7 +93,6 @@ export default {
   },
   data() {
     return {
-      darkMode: true,
       items: [
         { title: "Appointments", icon: "mdi-calendar" },
         { title: "Contacts", icon: "mdi-contacts" },
@@ -119,7 +118,6 @@ export default {
           ],
         },
       ],
-      settingsMenu: false,
     };
   },
   methods: {
@@ -139,6 +137,7 @@ export default {
     },
     logout() {
       this.$store.commit("logout");
+      this.$vuetify.theme.dark = false
       this.$router.push({ name: "Login" });
     },
     changePassword() {

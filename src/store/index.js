@@ -178,7 +178,8 @@ export default new Vuex.Store({
       state.contacts = contacts
     },
     logout(state) {
-      state.user.isAuthenticated = false
+      state.user.isAuthenticated = false,
+      state.user.preferences.darkMode = false
     },
     TOGGLE_DARK_MODE(state) {
       state.user.preferences.darkMode = !state.user.preferences.darkMode // update the user preferences
