@@ -165,6 +165,22 @@ export default new Vuex.Store({
         contacts.push(state.contact.data)
       }
     },
+    deleteContact(state) {
+      const index = state.contacts.findIndex(c => c.id === state.contact.data.id)
+      state.contacts.splice(index, 1)
+      let modifiedAppointments = []
+
+      // next, remove all appointments in the UI to do with the deleted contact
+      for (const appointment in appointments) {
+        if (appointment.name !== state.contact.data.name) {
+          modifiedAppointments.push(appointment)
+        }
+      }
+      
+      state.appointments = modifiedAppointments
+      // this.commit("updateAppointments")
+      this.commit("initializeContact")
+    },
     toggleAppointmentDialog(state) {
       state.appointment.showDialog = !state.appointment.showDialog
     },

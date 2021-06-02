@@ -137,7 +137,7 @@ export default {
     },
     logout() {
       this.$store.commit("logout");
-      this.$vuetify.theme.dark = false
+      this.$vuetify.theme.dark = false; // have to reset the theme manually, as store doesn't have access to itS
       this.$router.push({ name: "Login" });
     },
     changePassword() {

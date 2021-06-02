@@ -21,13 +21,28 @@
           <v-icon small class="mr-2" @click="editContact(item)">
             mdi-pencil
           </v-icon>
-          <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+          <v-icon small @click="deleteContact(item)"> mdi-delete </v-icon>
         </template>
         <template v-slot:no-data>
-          <v-btn color="primary" @click="initialize"> Reset </v-btn>
+          No contacts are found
         </template>
       </v-data-table>
     </v-sheet>
+    <v-dialog v-model="dialogDelete" max-width="500px">
+      <v-card>
+        <v-card-title class="headline"
+          >Are you sure you want to delete this item?</v-card-title
+        >
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="deleteContactConfirm"
+            >OK</v-btn
+          >
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -38,6 +53,7 @@ export default {
     ContactFormDialog
   },
   data: () => ({
+    dialogDelete: false,
     headers: [
       {
         text: "Name",
@@ -65,14 +81,14 @@ export default {
     }
   },
 
-  watch: {
-    dialog(val) {
-      val || this.close();
-    },
-    dialogDelete(val) {
-      val || this.closeDelete();
-    },
-  },
+  // watch: {
+  //   dialog(val) {
+  //     val || this.close();
+  //   },
+  //   dialogDelete(val) {
+  //     val || this.closeDelete();
+  //   },
+  // },
 
   created() {
     this.initialize();
@@ -90,15 +106,15 @@ export default {
       store.commit('toggleContactDialog')
     },
 
-    deleteItem(item) {
-      this.editedIndex = this.contacts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialogDelete = true;
+    deleteContact(contact) {
+      this.$store.commit('setContact', contact)
+      console.log(contact.name)
+      this.dialogDelete = true
     },
 
-    deleteItemConfirm() {
-      this.contacts.splice(this.editedIndex, 1);
-      this.closeDelete();
+    deleteContactConfirm() {
+      this.$store.commit('deleteContact')
+      this.toggleDeleteDialog()
     },
 
     close() {
@@ -106,12 +122,13 @@ export default {
       this.$store.commit("initializeContact"); // next, set the appointment to be a blank one
     },
 
+    toggleDeleteDialog() {
+      this.dialogDelete = !this.dialogDelete
+    },
+
     closeDelete() {
-      this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
+      this.$store.commit("initializeContact");
+      this.toggleDeleteDialog()
     },
   },
 };
