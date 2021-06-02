@@ -21,7 +21,7 @@
         <v-icon small class="mr-2" @click="editAppointment(item)"> mdi-pencil </v-icon>
         <v-icon small @click="deleteAppointment(item)"> mdi-delete </v-icon>
       </template>
-      <template v-slot:no-data> <!-- v-slot:no-data is "No upcoming appointments now" -->
+      <template v-slot:no-data>
         No appointments are found
       </template>
     </v-data-table>
@@ -77,7 +77,7 @@ export default {
         return this.$store.state.appointments
       },
       set() {
-        this.$store.commit("updateAppointments")
+        // this.$store.commit("")
       }
     },
     appointment: {
