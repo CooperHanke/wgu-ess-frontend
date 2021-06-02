@@ -20,11 +20,12 @@
 
       <v-card>
         <v-list>
-          <v-list-item @click="toggleDarkMode">
-            <v-list-item-action>
-              <v-switch v-model="darkMode"></v-switch>
-            </v-list-item-action>
-            <v-list-item-title>Enable dark mode</v-list-item-title>
+          <v-list-item>
+              <v-switch 
+                v-model="darkMode"
+                label="Enable dark mode"
+              >
+              </v-switch>
           </v-list-item>
 
           <v-list-item @click="changePassword">
@@ -40,18 +41,23 @@
 export default {
   data() {
     return {
-      darkMode: true,
       settingsMenu: false
+    }
+  },
+  computed: {
+    darkMode: {
+      get() {
+        return this.$store.state.user.preferences.darkMode
+      },
+      set() {
+        this.$store.commit("TOGGLE_DARK_MODE")
+        this.$vuetify.theme.dark = this.$store.state.user.preferences.darkMode
+      }
     }
   },
   methods: {
     changePassword() {
-      console.log('would have changed password')
       this.$data.settingsMenu = false
-    },
-    toggleDarkMode() {
-      console.log('would have toggled darkMode')
-      this.$data.darkMode = !this.$data.darkMode
     }
   }
 };

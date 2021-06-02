@@ -1,9 +1,10 @@
 <template>
   <v-navigation-drawer app clipped permanent :mini-variant="mini">
-    <v-list dense nav>
-      <v-list-item-group>
 
-        <user-menu-item />
+    <user-menu-item />
+    
+    <v-list dense nav>
+      <v-list-item-group mandatory>
 
         <!-- using a regular list, giving out regular links first -->
         <v-list-item
@@ -64,7 +65,7 @@
 </template>
 
 <script>
-import UserMenuItem from '@/components/interface/UserMenuItem.vue'
+import UserMenuItem from '@/components/navbar/UserMenuItem.vue'
 export default {
   components: {
     UserMenuItem

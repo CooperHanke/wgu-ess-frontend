@@ -10,7 +10,10 @@ export default new Vuex.Store({
     user: {
       username: "Test User",
       isAuthenticated: false,
-      type: 'not-set'
+      type: 'not-set',
+      preferences: {
+        darkMode: false
+      }
     },
     activeDashboardPage: '',
     activeReportPage: '',
@@ -176,6 +179,9 @@ export default new Vuex.Store({
     },
     logout(state) {
       state.user.isAuthenticated = false
+    },
+    TOGGLE_DARK_MODE(state) {
+      state.user.preferences.darkMode = !state.user.preferences.darkMode // update the user preferences
     }
   },
   actions: {
