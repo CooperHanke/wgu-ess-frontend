@@ -4,18 +4,19 @@
       <img class="wgu-icon" src="@/assets/wgu-logo.jpg" alt="wgu-logo"/>
       <v-toolbar-title class="white--text" v-show="!isMobile"> WGU Enhanced Scheduling System</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn v-show="authenticated" icon class="white--text">
-        <v-icon>mdi-bell-outline</v-icon>
-      </v-btn>
+      <reminders v-if="authenticated" />
   </v-app-bar>
       <router-view/>
   </v-app>
 </template>
 
 <script>
-
+import Reminders from '@/components/reminders/Reminders.vue'
 export default {
   name: 'App',
+  components: {
+    Reminders
+  },
   computed: {
     isMobile() {
       return this.$vuetify.breakpoint.mobile
