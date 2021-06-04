@@ -106,7 +106,7 @@ export default {
               userGroup: "standard",
             },
             {
-              title: "Total Appointments By Contact",
+              title: "Appointments By Contact",
               location: "total-appointments-by-contact",
               userGroup: "standard",
             },
