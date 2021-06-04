@@ -11,6 +11,16 @@
         <v-toolbar flat>
           <v-toolbar-title>Upcoming Appointments</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
+
+          <v-text-field
+            v-model="search"
+            clearable
+            single-line
+            hide-details
+            prepend-inner-icon="mdi-magnify"
+            label="Search appointments..."
+          ></v-text-field>
+
           <v-spacer></v-spacer>
 
           <appointment-form-dialog />
@@ -69,6 +79,7 @@ export default {
       { text: "End Time", value: "endTime", sortable: false },
       { text: "Actions", value: "actions", sortable: false },
     ],
+    search: ''
   }),
 
   computed: {

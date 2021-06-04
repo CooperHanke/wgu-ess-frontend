@@ -44,9 +44,10 @@
           </v-list-item>
         </v-list-group>
 
-        <v-divider class="mx-4"></v-divider>
       </v-list-item-group>
     </v-list>
+
+    <v-divider class="mx-4"></v-divider>
 
     <template v-slot:append>
       <div class="text-center pa-1" v-if="mini" @click="logout">
@@ -75,7 +76,11 @@ export default {
       return this.$vuetify.breakpoint.mobile;
     },
     menuItems() {
-      return this.items.filter((item) => !item.availableReports);
+      if (this.userType === 'manager') {
+        return this.items.filter((item) => !item.availableReports);
+      } else if (this.userType === 'standard') {
+        return this.items.filter((item) => !item.availableReports && item.userGroup !== 'manager')
+      } else return null
     },
     reportItems() {
       const reportItem = this.items.find((item) => item.availableReports);
@@ -89,13 +94,14 @@ export default {
     },
     userType() {
       return this.$store.state.user.type;
-    },
+    }
   },
   data() {
     return {
       items: [
-        { title: "Appointments", icon: "mdi-calendar" },
-        { title: "Contacts", icon: "mdi-contacts" },
+        { title: "Appointments", icon: "mdi-calendar", userGroup: "standard" },
+        { title: "Contacts", icon: "mdi-contacts", userGroup: "standard" },
+        { title: "User Management", icon: "mdi-account-supervisor-circle", userGroup: "manager" },
         {
           title: "Reports",
           icon: "mdi-file-chart",
@@ -114,7 +120,7 @@ export default {
               title: "User Schedules",
               location: "user-schedules",
               userGroup: "manager",
-            },
+            }
           ],
         },
       ],

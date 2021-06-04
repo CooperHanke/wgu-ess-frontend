@@ -9,8 +9,18 @@
       >
         <template v-slot:top>
           <v-toolbar flat>
-            <v-toolbar-title>Contact List</v-toolbar-title>
+            <v-toolbar-title>Contacts</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
+
+          <v-text-field
+            v-model="search"
+            clearable
+            single-line
+            hide-details
+            prepend-inner-icon="mdi-magnify"
+            label="Search contacts..."
+          ></v-text-field>
+
             <v-spacer></v-spacer>
             
             <contact-form-dialog />
