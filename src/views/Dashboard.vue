@@ -1,9 +1,7 @@
 <template>
   <v-main>
     <navbar />
-    <v-container>
-      <component v-bind:is="this.activePage" />
-    </v-container>
+    <component v-bind:is="this.activePage" />
   </v-main>
 </template>
 
@@ -12,12 +10,14 @@ import Navbar from '@/components/navbar/Navbar.vue'
 import Appointments from '@/components/appointments/Appointments.vue'
 import Contacts from '@/components/contacts/Contacts.vue'
 import Reports from '@/components/reports/Reports.vue'
+import UserManagement from '@/components/user-management/UserManagement.vue'
 export default {
   components: {
     Appointments,
     Contacts,
     Navbar,
-    Reports
+    Reports,
+    UserManagement
   },
   // since we are loading data, let's get the appointments and contacts sorted at this higher level
   created() {

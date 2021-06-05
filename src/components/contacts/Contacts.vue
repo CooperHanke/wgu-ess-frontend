@@ -78,6 +78,7 @@ export default {
 
       { text: "Actions", value: "actions", sortable: false },
     ],
+    search: ''
   }),
 
   computed: {
