@@ -39,11 +39,11 @@
           <v-icon medium class="mr-2" @click="resetPassword(item.username)">
             mdi-lock-reset
           </v-icon>
-          <v-icon medium :color="isLockedIcon(item)" @click="disableUser(item)"> {{ isLocked(item) ? 'mdi-account-lock' : 'mdi-account-lock-outline' }} </v-icon>
+          <v-icon medium :color="isLockedIcon(item)" @click="disableUser(item)"> {{ isDisabledOrLocked(item) ? 'mdi-lock' : 'mdi-lock-open-outline' }} </v-icon>
         </template>
       </v-data-table>
     </v-sheet>
-    <v-dialog v-model="dialogDisable" max-width="800">
+    <v-dialog v-model="dialogDisable" max-width="600px">
       <v-card>
         <v-card-title>Are you sure you want to disable this {{user.username}}?</v-card-title>
         <v-card-text>You can unlock again in the future</v-card-text>
@@ -107,7 +107,7 @@ export default {
         fullName: "Standard Manager",
         username: "@local.manager",
         userType: "manager",
-        userStatus: "password needs reset"
+        userStatus: "request password reset"
       },
       {
         fullName: "Locked User",
@@ -129,7 +129,7 @@ export default {
       switch(userStatus) {
         case 'online':
           return 'green'
-        case 'password needs reset':
+        case 'request password reset':
           return 'cyan'
         case 'locked':
           return 'orange'
@@ -147,11 +147,11 @@ export default {
       this.user = user
       this.dialogDisable = true
     },
-    isLocked(user) {
-      return user.userStatus === 'locked'
+    isDisabledOrLocked(user) {
+      return user.userStatus === 'locked' || user.userStatus === 'disabled'
     },
     isLockedIcon(user) {
-      if (this.isLocked(user)) {
+      if (this.isDisabledOrLocked(user)) {
         return 'red'
       } else {
         return 'green'
