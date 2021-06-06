@@ -35,12 +35,12 @@
 
           </v-toolbar>
         </template>
-        <!-- <template v-slot:[`item.actions`]="{ item }">
-          <v-icon small class="mr-2" @click="editContact(item)">
-            mdi-pencil
+        <template v-slot:[`item.actions`]="{ item }">
+          <v-icon medium class="mr-2" @click="resetPassword(item.username)">
+            mdi-lock-reset
           </v-icon>
-          <v-icon small @click="deleteContact(item)"> mdi-delete </v-icon>
-        </template> -->
+          <v-icon medium @click="disableUser(item.username)"> mdi-account-lock </v-icon>
+        </template>
       </v-data-table>
     </v-sheet>
     <!-- <v-dialog v-model="dialogDelete" max-width="500px">
@@ -88,6 +88,11 @@ export default {
         align: "start",
         sortable: true,
         value: "userStatus"
+      },
+      {
+        text: "Actions",
+        value: "actions",
+        sortable: false
       }
     ],
     search: '',
@@ -132,6 +137,12 @@ export default {
         default:
           return 'grey'
       }
+    },
+    resetPassword(username) {
+      console.log(`would have reset password for ${username}`)
+    },
+    disableUser(username) {
+      console.log(`would have disabled account for ${username}`)
     }
   }
 }
