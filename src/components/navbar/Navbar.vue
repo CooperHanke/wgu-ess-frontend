@@ -139,7 +139,8 @@ export default {
       } else return;
     },
     formatLink(link) {
-      return link.toLowerCase();
+      let temp = link
+      return temp.replace(/\s+/g, '-').toLowerCase();
     },
     logout() {
       this.$store.commit("logout");
