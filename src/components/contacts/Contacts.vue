@@ -66,11 +66,12 @@ export default {
     dialogDelete: false,
     headers: [
       {
-        text: "Name",
+        text: "First Name",
         align: "start",
         sortable: false,
-        value: "name",
+        value: "firstName",
       },
+      { text: "Last Name", value: "lastName" },
       { text: "Address", value: "address1" },
       { text: "City", value: "city" },
       { text: "Phone Number", value: "phoneNumber" },

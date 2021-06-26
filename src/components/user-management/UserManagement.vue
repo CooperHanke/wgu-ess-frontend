@@ -7,7 +7,7 @@
         sort-by="user"
         class="elevation-1"
       >
-        <template v-slot:item.userStatus="{ item }">
+        <template v-slot:[`item.userStatus`]="{ item }">
           <v-chip
             :color="getColor(item.userStatus)"
             dark

@@ -58,7 +58,7 @@ export default new Vuex.Store({
       state.contacts = contacts
     },
     setAuth(state) { // this should take a user object
-      // state.user.type = 'standard' // mock being normal user
+      //state.user.type = 'standard' // mock being normal user
       state.user.type = 'manager',
       // manager is another type
       state.user.isAuthenticated = true
