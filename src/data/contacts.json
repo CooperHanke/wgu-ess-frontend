@@ -1,7 +1,8 @@
 [
   {
     "id": 1,
-    "name": "Wesley Ramirez",
+    "firstName": "Wesley",
+    "lastName": "Ramirez",
     "address1": "Ap #482-5638 Orci. Rd.",
     "address2": "",
     "city": "New York",
@@ -11,7 +12,8 @@
   },
   {
     "id": 2,
-    "name": "Vladimir Robertson",
+    "firstName": "Vladimir",
+    "lastName": "Robertson",
     "address1": "2061 Interdum Rd.",
     "address2": "",
     "city": "Atlanta",

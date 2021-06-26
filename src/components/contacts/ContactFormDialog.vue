@@ -16,8 +16,14 @@
             <v-row>
               <v-col>
                 <v-text-field
-                  v-model="contact.name"
-                  label="Name"
+                  v-model="contact.firstName"
+                  label="First Name"
+                ></v-text-field>
+              </v-col>
+              <v-col>
+                <v-text-field
+                  v-model="contact.lastName"
+                  label="Last Name"
                 ></v-text-field>
               </v-col>
             </v-row>
