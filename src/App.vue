@@ -1,10 +1,16 @@
 <template>
   <v-app>
+    <v-overlay :value="this.$store.state.ui.overlayActive">
+      <v-progress-circular
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
     <v-app-bar color="primary" app clipped-left>
       <img class="wgu-icon" src="@/assets/wgu-logo.jpg" alt="wgu-logo"/>
       <v-toolbar-title class="white--text" v-show="!isMobile"> WGU Enhanced Scheduling System</v-toolbar-title>
       <v-spacer></v-spacer>
-      <reminders v-if="authenticated" />
+      <reminders v-if="loggedIn" />
   </v-app-bar>
       <router-view/>
   </v-app>
@@ -24,8 +30,8 @@ export default {
     username() {
       return this.$store.state.user.username
     },
-    authenticated() {
-      return this.$store.state.user.isAuthenticated
+    loggedIn() {
+      return this.$store.state.user !== null
     }
   }
 };

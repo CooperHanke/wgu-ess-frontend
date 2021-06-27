@@ -68,7 +68,6 @@ export default {
       {
         text: "First Name",
         align: "start",
-        sortable: false,
         value: "firstName",
       },
       { text: "Last Name", value: "lastName" },

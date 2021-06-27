@@ -30,8 +30,8 @@ export default {
     }
   },
   watch: {
-    '$store.state.activeDashboardPage': function() {
-      this.activePage = this.$store.state.activeDashboardPage
+    '$store.state.ui.activeDashboardPage': function() {
+      this.activePage = this.$store.state.ui.activeDashboardPage
     }
   }
 };
