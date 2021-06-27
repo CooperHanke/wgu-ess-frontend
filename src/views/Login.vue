@@ -10,9 +10,10 @@
             <v-form>
               <v-text-field
                 prepend-icon="mdi-account"
-                name="login"
+                name="username"
                 label="Login"
                 type="text"
+                v-model="username"
               ></v-text-field>
               <v-text-field
                 id="password"
@@ -20,6 +21,7 @@
                 name="password"
                 label="Password"
                 type="password"
+                v-model="password"
               ></v-text-field>
             </v-form>
           </v-card-text>
@@ -37,15 +39,26 @@
 export default {
   data() {
     return {
-      username: this.username,
-      password: this.password,
-    }
+      username: "",
+      password: "",
+    };
   },
   methods: {
     performLogin() {
-      this.$store.commit('setAuth')
-      this.$router.push({ name: 'Dashboard' })
-    }
-  }
+      this.$store.dispatch("attemptAuth", {
+        username: this.username,
+        password: this.password,
+      });
+      //setTimeout( () => this.$router.push({ name: 'Dashboard' }), 500) // give the requests time to work
+    },
+  },
+  watch: {
+    "$store.state.auth.userId": function () {
+      if (this.$store.state.auth.userId !== null) {
+        this.$store.dispatch("toggleLoadingOverlay", false);
+        this.$router.push({ name: "Dashboard" });
+      }
+    },
+  },
 };
 </script>

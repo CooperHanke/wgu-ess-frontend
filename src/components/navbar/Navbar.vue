@@ -76,15 +76,16 @@ export default {
       return this.$vuetify.breakpoint.mobile;
     },
     menuItems() {
-      if (this.userType === 'manager') {
+      console.log(this.userType)
+      if (this.userType === 'Manager') {
         return this.items.filter((item) => !item.availableReports);
-      } else if (this.userType === 'standard') {
-        return this.items.filter((item) => !item.availableReports && item.userGroup !== 'manager')
+      } else if (this.userType === 'Standard') {
+        return this.items.filter((item) => !item.availableReports && item.userGroup !== 'Manager')
       } else return null
     },
     reportItems() {
       const reportItem = this.items.find((item) => item.availableReports);
-      if (this.userType === "manager") {
+      if (this.userType === "Manager") {
         return reportItem.availableReports;
       } else {
         return reportItem.availableReports.filter(
@@ -99,9 +100,9 @@ export default {
   data() {
     return {
       items: [
-        { title: "Appointments", icon: "mdi-calendar", userGroup: "standard" },
-        { title: "Contacts", icon: "mdi-contacts", userGroup: "standard" },
-        { title: "User Management", icon: "mdi-account-supervisor-circle", userGroup: "manager" },
+        { title: "Appointments", icon: "mdi-calendar", userGroup: "Standard" },
+        { title: "Contacts", icon: "mdi-contacts", userGroup: "Standard" },
+        { title: "User Management", icon: "mdi-account-supervisor-circle", userGroup: "Manager" },
         {
           title: "Reports",
           icon: "mdi-file-chart",
@@ -109,17 +110,17 @@ export default {
             {
               title: "Appointments By Month",
               location: "appointments-by-month",
-              userGroup: "standard",
+              userGroup: "Standard",
             },
             {
               title: "Appointments By Contact",
               location: "total-appointments-by-contact",
-              userGroup: "standard",
+              userGroup: "Standard",
             },
             {
               title: "User Schedules",
               location: "user-schedules",
-              userGroup: "manager",
+              userGroup: "Manager",
             }
           ],
         },
@@ -143,8 +144,8 @@ export default {
       return temp.replace(/\s+/g, '-').toLowerCase();
     },
     logout() {
-      this.$store.commit("logout");
-      this.$vuetify.theme.dark = false; // have to reset the theme manually, as store doesn't have access to itS
+      this.$store.dispatch("logoutUser");
+      this.$vuetify.theme.dark = false; // have to reset the theme manually, as store doesn't have access to it
       this.$router.push({ name: "Login" });
     },
     changePassword() {

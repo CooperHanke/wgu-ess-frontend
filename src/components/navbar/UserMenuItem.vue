@@ -47,11 +47,11 @@ export default {
   computed: {
     darkMode: {
       get() {
-        return this.$store.state.user.preferences.darkMode
+        return this.$store.state.user.usesDarkMode
       },
       set() {
         this.$store.commit("TOGGLE_DARK_MODE")
-        this.$vuetify.theme.dark = this.$store.state.user.preferences.darkMode
+        this.$vuetify.theme.dark = this.$store.state.user.usesDarkMode
       }
     }
   },

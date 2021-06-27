@@ -15,7 +15,7 @@ export default {
   computed: {
     reportPage: {
       get() {
-        return this.$store.state.activeReportPage
+        return this.$store.state.ui.activeReportPage
       }
     }
   }

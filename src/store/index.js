@@ -2,21 +2,22 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import appointments from "@/data/appointments.json"; // for local testing
 import contacts from "@/data/contacts.json"; // for local testing
+import axios from 'axios';
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user: {
-      username: "Test User",
-      isAuthenticated: false,
-      type: 'not-set',
-      preferences: {
-        darkMode: false
-      }
+    auth: {
+      token: localStorage.getItem('token') || null,
+      userId: localStorage.getItem('userId') || null
     },
-    activeDashboardPage: '',
-    activeReportPage: '',
+    user: {},
+    ui: {
+      activeDashboardPage: '',
+      activeReportPage: '',
+      overlayActive: false
+    },
     appointment: {
       data: {
         id: -1,
@@ -51,23 +52,32 @@ export default new Vuex.Store({
     contacts: []
   },
   mutations: {
+    SET_TOKEN(state, token) {
+      state.auth.token = token
+      // delete old token, if signing in again, then add it back
+      localStorage.removeItem('token')
+      localStorage.setItem('token', token)
+    },
+    SET_USER(state, user) {
+      state.user = user
+      state.auth.userId = user.id
+      localStorage.removeItem('userId')
+      localStorage.setItem('userId', user.id)
+    },
+    TOGGLE_LOADING_OVERLAY(state, toggle) {
+      state.ui.overlayActive = toggle
+    },
     initializeAppointments(state) {
       state.appointments = appointments
     },
     initializeContacts(state) {
       state.contacts = contacts
     },
-    setAuth(state) { // this should take a user object
-      //state.user.type = 'standard' // mock being normal user
-      state.user.type = 'manager',
-      // manager is another type
-      state.user.isAuthenticated = true
-    },
     setActivePage(state, page) {
-      state.activeDashboardPage = page
+      state.ui.activeDashboardPage = page
     },
     setReportPage(state, page) {
-      state.activeReportPage = page
+      state.ui.activeReportPage = page
     },
     initializeAppointment(state) {
       state.appointment.data = {
@@ -177,7 +187,7 @@ export default new Vuex.Store({
           modifiedAppointments.push(appointment)
         }
       }
-      
+
       state.appointments = modifiedAppointments
       // this.commit("updateAppointments")
       this.commit("initializeContact")
@@ -194,15 +204,43 @@ export default new Vuex.Store({
     updateContacts(state) {
       state.contacts = contacts
     },
-    logout(state) {
-      state.user.isAuthenticated = false,
-      state.user.preferences.darkMode = false
+    LOGOUT_USER(state) {
+      state.user = {}
+      state.auth.token = null
+      state.auth.userId = null
+      localStorage.removeItem('token')
+      localStorage.removeItem('userId')
     },
     TOGGLE_DARK_MODE(state) {
-      state.user.preferences.darkMode = !state.user.preferences.darkMode // update the user preferences
+      state.user.usesDarkMode = !state.user.usesDarkMode // update the user preferences
     }
   },
   actions: {
+    attemptAuth({ commit, dispatch }, credentials) {
+      axios({ url: 'https://localhost:5001/api/users/auth', data: credentials, method: 'POST' })
+        .then(resp => {
+          if (resp.status == 200) {
+            commit("SET_TOKEN", resp.data.token)
+            dispatch('toggleLoadingOverlay', true)
+            dispatch('getUserData', resp.data.userId)
+          } else if (resp.status == 400) {
+            console.log("wrong password combo") // replace with way to show error message
+          }
+        })
+        .catch(error => console.log(error))
+    },
+    getUserData({ commit, state }, userId) {
+      axios({ url: `https://localhost:5001/api/users/${userId}`, method: 'GET', headers: { 'Authorization': `Bearer ${state.auth.token}` } })
+        .then(resp => {
+          commit("SET_USER", resp.data)
+      })
+    },
+    logoutUser({ commit }) {
+      commit('LOGOUT_USER')
+    },
+    toggleLoadingOverlay({ commit }, toggle) {
+      commit('TOGGLE_LOADING_OVERLAY', toggle)
+    }
   },
   modules: {
   },
