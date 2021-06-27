@@ -2,19 +2,17 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import appointments from "@/data/appointments.json"; // for local testing
 import contacts from "@/data/contacts.json"; // for local testing
+import axios from 'axios';
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user: {
-      username: "Test User",
-      isAuthenticated: false,
-      type: 'not-set',
-      preferences: {
-        darkMode: false
-      }
+    auth: {
+      token: localStorage.getItem('token') || null,
+      userId: localStorage.getItem('userId') || null
     },
+    user: {},
     activeDashboardPage: '',
     activeReportPage: '',
     appointment: {
@@ -51,17 +49,19 @@ export default new Vuex.Store({
     contacts: []
   },
   mutations: {
+    SET_TOKEN(state, token) {
+      state.auth.token = token
+      localStorage.setItem('token', token)
+    },
+    SET_USER(state, user) {
+      state.user = user
+      localStorage.setItem('lastUserId', user.id)
+    },
     initializeAppointments(state) {
       state.appointments = appointments
     },
     initializeContacts(state) {
       state.contacts = contacts
-    },
-    setAuth(state) { // this should take a user object
-      //state.user.type = 'standard' // mock being normal user
-      state.user.type = 'manager',
-      // manager is another type
-      state.user.isAuthenticated = true
     },
     setActivePage(state, page) {
       state.activeDashboardPage = page
@@ -177,7 +177,7 @@ export default new Vuex.Store({
           modifiedAppointments.push(appointment)
         }
       }
-      
+
       state.appointments = modifiedAppointments
       // this.commit("updateAppointments")
       this.commit("initializeContact")
@@ -196,13 +196,32 @@ export default new Vuex.Store({
     },
     logout(state) {
       state.user.isAuthenticated = false,
-      state.user.preferences.darkMode = false
+        state.user.preferences.darkMode = false
     },
     TOGGLE_DARK_MODE(state) {
       state.user.preferences.darkMode = !state.user.preferences.darkMode // update the user preferences
     }
   },
   actions: {
+    attemptAuth({ commit, dispatch }, credentials) {
+      axios({ url: 'https://localhost:5001/api/users/auth', data: credentials, method: 'POST' })
+        .then(resp => {
+          if (resp.status == 200) {
+            commit("SET_TOKEN", resp.data.token)
+            dispatch('getUserData', resp.data.userId)
+          } else if (resp.status == 400) {
+            console.log("wrong password combo") // replace with way to show error message
+          }
+        })
+        .catch(error => console.log(error))
+    },
+    getUserData({ commit, state }, userId) {
+      axios({ url: `https://localhost:5001/api/users/${userId}`, method: 'GET', headers: { 'Authorization': `Bearer ${state.auth.token}` } })
+        .then(resp => {
+          commit("SET_USER", resp.data)
+          this.$router.push({ name: 'Dashboard' })
+      })
+    }
   },
   modules: {
   },

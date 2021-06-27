@@ -26,7 +26,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   // down here, we are going to check for the mock state first
-  if (to.name !== 'Login' && !store.state.user.isAuthenticated) next({ name: 'Login' })
+  if (to.name !== 'Login' && store.state.auth.token == null) next({ name: 'Login' })
   else next()
 })
 
