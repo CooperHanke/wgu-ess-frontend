@@ -13,8 +13,11 @@ export default new Vuex.Store({
       userId: localStorage.getItem('userId') || null
     },
     user: {},
-    activeDashboardPage: '',
-    activeReportPage: '',
+    ui: {
+      activeDashboardPage: '',
+      activeReportPage: '',
+      overlayActive: false
+    },
     appointment: {
       data: {
         id: -1,
@@ -51,11 +54,18 @@ export default new Vuex.Store({
   mutations: {
     SET_TOKEN(state, token) {
       state.auth.token = token
+      // delete old token, if signing in again, then add it back
+      localStorage.removeItem('token')
       localStorage.setItem('token', token)
     },
     SET_USER(state, user) {
       state.user = user
-      localStorage.setItem('lastUserId', user.id)
+      state.auth.userId = user.id
+      localStorage.removeItem('userId')
+      localStorage.setItem('userId', user.id)
+    },
+    TOGGLE_LOADING_OVERLAY(state, toggle) {
+      state.ui.overlayActive = toggle
     },
     initializeAppointments(state) {
       state.appointments = appointments
@@ -64,10 +74,10 @@ export default new Vuex.Store({
       state.contacts = contacts
     },
     setActivePage(state, page) {
-      state.activeDashboardPage = page
+      state.ui.activeDashboardPage = page
     },
     setReportPage(state, page) {
-      state.activeReportPage = page
+      state.ui.activeReportPage = page
     },
     initializeAppointment(state) {
       state.appointment.data = {
@@ -194,12 +204,15 @@ export default new Vuex.Store({
     updateContacts(state) {
       state.contacts = contacts
     },
-    logout(state) {
-      state.user.isAuthenticated = false,
-        state.user.preferences.darkMode = false
+    LOGOUT_USER(state) {
+      state.user = {}
+      state.auth.token = null
+      state.auth.userId = null
+      localStorage.removeItem('token')
+      localStorage.removeItem('userId')
     },
     TOGGLE_DARK_MODE(state) {
-      state.user.preferences.darkMode = !state.user.preferences.darkMode // update the user preferences
+      state.user.usesDarkMode = !state.user.usesDarkMode // update the user preferences
     }
   },
   actions: {
@@ -208,6 +221,7 @@ export default new Vuex.Store({
         .then(resp => {
           if (resp.status == 200) {
             commit("SET_TOKEN", resp.data.token)
+            dispatch('toggleLoadingOverlay', true)
             dispatch('getUserData', resp.data.userId)
           } else if (resp.status == 400) {
             console.log("wrong password combo") // replace with way to show error message
@@ -219,8 +233,13 @@ export default new Vuex.Store({
       axios({ url: `https://localhost:5001/api/users/${userId}`, method: 'GET', headers: { 'Authorization': `Bearer ${state.auth.token}` } })
         .then(resp => {
           commit("SET_USER", resp.data)
-          this.$router.push({ name: 'Dashboard' })
       })
+    },
+    logoutUser({ commit }) {
+      commit('LOGOUT_USER')
+    },
+    toggleLoadingOverlay({ commit }, toggle) {
+      commit('TOGGLE_LOADING_OVERLAY', toggle)
     }
   },
   modules: {

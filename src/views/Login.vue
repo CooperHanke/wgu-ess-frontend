@@ -39,18 +39,26 @@
 export default {
   data() {
     return {
-      username: '',
-      password: '',
-    }
+      username: "",
+      password: "",
+    };
   },
   methods: {
     performLogin() {
-      this.$store.dispatch('attemptAuth', {
+      this.$store.dispatch("attemptAuth", {
         username: this.username,
-        password: this.password
-      })
-      // this.$router.push({ name: 'Dashboard' })
-    }
-  }
+        password: this.password,
+      });
+      //setTimeout( () => this.$router.push({ name: 'Dashboard' }), 500) // give the requests time to work
+    },
+  },
+  watch: {
+    "$store.state.auth.userId": function () {
+      if (this.$store.state.auth.userId !== null) {
+        this.$store.dispatch("toggleLoadingOverlay", false);
+        this.$router.push({ name: "Dashboard" });
+      }
+    },
+  },
 };
 </script>
