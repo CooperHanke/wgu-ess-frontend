@@ -1,7 +1,6 @@
 <template>
   <v-snackbar
       v-model="$store.state.ui.snackbar.isActive"
-      :timeout="timeout"
     >
       {{ text }}
 
@@ -23,14 +22,11 @@ export default {
   computed: {
     text() {
       return this.$store.state.ui.snackbar.message
-    },
-    timeout() {
-      return this.$store.state.ui.snackbar.timeoutInterval * 1000
     }
   },
   methods: {
     closeSnackbar() {
-      this.$store.commit("closeSnackbar")
+      this.$store.commit("CLOSE_SNACKBAR")
     }
   }
 }

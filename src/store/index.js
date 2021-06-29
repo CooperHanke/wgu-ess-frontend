@@ -254,13 +254,10 @@ export default new Vuex.Store({
     toggleLoadingOverlay({ commit }, toggle) {
       commit('TOGGLE_LOADING_OVERLAY', toggle)
     },
-    closeSnackbar({ commit }) {
-      commit('CLOSE_SNACKBAR')
-    },
-    setSnackbar({ commit, state }, message) {
+    showSnackbar({ commit, state }, message) {
       commit('SET_SNACKBAR', message)
       setTimeout(() => {
-        this.dispatch('closeSnackbar')
+        commit('CLOSE_SNACKBAR')
       }, state.ui.snackbar.timeoutInterval * 1000)
     },
     toggleDarkMode({ commit, state }) {
@@ -272,11 +269,11 @@ export default new Vuex.Store({
          'Authorization': `Bearer ${state.auth.token}`,
         }})
         .then(resp => {
-          commit("SET_SNACKBAR", "Saved the dark mode preference to the database" )
+          commit("SET_SNACKBAR", "Saved the dark mode preference to the database")
           commit("SET_USER", resp.data) // reset the user for now
         })
         .catch( () => {
-          commit("SET_SNACKBAR", "Unable to save setting to the database" )
+          commit("SET_SNACKBAR", "Unable to save setting to the database")
         })
     },
     logoutUser({ commit }) {
