@@ -64,11 +64,13 @@ export default new Vuex.Store({
       localStorage.removeItem('token')
       localStorage.setItem('token', token)
     },
+    SET_USER_ID(state, id) {
+      state.auth.userId = id
+      localStorage.removeItem('userId')
+      localStorage.setItem('userId', id)
+    },
     SET_USER(state, user) {
       state.user = user
-      state.auth.userId = user.id
-      localStorage.removeItem('userId')
-      localStorage.setItem('userId', user.id)
     },
     TOGGLE_LOADING_OVERLAY(state, toggle) {
       state.ui.overlayActive = toggle
@@ -235,17 +237,21 @@ export default new Vuex.Store({
       axios({ url: 'https://localhost:5001/api/users/auth', data: credentials, method: 'POST' })
         .then(resp => {
           commit("SET_TOKEN", resp.data.token)
-          dispatch('getUserData', resp.data.userId)
+          commit("SET_USER_ID", resp.data.userId)
+          dispatch('toggleLoadingOverlay', false)
+          // dispatch('getUserData', resp.data.userId)
         })
         .catch(() => {
           dispatch('toggleLoginFailure', true)
           dispatch('toggleLoadingOverlay', false)
         })
     },
-    getUserData({ commit, state }, userId) {
+    getUserData({ commit, dispatch, state }, userId) {
+      dispatch('toggleLoadingOverlay', true)
       axios({ url: `https://localhost:5001/api/users/${userId}`, method: 'GET', headers: { 'Authorization': `Bearer ${state.auth.token}` } })
         .then(resp => {
           commit("SET_USER", resp.data)
+          dispatch('toggleLoadingOverlay', false)
       })
     },
     toggleLoginFailure({ commit }, toggle) {
