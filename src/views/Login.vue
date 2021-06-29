@@ -32,15 +32,24 @@
         </v-card>
       </v-flex>
     </v-layout>
+
+    <LoginError />
+
   </v-container>
+
+  
 </template>
 
 <script>
+import LoginError from '@/components/login/LoginError.vue'
 export default {
+  components: {
+    LoginError
+  },
   data() {
     return {
       username: "",
-      password: "",
+      password: ""
     };
   },
   methods: {
@@ -50,14 +59,6 @@ export default {
         password: this.password,
       });
       //setTimeout( () => this.$router.push({ name: 'Dashboard' }), 500) // give the requests time to work
-    },
-  },
-  watch: {
-    "$store.state.auth.userId": function () {
-      if (this.$store.state.auth.userId !== null) {
-        this.$store.dispatch("toggleLoadingOverlay", false);
-        this.$router.push({ name: "Dashboard" });
-      }
     },
   },
 };

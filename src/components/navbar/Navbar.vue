@@ -76,7 +76,6 @@ export default {
       return this.$vuetify.breakpoint.mobile;
     },
     menuItems() {
-      console.log(this.userType)
       if (this.userType === 'Manager') {
         return this.items.filter((item) => !item.availableReports);
       } else if (this.userType === 'Standard') {

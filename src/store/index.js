@@ -10,7 +10,8 @@ export default new Vuex.Store({
   state: {
     auth: {
       token: localStorage.getItem('token') || null,
-      userId: localStorage.getItem('userId') || null
+      userId: localStorage.getItem('userId') || null,
+      loginFailed: false
     },
     user: {},
     ui: {
@@ -66,6 +67,9 @@ export default new Vuex.Store({
     },
     TOGGLE_LOADING_OVERLAY(state, toggle) {
       state.ui.overlayActive = toggle
+    },
+    TOGGLE_LOGIN_FAILED(state, toggle) {
+      state.auth.loginFailed = toggle
     },
     initializeAppointments(state) {
       state.appointments = appointments
@@ -217,17 +221,16 @@ export default new Vuex.Store({
   },
   actions: {
     attemptAuth({ commit, dispatch }, credentials) {
+      dispatch('toggleLoadingOverlay', true)
       axios({ url: 'https://localhost:5001/api/users/auth', data: credentials, method: 'POST' })
         .then(resp => {
-          if (resp.status == 200) {
-            commit("SET_TOKEN", resp.data.token)
-            dispatch('toggleLoadingOverlay', true)
-            dispatch('getUserData', resp.data.userId)
-          } else if (resp.status == 400) {
-            console.log("wrong password combo") // replace with way to show error message
-          }
+          commit("SET_TOKEN", resp.data.token)
+          dispatch('getUserData', resp.data.userId)
         })
-        .catch(error => console.log(error))
+        .catch(() => {
+          dispatch('toggleLoginFailure', true)
+          dispatch('toggleLoadingOverlay', false)
+        })
     },
     getUserData({ commit, state }, userId) {
       axios({ url: `https://localhost:5001/api/users/${userId}`, method: 'GET', headers: { 'Authorization': `Bearer ${state.auth.token}` } })
@@ -235,11 +238,14 @@ export default new Vuex.Store({
           commit("SET_USER", resp.data)
       })
     },
-    logoutUser({ commit }) {
-      commit('LOGOUT_USER')
+    toggleLoginFailure({ commit }, toggle) {
+      commit('TOGGLE_LOGIN_FAILED', toggle)
     },
     toggleLoadingOverlay({ commit }, toggle) {
       commit('TOGGLE_LOADING_OVERLAY', toggle)
+    },
+    logoutUser({ commit }) {
+      commit('LOGOUT_USER')
     }
   },
   modules: {
