@@ -1,27 +1,28 @@
 <template>
   <v-app>
-    <v-overlay :value="this.$store.state.ui.overlayActive">
-      <v-progress-circular
-        indeterminate
-        size="64"
-      ></v-progress-circular>
-    </v-overlay>
+    <overlay />
+    <snackbar />
     <v-app-bar color="primary" app clipped-left>
       <img class="wgu-icon" src="@/assets/wgu-logo.jpg" alt="wgu-logo"/>
       <v-toolbar-title class="white--text" v-show="!isMobile"> WGU Enhanced Scheduling System</v-toolbar-title>
       <v-spacer></v-spacer>
       <reminders v-if="loggedIn" />
-  </v-app-bar>
+    </v-app-bar>
       <router-view/>
   </v-app>
 </template>
 
 <script>
 import Reminders from '@/components/reminders/Reminders.vue'
+import Overlay from '@/components/ui/Overlay.vue'
+import Snackbar from '@/components/ui/Snackbar.vue'
+
 export default {
   name: 'App',
   components: {
-    Reminders
+    Reminders,
+    Overlay,
+    Snackbar
   },
   computed: {
     isMobile() {
@@ -32,6 +33,11 @@ export default {
     },
     loggedIn() {
       return this.$store.state.auth.userId !== null
+    }
+  },
+  watch: {
+    '$store.state.user.usesDarkMode': function() {
+      this.$vuetify.theme.dark = this.$store.state.user.usesDarkMode
     }
   }
 };
