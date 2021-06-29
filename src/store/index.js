@@ -239,7 +239,6 @@ export default new Vuex.Store({
           commit("SET_TOKEN", resp.data.token)
           commit("SET_USER_ID", resp.data.userId)
           dispatch('toggleLoadingOverlay', false)
-          // dispatch('getUserData', resp.data.userId)
         })
         .catch(() => {
           dispatch('toggleLoginFailure', true)

@@ -31,22 +31,50 @@
 
             <v-spacer></v-spacer>
             
-            <!-- <contact-form-dialog /> -->
+            <user-form-dialog />
 
           </v-toolbar>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-icon medium class="mr-2" @click="resetPassword(item.username)">
-            mdi-lock-reset
+          <v-icon small class="mr-2" @click="editUser(item)">
+            mdi-pencil
           </v-icon>
-          <v-icon medium :color="isLockedIcon(item)" @click="disableUser(item)"> {{ isDisabledOrLocked(item) ? 'mdi-lock' : 'mdi-lock-open-outline' }} </v-icon>
+          <v-tooltip top>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon 
+                medium 
+                class="mr-2" 
+                @click="resetPassword(item.username)"
+                v-bind="attrs"
+                v-on="on"
+              >
+                mdi-lock-reset
+              </v-icon>
+            </template>
+            <span>Reset Password</span>
+          </v-tooltip>
+          <v-tooltip top>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon 
+                medium 
+                :color="isLockedIcon(item)" 
+                @click="disableUser(item)"
+                v-bind="attrs"
+                v-on="on"> 
+                
+                {{ isDisabledOrLocked(item) ? 'mdi-lock' : 'mdi-lock-open-outline' }} 
+                
+              </v-icon>
+              </template>
+            <span> {{ isDisabledOrLocked(item) ? 'Unlock Account' : 'Lock Account' }} </span>
+          </v-tooltip>
         </template>
       </v-data-table>
     </v-sheet>
     <v-dialog v-model="dialogDisable" max-width="600px">
       <v-card>
         <v-card-title>Are you sure you want to disable this {{user.username}}?</v-card-title>
-        <v-card-text>You can unlock again in the future</v-card-text>
+        <v-card-text>You can unlock the account again in the future</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text >Cancel</v-btn>
@@ -61,15 +89,25 @@
 </template>
 
 <script>
+import UserFormDialog from '@/components/user-management/UserFormDialog.vue'
 export default {
+  components: {
+    UserFormDialog
+  },
   data: () => ({
     dialogDisable: false,
     headers: [
       {
-        text: "User's Full Name",
+        text: "First Name",
         align: "start",
         sortable: true,
-        value: "fullName"
+        value: "firstName"
+      },
+      {
+        text: "Last Name",
+        align: "start",
+        sortable: true,
+        value: "lastName"
       },
       {
         text: "User Name",
@@ -80,13 +118,13 @@ export default {
       {
         text: "User Type",
         align: "start",
-        sortable: true,
+        sortable: false,
         value: "userType"
       },
       {
         text: "User's Status",
         align: "start",
-        sortable: true,
+        sortable: false,
         value: "userStatus"
       },
       {
@@ -96,27 +134,31 @@ export default {
       }
     ],
     search: '',
-    users: [
+    users: [ // mocked user data
       {
-        fullName: "Standard User",
+        firstName: "Standard",
+        lastName: "User",
         username: "@standard.user",
         userType: "standard",
         userStatus: "online"
       },
       {
-        fullName: "Standard Manager",
+        firstName: "Standard",
+        lastName: "Manager",
         username: "@local.manager",
         userType: "manager",
         userStatus: "request password reset"
       },
       {
-        fullName: "Locked User",
+        firstName: "Locked",
+        lastName: "User",
         username: "@locked.user",
         userType: "standard",
         userStatus: "locked"
       },
       {
-        fullName: "Disabled Standard",
+        firstName: "Disabled",
+        lastName: "Standard",
         username: "@disabled.standard",
         userType: "standard",
         userStatus: "disabled"
