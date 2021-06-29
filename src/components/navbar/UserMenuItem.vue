@@ -22,8 +22,9 @@
         <v-list>
           <v-list-item>
               <v-switch 
-                v-model="darkMode"
+                v-model="$store.state.user.usesDarkMode"
                 label="Enable dark mode"
+                @click="toggleDarkMode"
               >
               </v-switch>
           </v-list-item>
@@ -44,20 +45,12 @@ export default {
       settingsMenu: false
     }
   },
-  computed: {
-    darkMode: {
-      get() {
-        return this.$store.state.user.usesDarkMode
-      },
-      set() {
-        this.$store.commit("TOGGLE_DARK_MODE")
-        this.$vuetify.theme.dark = this.$store.state.user.usesDarkMode
-      }
-    }
-  },
   methods: {
     changePassword() {
       this.$data.settingsMenu = false
+    },
+    toggleDarkMode() {
+      this.$store.dispatch("toggleDarkMode")
     }
   }
 };
