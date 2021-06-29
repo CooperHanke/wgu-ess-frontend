@@ -31,7 +31,7 @@ export default {
       return this.$store.state.user.username
     },
     loggedIn() {
-      return this.$store.state.user !== null
+      return this.$store.state.auth.userId !== null
     }
   }
 };
