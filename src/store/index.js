@@ -17,7 +17,12 @@ export default new Vuex.Store({
     ui: {
       activeDashboardPage: '',
       activeReportPage: '',
-      overlayActive: false
+      overlayActive: false,
+      snackbar: {
+        isActive: false,
+        message: '',
+        timeoutInterval: 3 // timeout in seconds to be set
+      }
     },
     appointment: {
       data: {
@@ -70,6 +75,10 @@ export default new Vuex.Store({
     },
     TOGGLE_LOGIN_FAILED(state, toggle) {
       state.auth.loginFailed = toggle
+    },
+    TOGGLE_SNACKBAR(state, toggle, message) {
+      state.ui.snackbar.message = message
+      state.ui.snackbar.isActive = toggle
     },
     initializeAppointments(state) {
       state.appointments = appointments
@@ -214,9 +223,6 @@ export default new Vuex.Store({
       state.auth.userId = null
       localStorage.removeItem('token')
       localStorage.removeItem('userId')
-    },
-    TOGGLE_DARK_MODE(state) {
-      state.user.usesDarkMode = !state.user.usesDarkMode // update the user preferences
     }
   },
   actions: {
@@ -243,6 +249,26 @@ export default new Vuex.Store({
     },
     toggleLoadingOverlay({ commit }, toggle) {
       commit('TOGGLE_LOADING_OVERLAY', toggle)
+    },
+    toggleSnackbar({ commit }, toggle, message) {
+      commit('TOGGLE_SNACKBAR', toggle, message)
+    },
+    toggleDarkMode({ commit, state }) {
+      axios({ 
+        url: `https://localhost:5001/api/users/${state.user.id}`, 
+        data: state.user, 
+        method: 'PUT', 
+        headers: {
+         'Authorization': `Bearer ${state.auth.token}`,
+        }})
+        .then(resp => {
+          commit("SET_USER", resp.data) // reset the user for now
+          // set snackbar message?
+        })
+        .catch( () => {
+          // set snackbar message
+          console.log("Unable to save the setting")
+        })
     },
     logoutUser({ commit }) {
       commit('LOGOUT_USER')
