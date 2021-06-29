@@ -1,6 +1,7 @@
 <template>
   <v-app>
-    <Overlay />
+    <overlay />
+    <snackbar />
     <v-app-bar color="primary" app clipped-left>
       <img class="wgu-icon" src="@/assets/wgu-logo.jpg" alt="wgu-logo"/>
       <v-toolbar-title class="white--text" v-show="!isMobile"> WGU Enhanced Scheduling System</v-toolbar-title>
@@ -14,12 +15,14 @@
 <script>
 import Reminders from '@/components/reminders/Reminders.vue'
 import Overlay from '@/components/ui/Overlay.vue'
+import Snackbar from '@/components/ui/Snackbar.vue'
 
 export default {
   name: 'App',
   components: {
     Reminders,
-    Overlay
+    Overlay,
+    Snackbar
   },
   computed: {
     isMobile() {

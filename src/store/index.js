@@ -76,9 +76,13 @@ export default new Vuex.Store({
     TOGGLE_LOGIN_FAILED(state, toggle) {
       state.auth.loginFailed = toggle
     },
-    TOGGLE_SNACKBAR(state, toggle, message) {
+    CLOSE_SNACKBAR(state) {
+      state.ui.snackbar.isActive = false
+      state.ui.snackbar.message = ''
+    },
+    SET_SNACKBAR(state, message) {
       state.ui.snackbar.message = message
-      state.ui.snackbar.isActive = toggle
+      state.ui.snackbar.isActive = true
     },
     initializeAppointments(state) {
       state.appointments = appointments
@@ -250,8 +254,14 @@ export default new Vuex.Store({
     toggleLoadingOverlay({ commit }, toggle) {
       commit('TOGGLE_LOADING_OVERLAY', toggle)
     },
-    toggleSnackbar({ commit }, toggle, message) {
-      commit('TOGGLE_SNACKBAR', toggle, message)
+    closeSnackbar({ commit }) {
+      commit('CLOSE_SNACKBAR')
+    },
+    setSnackbar({ commit, state }, message) {
+      commit('SET_SNACKBAR', message)
+      setTimeout(() => {
+        this.dispatch('closeSnackbar')
+      }, state.ui.snackbar.timeoutInterval * 1000)
     },
     toggleDarkMode({ commit, state }) {
       axios({ 
@@ -262,12 +272,11 @@ export default new Vuex.Store({
          'Authorization': `Bearer ${state.auth.token}`,
         }})
         .then(resp => {
+          commit("SET_SNACKBAR", "Saved the dark mode preference to the database" )
           commit("SET_USER", resp.data) // reset the user for now
-          // set snackbar message?
         })
         .catch( () => {
-          // set snackbar message
-          console.log("Unable to save the setting")
+          commit("SET_SNACKBAR", "Unable to save setting to the database" )
         })
     },
     logoutUser({ commit }) {
