@@ -33,13 +33,17 @@
             
             <user-form-dialog />
 
+            <v-btn color="primary" class="mb-2" @click="addUserDialog">
+              Create New User
+            </v-btn>
+
           </v-toolbar>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
           <v-icon small class="mr-2" @click="editUser(item)">
             mdi-pencil
           </v-icon>
-          <v-tooltip top>
+          <v-tooltip top v-if="item.userStatus != 'logged in user'">
             <template v-slot:activator="{ on, attrs }">
               <v-icon 
                 medium 
@@ -53,7 +57,7 @@
             </template>
             <span>Reset Password</span>
           </v-tooltip>
-          <v-tooltip top>
+          <v-tooltip top v-if="item.userStatus != 'logged in user'">
             <template v-slot:activator="{ on, attrs }">
               <v-icon 
                 medium 
@@ -94,6 +98,18 @@ export default {
   components: {
     UserFormDialog
   },
+  computed: {
+    users() {
+      return this.$store.state.users
+    },
+    sameUser(user) {
+      return this.$store.state.auth.userId === user.id
+    }
+  },
+  mounted() {
+    // load the user data from the store
+    this.$store.dispatch('loadUsers')
+  },
   data: () => ({
     dialogDisable: false,
     headers: [
@@ -113,16 +129,16 @@ export default {
         text: "User Name",
         align: "start",
         sortable: true,
-        value: "username"
+        value: "userName"
       },
       {
         text: "User Type",
         align: "start",
         sortable: false,
-        value: "userType"
+        value: "type"
       },
       {
-        text: "User's Status",
+        text: "Status",
         align: "start",
         sortable: false,
         value: "userStatus"
@@ -134,49 +150,57 @@ export default {
       }
     ],
     search: '',
-    users: [ // mocked user data
-      {
-        firstName: "Standard",
-        lastName: "User",
-        username: "@standard.user",
-        userType: "standard",
-        userStatus: "online"
-      },
-      {
-        firstName: "Standard",
-        lastName: "Manager",
-        username: "@local.manager",
-        userType: "manager",
-        userStatus: "request password reset"
-      },
-      {
-        firstName: "Locked",
-        lastName: "User",
-        username: "@locked.user",
-        userType: "standard",
-        userStatus: "locked"
-      },
-      {
-        firstName: "Disabled",
-        lastName: "Standard",
-        username: "@disabled.standard",
-        userType: "standard",
-        userStatus: "disabled"
-      }
-    ],
+    // users: [ // mocked user data
+    //   {
+    //     firstName: "Standard",
+    //     lastName: "User",
+    //     username: "@standard.user",
+    //     userType: "standard",
+    //     userStatus: "enabled"
+    //   },
+    //   {
+    //     firstName: "Standard",
+    //     lastName: "Manager",
+    //     username: "@local.manager",
+    //     userType: "manager",
+    //     userStatus: "request password reset"
+    //   },
+    //   {
+    //     firstName: "Locked",
+    //     lastName: "User",
+    //     username: "@locked.user",
+    //     userType: "standard",
+    //     userStatus: "locked"
+    //   },
+    //   {
+    //     firstName: "Disabled",
+    //     lastName: "Standard",
+    //     username: "@disabled.standard",
+    //     userType: "standard",
+    //     userStatus: "disabled"
+    //   }
+    // ],
     user: {}
   }),
   methods: {
+    editUser(user) {
+      this.$store.commit("SET_USER_ADD_OR_EDIT_FORM", user)
+      this.$store.commit("TOGGLE_USER_DIALOG")
+    },
+    addUserDialog() {
+      this.$store.commit("SET_USER_ADD_OR_EDIT_FORM", {})
+      this.$store.commit("TOGGLE_USER_DIALOG")
+    },
     getColor( userStatus ) {
       switch(userStatus) {
-        case 'online':
+        case 'enabled':
           return 'green'
-        case 'request password reset':
-          return 'cyan'
-        case 'locked':
+        case 'need password reset':
           return 'orange'
-        case 'disabled':
+        case 'locked':
           return 'red'
+        case 'logged in user':
+          return 'grey'
         default:
           return 'grey'
       }
@@ -193,11 +217,7 @@ export default {
       return user.userStatus === 'locked' || user.userStatus === 'disabled'
     },
     isLockedIcon(user) {
-      if (this.isDisabledOrLocked(user)) {
-        return 'red'
-      } else {
-        return 'green'
-      }
+      return this.isDisabledOrLocked(user)? 'red' : 'green'
     }
   }
 }

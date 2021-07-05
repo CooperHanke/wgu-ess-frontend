@@ -1,11 +1,11 @@
 <template>
   <div>
     <v-dialog v-model="showDialog" max-width="800px" close-delay="0" persistent>
-      <template v-slot:activator="{ on, attrs }">
+      <!-- <template v-slot:activator="{ on, attrs }">
         <v-btn color="primary" class="mb-2" v-bind="attrs" v-on="on">
           Create New User
         </v-btn>
-      </template>
+      </template> -->
       <v-card>
         <v-card-title>
           <span class="headline">{{ dialogHeader }}</span>
@@ -16,38 +16,39 @@
             <v-row>
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  v-model="user.firstName"
+                  v-model="userData.firstName"
                   label="First Name"
                 ></v-text-field>
               </v-col>
 
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  v-model="user.lastName"
+                  v-model="userData.lastName"
                   label="Last Name"
                 ></v-text-field>
               </v-col>
 
               <v-col cols="12" sm="6" md="4">
                 <v-select
-                  v-model="user.userType"
+                  v-model="userData.type"
                   label="User Type"
                   :items="types"
-                  item-text="user.userType"
-                  item-value="user.userType"
+                  item-text="type"
+                  item-value="type"
+                  
                 ></v-select>
               </v-col>
 
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  v-model="user.userName"
+                  v-model="userData.userName"
                   label="User Name"
                 ></v-text-field>
               </v-col>
 
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  v-model="user.password"
+                  v-model="userData.password"
                   label="Set Password"
                   type="password"
                 ></v-text-field>
@@ -55,7 +56,7 @@
 
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  v-model="user.passwordConfirm"
+                  v-model="userData.passwordConfirm"
                   label="Confirm Password"
                   type="password"
                 ></v-text-field>
@@ -78,17 +79,32 @@
 <script>
 export default {
   computed: {
+    userData: {
+      get() {
+        return this.$store.state.ui.user.formItem
+      // },
+      // set() {
+      //   if (this.$store.state.ui.user.formItem.id) {
+      //     console.log("should be set")
+      //     // const userData = this.$store.state.ui.user.formItem
+      //     this.firstName = this.$store.state.ui.user.formItem.firstName,
+      //     this.lastName = this.$store.state.ui.user.formItem.lastName,
+      //     this.userName = this.$store.state.ui.user.formItem.userName,
+      //     this.type = this.$store.state.ui.user.formItem.type
+      //   }
+      }
+    },
     dialogHeader() {
-      return this.$store.state.appointment.data.id > -1
+      return this.$store.state.ui.user.formItem.id
         ? "Edit User"
         : "New User";
     },
     showDialog: {
       get() {
-        return this.$store.state.appointment.showDialog;
+        return this.$store.state.ui.user.showDialog
       },
       set() {
-        this.$store.commit("toggleUserDialog");
+        this.$store.commit("TOGGLE_USER_DIALOG")
       },
     }
   },
@@ -97,14 +113,12 @@ export default {
     return {
       dialogDelete: false,
       types: ['Standard', 'Manager'],
-      user: {
-        firstName: '',
-        lastName: '',
-        userType: '',
-        password: '',
-        passwordConfirm: '',
-        userName: ''
-      }
+      firstName: '',
+      lastName: '',
+      type: '',
+      password: '',
+      passwordConfirm: '',
+      userName: ''
     };
   },
 
@@ -119,6 +133,8 @@ export default {
 
   methods: {
     close() {
+      this.$store.commit("SET_USER_ADD_OR_EDIT_FORM", {})
+      this.$store.commit("TOGGLE_USER_DIALOG")
       // this.$store.commit("toggleAppointmentDialog"); // first, close the dialog box, so user doesn't see us change the dialog type
       // this.$store.commit("initializeAppointment"); // next, set the appointment to be a blank one
     },

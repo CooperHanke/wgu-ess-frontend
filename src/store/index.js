@@ -22,6 +22,10 @@ export default new Vuex.Store({
         isActive: false,
         message: '',
         timeoutInterval: 3 // timeout in seconds to be set
+      },
+      user: {
+        formItem: {},
+        showDialog: false
       }
     },
     appointment: {
@@ -55,7 +59,8 @@ export default new Vuex.Store({
       },
       showDialog: false
     },
-    contacts: []
+    contacts: [],
+    users: []
   },
   mutations: {
     SET_TOKEN(state, token) {
@@ -82,9 +87,19 @@ export default new Vuex.Store({
       state.ui.snackbar.isActive = false
       state.ui.snackbar.message = ''
     },
+    LOAD_USERS(state, users) {
+      state.users = users
+    },
     SET_SNACKBAR(state, message) {
       state.ui.snackbar.message = message
       state.ui.snackbar.isActive = true
+    },
+    TOGGLE_USER_DIALOG(state) {
+      state.ui.user.showDialog = !state.ui.user.showDialog
+    },
+    SET_USER_ADD_OR_EDIT_FORM(state, user) {
+      user.id ? state.ui.user.formItem = user : state.ui.user.formItem = {}
+      // state.ui.user.formItem = user
     },
     initializeAppointments(state) {
       state.appointments = appointments
@@ -251,7 +266,7 @@ export default new Vuex.Store({
         .then(resp => {
           commit("SET_USER", resp.data)
           dispatch('toggleLoadingOverlay', false)
-      })
+      }) // finish out the catch block
     },
     toggleLoginFailure({ commit }, toggle) {
       commit('TOGGLE_LOGIN_FAILED', toggle)
@@ -283,6 +298,26 @@ export default new Vuex.Store({
     },
     logoutUser({ commit }) {
       commit('LOGOUT_USER')
+    },
+    loadUsers({ commit, dispatch, state}) {
+      dispatch('toggleLoadingOverlay', true)
+      axios({ url: `https://localhost:5001/api/users`, method: 'GET', headers: { 'Authorization': `Bearer ${state.auth.token}` } })
+      .then(resp => {
+        // here, check those flags and set a userStatus unique to UI
+        resp.data.forEach(user => {
+          if (state.auth.userId === user.id) {
+            user.userStatus = "logged in user"
+          } else if (user.isLocked) {
+            user.userStatus = "locked"
+          } else if (user.needPasswordReset) {
+            user.userStatus = "need password reset"
+          } else {
+            user.userStatus = "enabled"
+          }
+        })
+        commit("LOAD_USERS", resp.data)
+        dispatch('toggleLoadingOverlay', false)
+      })
     }
   },
   modules: {
