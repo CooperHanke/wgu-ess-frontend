@@ -58,7 +58,6 @@ export default {
         username: this.username,
         password: this.password,
       });
-      //setTimeout( () => this.$router.push({ name: 'Dashboard' }), 500) // give the requests time to work
     },
   },
 };

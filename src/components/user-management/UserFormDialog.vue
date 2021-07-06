@@ -1,11 +1,6 @@
 <template>
   <div>
     <v-dialog v-model="showDialog" max-width="800px" close-delay="0" persistent>
-      <!-- <template v-slot:activator="{ on, attrs }">
-        <v-btn color="primary" class="mb-2" v-bind="attrs" v-on="on">
-          Create New User
-        </v-btn>
-      </template> -->
       <v-card>
         <v-card-title>
           <span class="headline">{{ dialogHeader }}</span>
@@ -132,8 +127,22 @@ export default {
 
     save() {
       if (this.userData.id !== "") {
-        this.userData.id = this.$store.state.ui.user.formItem.id
-        this.$store.dispatch("editUserSubmit", this.userData)
+        const id = this.$store.state.ui.user.formItem.id
+        const editedUserData = {
+          id,
+          firstName: this.firstName,
+          lastName: this.lastName,
+          type: this.type,
+          userName: this.userName,
+          isLocked: this.userData.isLocked,
+          needPasswordReset: this.userData.needPasswordReset
+        }
+        if (this.validPassword()) {
+          editedUserData.password = this.password
+        } else {
+          delete editedUserData.password
+        }
+        this.$store.dispatch("editUserSubmit", editedUserData)
       } else {
         const newUserData = {
           firstName: this.firstName,
@@ -145,6 +154,10 @@ export default {
         this.$store.dispatch("newUserSubmit", newUserData)
       }
       this.close();
+    },
+
+    validPassword() {
+      return (this.password !== '' && this.passwordConfirm !== '') && (this.password == this.passwordConfirm)
     },
 
     clearFormEntries() {

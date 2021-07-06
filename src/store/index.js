@@ -121,6 +121,12 @@ export default new Vuex.Store({
         type: ''
       }
     },
+    ADD_PASSWORD_TO_USER_FOR_USER_CHANGE(state, password) {
+      state.user.password = password
+    },
+    SET_RESET_PASSWORD_FLAG(state, value) {
+      state.user.passwordReset = value
+    },
     initializeAppointments(state) {
       state.appointments = appointments
     },
@@ -363,6 +369,66 @@ export default new Vuex.Store({
         dispatch('loadUsers')
         dispatch('toggleLoadingOverlay', false)
       })
+    },
+    editUserSubmit({ commit, dispatch, state }, userData) {
+      dispatch('toggleLoadingOverlay', true)
+      axios({ 
+        url: `https://localhost:5001/api/users/${state.user.id}`, 
+        data: userData, 
+        method: 'PUT', 
+        headers: {
+         'Authorization': `Bearer ${state.auth.token}`,
+        }})
+        .then(() => {
+          commit("SET_SNACKBAR", `Successfully edited existing user ${userData.userName} on system`)
+          dispatch('loadUsers')
+          dispatch('toggleLoadingOverlay', false)
+        })
+        .catch( () => {
+          commit("SET_SNACKBAR", `Unable to apply settings for ${userData.userName} on system`)
+          dispatch('toggleLoadingOverlay', false)
+        })
+    },
+    changeUserPassword({ commit, dispatch, state }, password) {
+      commit("ADD_PASSWORD_TO_USER_FOR_USER_CHANGE", password)
+      dispatch('toggleLoadingOverlay', true)
+      axios({ 
+        url: `https://localhost:5001/api/users/${state.user.id}`, 
+        data: state.user, 
+        method: 'PUT', 
+        headers: {
+         'Authorization': `Bearer ${state.auth.token}`,
+        }})
+        .then( () => {
+          dispatch('toggleLoadingOverlay', false)
+          dispatch('showSnackbar', "Password reset, you can log in again shortly")
+          commit('LOGOUT_USER')
+          commit("SET_RESET_PASSWORD_FLAG", true)
+        })
+        .catch( () => {
+          commit("SET_SNACKBAR", "Unable to change password at this time")
+          dispatch('toggleLoadingOverlay', false)
+        })
+    },
+    setLockStatus({ commit, dispatch, state }, userData) {
+      const message = userData.isLocked ? ["locked", "from logging in"] : ["unlocked", "for logging in"]
+      dispatch('toggleLoadingOverlay', true)
+      axios({ 
+        url: `https://localhost:5001/api/users/${userData.id}`, 
+        data: userData, 
+        method: 'PUT', 
+        headers: {
+         'Authorization': `Bearer ${state.auth.token}`,
+        }})
+        .then(() => {
+          commit("SET_SNACKBAR", `Successfully ${message[0]} user ${userData.userName} ${message[1]}`)
+          dispatch('loadUsers')
+          dispatch('toggleLoadingOverlay', false)
+        })
+        .catch( () => {
+          commit("SET_SNACKBAR", `Unable to apply settings for ${userData.userName} on system`)
+          dispatch('toggleLoadingOverlay', false)
+        })
     }
   },
   modules: {

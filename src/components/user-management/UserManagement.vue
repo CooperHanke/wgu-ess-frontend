@@ -61,16 +61,14 @@
         </template>
       </v-data-table>
     </v-sheet>
-    <v-dialog v-model="dialogDisable" max-width="600px">
+    <v-dialog v-model="dialogDisable" max-width="600px" persistent>
       <v-card>
-        <v-card-title>Are you sure you want to disable this {{user.username}}?</v-card-title>
+        <v-card-title>Are you sure you want to disable @{{ user.userName }}?</v-card-title>
         <v-card-text>You can unlock the account again in the future</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text >Cancel</v-btn>
-          <v-btn color="blue darken-1" text
-            >OK</v-btn
-          >
+          <v-btn color="blue darken-1" text @click="dialogDisable = !dialogDisable">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="lockUserAccount(user)">OK</v-btn>
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
@@ -90,7 +88,7 @@ export default {
     },
     sameUser(user) {
       return this.$store.state.auth.userId === user.id
-    }
+    },
   },
   mounted() {
     // load the user data from the store
@@ -161,7 +159,6 @@ export default {
       }
     },
     disableUser(user) {
-      console.log(`would have disabled account for ${user.username}`)
       this.user = user
       this.dialogDisable = true
     },
@@ -170,6 +167,11 @@ export default {
     },
     isLockedIcon(user) {
       return this.isDisabledOrLocked(user)? 'red' : 'green'
+    },
+    lockUserAccount(user) {
+      user.isLocked = !this.isDisabledOrLocked(user)
+      this.$store.dispatch("setLockStatus", user, true)
+      this.dialogDisable = false
     }
   }
 }
