@@ -33,30 +33,16 @@
             
             <user-form-dialog />
 
-            <v-btn color="primary" class="mb-2" @click="addUserDialog">
+            <v-btn color="primary" class="mb-2" @click="addUser">
               Create New User
             </v-btn>
 
           </v-toolbar>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-icon small class="mr-2" @click="editUser(item)">
+          <v-icon small class="mr-2" @click="editUser(item.id)">
             mdi-pencil
           </v-icon>
-          <v-tooltip top v-if="item.userStatus != 'logged in user'">
-            <template v-slot:activator="{ on, attrs }">
-              <v-icon 
-                medium 
-                class="mr-2" 
-                @click="resetPassword(item.username)"
-                v-bind="attrs"
-                v-on="on"
-              >
-                mdi-lock-reset
-              </v-icon>
-            </template>
-            <span>Reset Password</span>
-          </v-tooltip>
           <v-tooltip top v-if="item.userStatus != 'logged in user'">
             <template v-slot:activator="{ on, attrs }">
               <v-icon 
@@ -150,45 +136,14 @@ export default {
       }
     ],
     search: '',
-    // users: [ // mocked user data
-    //   {
-    //     firstName: "Standard",
-    //     lastName: "User",
-    //     username: "@standard.user",
-    //     userType: "standard",
-    //     userStatus: "enabled"
-    //   },
-    //   {
-    //     firstName: "Standard",
-    //     lastName: "Manager",
-    //     username: "@local.manager",
-    //     userType: "manager",
-    //     userStatus: "request password reset"
-    //   },
-    //   {
-    //     firstName: "Locked",
-    //     lastName: "User",
-    //     username: "@locked.user",
-    //     userType: "standard",
-    //     userStatus: "locked"
-    //   },
-    //   {
-    //     firstName: "Disabled",
-    //     lastName: "Standard",
-    //     username: "@disabled.standard",
-    //     userType: "standard",
-    //     userStatus: "disabled"
-    //   }
-    // ],
     user: {}
   }),
   methods: {
-    editUser(user) {
-      this.$store.commit("SET_USER_ADD_OR_EDIT_FORM", user)
+    editUser(userId) {
+      this.$store.dispatch("loadUserForEdit", userId)
       this.$store.commit("TOGGLE_USER_DIALOG")
     },
-    addUserDialog() {
-      this.$store.commit("SET_USER_ADD_OR_EDIT_FORM", {})
+    addUser() {
       this.$store.commit("TOGGLE_USER_DIALOG")
     },
     getColor( userStatus ) {
@@ -204,9 +159,6 @@ export default {
         default:
           return 'grey'
       }
-    },
-    resetPassword(username) {
-      console.log(`would have reset password for ${username}`)
     },
     disableUser(user) {
       console.log(`would have disabled account for ${user.username}`)

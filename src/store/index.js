@@ -24,7 +24,13 @@ export default new Vuex.Store({
         timeoutInterval: 3 // timeout in seconds to be set
       },
       user: {
-        formItem: {},
+        formItem: {
+          id: '',
+          firstName: '',
+          lastName: '',
+          userName: '',
+          type: ''
+        },
         showDialog: false
       }
     },
@@ -97,9 +103,23 @@ export default new Vuex.Store({
     TOGGLE_USER_DIALOG(state) {
       state.ui.user.showDialog = !state.ui.user.showDialog
     },
+    SET_EDIT_USER_DATA(state, user) {
+      state.ui.user.formItem = Object.assign({}, user)
+    },
     SET_USER_ADD_OR_EDIT_FORM(state, user) {
-      user.id ? state.ui.user.formItem = user : state.ui.user.formItem = {}
+      if (user.id !== '') {
+        state.ui.user.formItem = Object.assign({}, user)
+      }
       // state.ui.user.formItem = user
+    },
+    CLEAR_USER_FORM_DATA(state) {
+      state.ui.user.formItem = {
+        id: '',
+        firstName: '',
+        lastName: '',
+        userName: '',
+        type: ''
+      }
     },
     initializeAppointments(state) {
       state.appointments = appointments
@@ -316,6 +336,31 @@ export default new Vuex.Store({
           }
         })
         commit("LOAD_USERS", resp.data)
+        dispatch('toggleLoadingOverlay', false)
+      })
+    },
+    loadUserForEdit({ commit, dispatch, state }, userId) {
+      dispatch('toggleLoadingOverlay', true)
+      axios({ url: `https://localhost:5001/api/users/${userId}`, method: 'GET', headers: { 'Authorization': `Bearer ${state.auth.token}` } })
+        .then(resp => {
+          commit("SET_EDIT_USER_DATA", resp.data)
+          dispatch('toggleLoadingOverlay', false)
+      }) // finish out the catch block
+    },
+    newUserSubmit({ dispatch, state }, userData) {
+      var newUser = {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        type: userData.type,
+        userName: userData.userName,
+        UsesDarkMode: false,
+        password: userData.password
+      }
+      dispatch('toggleLoadingOverlay', true)
+      axios({ url: `https://localhost:5001/api/users`, method: 'POST', data: newUser, headers: { 'Authorization': `Bearer ${state.auth.token}` } })
+      .then(() => {
+        dispatch('showSnackbar', `Successfully added ${userData.userName} to system`)
+        dispatch('loadUsers')
         dispatch('toggleLoadingOverlay', false)
       })
     }

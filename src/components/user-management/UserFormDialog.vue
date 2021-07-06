@@ -16,21 +16,21 @@
             <v-row>
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  v-model="userData.firstName"
+                  v-model="firstName"
                   label="First Name"
                 ></v-text-field>
               </v-col>
 
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  v-model="userData.lastName"
+                  v-model="lastName"
                   label="Last Name"
                 ></v-text-field>
               </v-col>
 
               <v-col cols="12" sm="6" md="4">
                 <v-select
-                  v-model="userData.type"
+                  v-model="type"
                   label="User Type"
                   :items="types"
                   item-text="type"
@@ -41,14 +41,15 @@
 
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  v-model="userData.userName"
+                  v-model="userName"
                   label="User Name"
                 ></v-text-field>
               </v-col>
 
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  v-model="userData.password"
+                  :disabled="this.sameUser"
+                  v-model="password"
                   label="Set Password"
                   type="password"
                 ></v-text-field>
@@ -56,7 +57,8 @@
 
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  v-model="userData.passwordConfirm"
+                  :disabled="this.sameUser"
+                  v-model="passwordConfirm"
                   label="Confirm Password"
                   type="password"
                 ></v-text-field>
@@ -79,20 +81,11 @@
 <script>
 export default {
   computed: {
-    userData: {
-      get() {
-        return this.$store.state.ui.user.formItem
-      // },
-      // set() {
-      //   if (this.$store.state.ui.user.formItem.id) {
-      //     console.log("should be set")
-      //     // const userData = this.$store.state.ui.user.formItem
-      //     this.firstName = this.$store.state.ui.user.formItem.firstName,
-      //     this.lastName = this.$store.state.ui.user.formItem.lastName,
-      //     this.userName = this.$store.state.ui.user.formItem.userName,
-      //     this.type = this.$store.state.ui.user.formItem.type
-      //   }
-      }
+    userData() {
+      return this.$store.state.ui.user.formItem
+    },
+    sameUser() {
+      return this.$store.state.ui.user.formItem.id === this.$store.state.auth.userId
     },
     dialogHeader() {
       return this.$store.state.ui.user.formItem.id
@@ -116,27 +109,17 @@ export default {
       firstName: '',
       lastName: '',
       type: '',
+      userName: '',
       password: '',
       passwordConfirm: '',
-      userName: ''
     };
-  },
-
-  watch: {
-    dialog(val) {
-      val || this.close();
-    },
-    dialogDelete(val) {
-      val || this.toggleDeleteDialog();
-    },
   },
 
   methods: {
     close() {
-      this.$store.commit("SET_USER_ADD_OR_EDIT_FORM", {})
+      this.$store.commit("CLEAR_USER_FORM_DATA")
+      this.clearFormEntries()
       this.$store.commit("TOGGLE_USER_DIALOG")
-      // this.$store.commit("toggleAppointmentDialog"); // first, close the dialog box, so user doesn't see us change the dialog type
-      // this.$store.commit("initializeAppointment"); // next, set the appointment to be a blank one
     },
     deleteItemConfirm() {
       this.appointments.splice(this.editedIndex, 1);
@@ -148,9 +131,41 @@ export default {
     },
 
     save() {
-      this.$store.commit("saveAppointment");
+      if (this.userData.id !== "") {
+        this.userData.id = this.$store.state.ui.user.formItem.id
+        this.$store.dispatch("editUserSubmit", this.userData)
+      } else {
+        const newUserData = {
+          firstName: this.firstName,
+          lastName: this.lastName,
+          type: this.type,
+          userName: this.userName,
+          password: this.password,
+        }
+        this.$store.dispatch("newUserSubmit", newUserData)
+      }
       this.close();
     },
+
+    clearFormEntries() {
+      this.firstName = ''
+      this.lastName = ''
+      this.userName = ''
+      this.type = ''
+      this.password = ''
+      this.passwordConfirm = ''
+    }
   },
+
+  watch: {
+    "$store.state.ui.user.formItem": function() {
+      if (this.$store.state.ui.user.formItem.id !== '') {
+        this.firstName = this.$store.state.ui.user.formItem.firstName
+        this.lastName = this.$store.state.ui.user.formItem.lastName
+        this.type = this.$store.state.ui.user.formItem.type
+        this.userName = this.$store.state.ui.user.formItem.userName
+      }
+    },
+  }
 };
 </script>
