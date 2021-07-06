@@ -11,7 +11,8 @@ export default new Vuex.Store({
     auth: {
       token: localStorage.getItem('token') || null,
       userId: localStorage.getItem('userId') || null,
-      loginFailed: false
+      loginFailed: false,
+      loginFailedMessage: ''
     },
     user: {},
     ui: {
@@ -69,7 +70,7 @@ export default new Vuex.Store({
     users: []
   },
   mutations: {
-    SET_TOKEN(state, token) {
+    SET_TOKEN(state , token) {
       state.auth.token = token
       // delete old token, if signing in again, then add it back
       localStorage.removeItem('token')
@@ -88,6 +89,12 @@ export default new Vuex.Store({
     },
     TOGGLE_LOGIN_FAILED(state, toggle) {
       state.auth.loginFailed = toggle
+    },
+    SET_LOGIN_ERROR_MSG(state, msg) {
+      state.auth.loginFailedMessage = msg
+    },
+    CLEAR_LOGIN_ERRORS(state) {
+      state.auth.loginFailedMessage = ''
     },
     CLOSE_SNACKBAR(state) {
       state.ui.snackbar.isActive = false
@@ -274,14 +281,19 @@ export default new Vuex.Store({
   },
   actions: {
     attemptAuth({ commit, dispatch }, credentials) {
+      commit('TOGGLE_LOGIN_FAILED', false)
       dispatch('toggleLoadingOverlay', true)
       axios({ url: 'https://localhost:5001/api/users/auth', data: credentials, method: 'POST' })
         .then(resp => {
+          commit("CLEAR_LOGIN_ERRORS")
           commit("SET_TOKEN", resp.data.token)
           commit("SET_USER_ID", resp.data.userId)
           dispatch('toggleLoadingOverlay', false)
         })
-        .catch(() => {
+        .catch(error => {
+          if( error.response ){
+            commit('SET_LOGIN_ERROR_MSG', error.response.data); // => the response payload 
+          }
           dispatch('toggleLoginFailure', true)
           dispatch('toggleLoadingOverlay', false)
         })
@@ -421,8 +433,8 @@ export default new Vuex.Store({
          'Authorization': `Bearer ${state.auth.token}`,
         }})
         .then(() => {
-          commit("SET_SNACKBAR", `Successfully ${message[0]} user ${userData.userName} ${message[1]}`)
           dispatch('loadUsers')
+          commit("SET_SNACKBAR", `Successfully ${message[0]} user ${userData.userName} ${message[1]}`)
           dispatch('toggleLoadingOverlay', false)
         })
         .catch( () => {

@@ -11,7 +11,7 @@
         </v-card-title>
 
         <v-card-text>
-          Authentication failed. Please ensure that your username and password is correct, or reach out to a manager to have your password reset.
+          {{ errorMessage }}
         </v-card-text>
 
         <v-divider></v-divider>
@@ -21,7 +21,7 @@
           <v-btn
             color="primary"
             text
-            @click="$store.dispatch('toggleLoginFailure', false)"
+            @click="clearErrorState"
           >
             Try Again
           </v-btn>
@@ -32,9 +32,20 @@
 
 <script>
 export default {
+  computed: {
+    errorMessage() {
+      return this.$store.state.auth.loginFailedMessage === '' ? '' : this.$store.state.auth.loginFailedMessage
+    }
+  },
   data() {
     return {
       hasError: false
+    }
+  },
+  methods: {
+    clearErrorState() {
+      this.$store.commit('CLEAR_LOGIN_ERRORS')
+      this.$store.dispatch('toggleLoginFailure', false)
     }
   },
   watch: {
