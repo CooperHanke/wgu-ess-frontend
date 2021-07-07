@@ -14,7 +14,8 @@ export default new Vuex.Store({
       loginFailed: false,
       loginFailedMessage: '',
       enablePasswordReset: false,
-      loginAttempts: 0
+      loginAttempts: 0,
+      resetPasswordDialog: false
     },
     user: {},
     ui: {
@@ -24,7 +25,7 @@ export default new Vuex.Store({
       snackbar: {
         isActive: false,
         message: '',
-        timeoutInterval: 3 // timeout in seconds to be set
+        timeoutInterval: 5 // timeout in seconds to be set
       },
       user: {
         formItem: {
@@ -111,6 +112,12 @@ export default new Vuex.Store({
     CLOSE_SNACKBAR(state) {
       state.ui.snackbar.isActive = false
       state.ui.snackbar.message = ''
+    },
+    OPEN_RESET_BUTTON_DIALOG(state) {
+      state.auth.resetPasswordDialog = true
+    },
+    CLOSE_PASSWORD_RESET_DIALOG(state) {
+      state.auth.resetPasswordDialog = false
     },
     LOAD_USERS(state, users) {
       state.users = users
@@ -319,6 +326,23 @@ export default new Vuex.Store({
           commit("SET_USER", resp.data)
           dispatch('toggleLoadingOverlay', false)
       }) // finish out the catch block
+    },
+    openResetPasswordDialog({ commit }) {
+      commit("OPEN_RESET_BUTTON_DIALOG")
+    },
+    clearPasswordResetDialog({ commit }) {
+      commit("CLOSE_PASSWORD_RESET_DIALOG")
+    },
+    submitPasswordResetRequest({ commit, dispatch }, userData) {
+      dispatch('toggleLoadingOverlay', true)
+      axios({ url: 'https://localhost:5001/api/users/auth/reset', data: userData, method: 'POST' })
+        .then( () => {
+          commit("CLEAR_LOGIN_ERRORS")
+          commit("RESET_PASSWORD_BUTTON")
+          dispatch("clearPasswordResetDialog")
+          dispatch("toggleLoadingOverlay", false)
+          dispatch("showSnackbar", "If you have a user account in the system, a manager will be able to reach out to you with a new password")
+        })
     },
     toggleLoginFailure({ commit }, toggle) {
       commit('TOGGLE_LOGIN_FAILED', toggle)

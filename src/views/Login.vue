@@ -28,7 +28,7 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" v-show="passwordResetEnabled">REQUEST PASSWORD RESET</v-btn>
+            <v-btn color="primary" v-show="passwordResetEnabled" @click="resetPassword" >REQUEST PASSWORD RESET</v-btn>
             <v-spacer></v-spacer>
             <v-btn @click="performLogin" color="primary" :disabled="!valid">Login</v-btn>
           </v-card-actions>
@@ -36,7 +36,9 @@
       </v-flex>
     </v-layout>
 
-    <LoginError />
+    <login-error />
+
+    <reset-password-dialog />
 
   </v-container>
 
@@ -45,9 +47,11 @@
 
 <script>
 import LoginError from '@/components/login/LoginError.vue'
+import ResetPasswordDialog from '@/components/login/ResetPasswordDialog.vue'
 export default {
   components: {
-    LoginError
+    LoginError,
+    ResetPasswordDialog
   },
   computed: {
     passwordResetEnabled() {
@@ -70,7 +74,11 @@ export default {
         username: this.username,
         password: this.password,
       });
+      this.$refs.loginForm.reset()
     },
+    resetPassword() {
+      this.$store.dispatch("openResetPasswordDialog")
+    }
   },
 };
 </script>
