@@ -400,6 +400,7 @@ export default new Vuex.Store({
       axios({ url: `https://localhost:5001/api/users/${userId}`, method: 'GET', headers: { 'Authorization': `Bearer ${state.auth.token}` } })
         .then(resp => {
           commit("SET_EDIT_USER_DATA", resp.data)
+          commit("TOGGLE_USER_DIALOG")
           dispatch('toggleLoadingOverlay', false)
       }) // finish out the catch block
     },

@@ -65,8 +65,8 @@
 
     <v-dialog v-model="dialogDisable" max-width="600px" persistent>
       <v-card>
-        <v-card-title>Are you sure you want to disable @{{ user.userName }}?</v-card-title>
-        <v-card-text>You can unlock the account again in the future</v-card-text>
+        <v-card-title>Are you sure you want to {{disableMessage[0]}} @{{ user.userName }}?</v-card-title>
+        <v-card-text>You can {{disableMessage[1]}} the account again in the future</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="dialogDisable = !dialogDisable">Cancel</v-btn>
@@ -102,9 +102,9 @@ export default {
     users() {
       return this.$store.state.users
     },
-    sameUser(user) {
-      return this.$store.state.auth.userId === user.id
-    },
+    disableMessage() {
+      return !this.user.isLocked ? ["disable", "enable"] : ["enable", "disable"]
+    }
   },
   mounted() {
     // load the user data from the store
@@ -156,7 +156,6 @@ export default {
   methods: {
     editUser(userId) {
       this.$store.dispatch("loadUserForEdit", userId)
-      this.$store.commit("TOGGLE_USER_DIALOG")
     },
     addUser() {
       this.$store.commit("TOGGLE_USER_DIALOG")

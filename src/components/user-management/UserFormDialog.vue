@@ -47,7 +47,7 @@
 
                 <v-col cols="12" sm="6" md="4">
                   <v-text-field
-                    :disabled="this.sameUser"
+                    v-if="!this.sameUser"
                     v-model="password"
                     label="Set Password"
                     type="password"
@@ -57,7 +57,7 @@
 
                 <v-col cols="12" sm="6" md="4">
                   <v-text-field
-                    :disabled="this.sameUser"
+                    v-if="!this.sameUser"
                     v-model="passwordConfirm"
                     label="Confirm Password"
                     type="password"

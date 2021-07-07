@@ -15,15 +15,12 @@
           <v-form>
             <v-text-field
               v-model="firstName"
-              
-              
               label="First Name"
               required
             ></v-text-field>
 
             <v-text-field
               v-model="lastName"
-              
               label="Last Name"
               required
             ></v-text-field>
