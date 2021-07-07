@@ -318,7 +318,7 @@ export default new Vuex.Store({
         commit('CLOSE_SNACKBAR')
       }, state.ui.snackbar.timeoutInterval * 1000)
     },
-    toggleDarkMode({ commit, state }) {
+    toggleDarkMode({ commit, dispatch, state }) {
       axios({ 
         url: `https://localhost:5001/api/users/${state.user.id}`, 
         data: state.user, 
@@ -327,11 +327,11 @@ export default new Vuex.Store({
          'Authorization': `Bearer ${state.auth.token}`,
         }})
         .then(resp => {
-          commit("SET_SNACKBAR", "Saved the dark mode preference to the database")
+          dispatch("showSnackbar", "Saved the dark mode preference to the database")
           commit("SET_USER", resp.data) // reset the user for now
         })
         .catch( () => {
-          commit("SET_SNACKBAR", "Unable to save setting to the database")
+          dispatch("showSnackbar", "Unable to save setting to the database")
         })
     },
     logoutUser({ commit }) {
@@ -381,8 +381,14 @@ export default new Vuex.Store({
         dispatch('loadUsers')
         dispatch('toggleLoadingOverlay', false)
       })
+      .catch(error => {
+        if( error.response ){
+          dispatch('showSnackbar', error.response.data)
+        }
+        dispatch('toggleLoadingOverlay', false)
+      })
     },
-    editUserSubmit({ commit, dispatch, state }, userData) {
+    editUserSubmit({ dispatch, state }, userData) {
       dispatch('toggleLoadingOverlay', true)
       axios({ 
         url: `https://localhost:5001/api/users/${state.user.id}`, 
@@ -392,12 +398,16 @@ export default new Vuex.Store({
          'Authorization': `Bearer ${state.auth.token}`,
         }})
         .then(() => {
-          commit("SET_SNACKBAR", `Successfully edited existing user ${userData.userName} on system`)
+          dispatch("showSnackbar", `Successfully edited existing user ${userData.userName} on system`)
           dispatch('loadUsers')
           dispatch('toggleLoadingOverlay', false)
         })
-        .catch( () => {
-          commit("SET_SNACKBAR", `Unable to apply settings for ${userData.userName} on system`)
+        .catch(error => {
+          if (error.response) {
+            dispatch('showSnackbar', error.response.data)
+          } else {
+            dispatch("showSnackbar", `Unable to apply settings for ${userData.userName} on system`)
+          }
           dispatch('toggleLoadingOverlay', false)
         })
     },
@@ -418,11 +428,11 @@ export default new Vuex.Store({
           commit("SET_RESET_PASSWORD_FLAG", true)
         })
         .catch( () => {
-          commit("SET_SNACKBAR", "Unable to change password at this time")
+          dispatch("showSnackbar", "Unable to change password at this time")
           dispatch('toggleLoadingOverlay', false)
         })
     },
-    setLockStatus({ commit, dispatch, state }, userData) {
+    setLockStatus({ dispatch, state }, userData) {
       const message = userData.isLocked ? ["locked", "from logging in"] : ["unlocked", "for logging in"]
       dispatch('toggleLoadingOverlay', true)
       axios({ 
@@ -434,11 +444,30 @@ export default new Vuex.Store({
         }})
         .then(() => {
           dispatch('loadUsers')
-          commit("SET_SNACKBAR", `Successfully ${message[0]} user ${userData.userName} ${message[1]}`)
+          dispatch("showSnackbar", `Successfully ${message[0]} user ${userData.userName} ${message[1]}`)
           dispatch('toggleLoadingOverlay', false)
         })
         .catch( () => {
-          commit("SET_SNACKBAR", `Unable to apply settings for ${userData.userName} on system`)
+          dispatch("showSnackbar", `Unable to apply settings for ${userData.userName} on system`)
+          dispatch('toggleLoadingOverlay', false)
+        })
+    },
+    deleteUser({ dispatch, state }, userData) {
+      dispatch('toggleLoadingOverlay', true)
+      axios({ 
+        url: `https://localhost:5001/api/users/${userData.id}`, 
+        data: userData.id, 
+        method: 'DELETE', 
+        headers: {
+         'Authorization': `Bearer ${state.auth.token}`,
+        }})
+        .then(() => {
+          dispatch('loadUsers')
+          dispatch("showSnackbar", `Successfully deleted user ${userData.userName} from the system`)
+          dispatch('toggleLoadingOverlay', false)
+        })
+        .catch( () => {
+          dispatch("showSnackbar", `Unable to delete ${userData.userName} from system`)
           dispatch('toggleLoadingOverlay', false)
         })
     }

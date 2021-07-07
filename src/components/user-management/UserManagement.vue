@@ -46,7 +46,7 @@
           <v-tooltip top v-if="item.userStatus != 'logged in user'">
             <template v-slot:activator="{ on, attrs }">
               <v-icon 
-                medium 
+                 class="mr-2"
                 :color="isLockedIcon(item)" 
                 @click="disableUser(item)"
                 v-bind="attrs"
@@ -58,9 +58,11 @@
               </template>
             <span> {{ isDisabledOrLocked(item) ? 'Unlock Account' : 'Lock Account' }} </span>
           </v-tooltip>
+          <v-icon small class="mr-2" v-if="item.userStatus != 'logged in user'" @click="deleteUser(item)"> mdi-delete </v-icon>
         </template>
       </v-data-table>
     </v-sheet>
+
     <v-dialog v-model="dialogDisable" max-width="600px" persistent>
       <v-card>
         <v-card-title>Are you sure you want to disable @{{ user.userName }}?</v-card-title>
@@ -73,6 +75,20 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="dialogDelete" max-width="600px" persistent>
+      <v-card>
+        <v-card-title>Are you sure you want to permanently delete @{{ user.userName }}?</v-card-title>
+        <v-card-text>If you wish to allow this user access, please consider locking the account instead</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="dialogDelete = !dialogDelete">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="deleteUserAccount(user)">OK</v-btn>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </div>
 </template>
 
@@ -96,6 +112,7 @@ export default {
   },
   data: () => ({
     dialogDisable: false,
+    dialogDelete: false,
     headers: [
       {
         text: "First Name",
@@ -162,6 +179,10 @@ export default {
       this.user = user
       this.dialogDisable = true
     },
+    deleteUser(user) {
+      this.user = user
+      this.dialogDelete = true
+    },
     isDisabledOrLocked(user) {
       return user.userStatus === 'locked' || user.userStatus === 'disabled'
     },
@@ -172,6 +193,10 @@ export default {
       user.isLocked = !this.isDisabledOrLocked(user)
       this.$store.dispatch("setLockStatus", user, true)
       this.dialogDisable = false
+    },
+    deleteUserAccount(user) {
+      this.$store.dispatch("deleteUser", user)
+      this.dialogDelete = false
     }
   }
 }
