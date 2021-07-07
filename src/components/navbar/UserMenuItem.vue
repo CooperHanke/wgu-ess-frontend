@@ -1,9 +1,57 @@
 <template>
+  <div>
+    <!-- dialog for changing password for logged in user -->
+    <v-dialog v-model="dialogChangePassword" max-width="600px" persistent>
+      <v-card>
+        <v-card-title>Change Password for {{ userName }} </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-form ref="passwordChangeForm">
+              <v-row>
+                <v-col>
+                  <v-text-field
+                    v-model="password"
+                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    :rules="[passwordRules.required, passwordRules.min]"
+                    :type="showPassword ? 'text' : 'password'"
+                    label="New Password"
+                    required
+                    counter
+                    @click:append="showPassword = !showPassword"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-text-field
+                    v-model="passwordConfirm"
+                    :append-icon="showPasswordConfirm ? 'mdi-eye' : 'mdi-eye-off'"
+                    :rules="[passwordRules.required, passwordRules.min]"
+                    :type="showPasswordConfirm ? 'text' : 'password'"
+                    label="Confirm New Password"
+                    required
+                    counter
+                    @click:append="showPasswordConfirm = !showPasswordConfirm"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-form>
+            <small>Changing this password will log you out automatically once the change is confirmed</small>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="cancelChangePassword">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="submitNewPassword">Submit</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   <!-- this is the menu that is activated by the cog -->
   <v-list-item>
     <v-list-item-content>
-      <v-list-item-title class="text-h6"> Test Dummy </v-list-item-title>
-      <v-list-item-subtitle>@test-user</v-list-item-subtitle>
+      <v-list-item-title class="text-h6"> {{ firstName }} {{ lastName }} </v-list-item-title>
+      <v-list-item-subtitle>{{ userName }}</v-list-item-subtitle>
     </v-list-item-content>
 
     <v-menu
@@ -13,7 +61,6 @@
     >
       <template v-slot:activator="{ on, attrs }">
         <v-btn icon v-bind="attrs" v-on="on">
-          <!-- activator goes into menu slot here -->
           <v-icon>mdi-cog</v-icon>
         </v-btn>
       </template>
@@ -36,21 +83,57 @@
       </v-card>
     </v-menu>
   </v-list-item>
+  </div>
 </template>
 
 <script>
 export default {
+  computed: {
+    firstName() {
+      return this.$store.state.user.firstName
+    },
+    lastName() {
+      return this.$store.state.user.lastName
+    },
+    userName() {
+      return `@${this.$store.state.user.userName}`
+    }
+  },
   data() {
     return {
-      settingsMenu: false
+      settingsMenu: false,
+      dialogChangePassword: false,
+      password: '',
+      passwordConfirm: '',
+      passwordRules: {
+        required: value => !!value || 'Required.',
+        min: v => v.length >= 8 || 'Min 8 characters',
+      },
+      showPassword: false,
+      showPasswordConfirm: false
     }
   },
   methods: {
     changePassword() {
-      this.$data.settingsMenu = false
+      this.settingsMenu = false,
+      this.dialogChangePassword = true
     },
     toggleDarkMode() {
       this.$store.dispatch("toggleDarkMode")
+    },
+    cancelChangePassword() {
+      // console.log(this.$refs.passwordChangeForm)
+      this.dialogChangePassword = false,
+      this.password = '',
+      this.passwordConfirm = ''
+      this.$refs.passwordChangeForm.resetValidation()
+    },
+    submitNewPassword() {
+      if (this.password === this.passwordConfirm) {
+        this.$store.dispatch("changeUserPassword", this.password)
+        this.$vuetify.theme.dark = false; // have to reset the theme manually, as store doesn't have access to it
+        this.$router.push({ name: "Login" });
+      } else return
     }
   }
 };
