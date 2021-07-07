@@ -7,13 +7,14 @@
             <v-toolbar-title>Please Log In</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
-            <v-form>
+            <v-form ref="loginForm" v-model="valid">
               <v-text-field
                 prepend-icon="mdi-account"
                 name="username"
                 label="Login"
                 type="text"
                 v-model="username"
+                :rules="rules"
               ></v-text-field>
               <v-text-field
                 id="password"
@@ -22,12 +23,13 @@
                 label="Password"
                 type="password"
                 v-model="password"
+                :rules="rules"
               ></v-text-field>
             </v-form>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn @click="performLogin" color="primary">Login</v-btn>
+            <v-btn @click="performLogin" color="primary" :disabled="!valid">Login</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -49,7 +51,11 @@ export default {
   data() {
     return {
       username: "",
-      password: ""
+      password: "",
+      rules: [
+        v => !!v || 'This field is required'
+      ],
+      valid: true
     };
   },
   methods: {
