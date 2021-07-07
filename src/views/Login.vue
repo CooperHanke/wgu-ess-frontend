@@ -28,6 +28,7 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
+            <v-btn color="primary" v-show="passwordResetEnabled">REQUEST PASSWORD RESET</v-btn>
             <v-spacer></v-spacer>
             <v-btn @click="performLogin" color="primary" :disabled="!valid">Login</v-btn>
           </v-card-actions>
@@ -47,6 +48,11 @@ import LoginError from '@/components/login/LoginError.vue'
 export default {
   components: {
     LoginError
+  },
+  computed: {
+    passwordResetEnabled() {
+      return this.$store.state.auth.enablePasswordReset
+    }
   },
   data() {
     return {

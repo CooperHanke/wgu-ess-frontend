@@ -12,7 +12,9 @@ export default new Vuex.Store({
       token: localStorage.getItem('token') || null,
       userId: localStorage.getItem('userId') || null,
       loginFailed: false,
-      loginFailedMessage: ''
+      loginFailedMessage: '',
+      enablePasswordReset: false,
+      loginAttempts: 0
     },
     user: {},
     ui: {
@@ -89,6 +91,16 @@ export default new Vuex.Store({
     },
     TOGGLE_LOGIN_FAILED(state, toggle) {
       state.auth.loginFailed = toggle
+    },
+    INCREMENT_LOGIN_ATTEMPTS_AND_ENABLE_BUTTON(state) {
+      state.auth.loginAttempts++
+      if (state.auth.loginAttempts >= 3) {
+        state.auth.enablePasswordReset = true
+      }
+    },
+    RESET_PASSWORD_BUTTON(state) {
+      state.auth.enablePasswordReset = false
+      state.auth.loginAttempts = 0
     },
     SET_LOGIN_ERROR_MSG(state, msg) {
       state.auth.loginFailedMessage = msg
@@ -286,11 +298,13 @@ export default new Vuex.Store({
       axios({ url: 'https://localhost:5001/api/users/auth', data: credentials, method: 'POST' })
         .then(resp => {
           commit("CLEAR_LOGIN_ERRORS")
+          commit("RESET_PASSWORD_BUTTON")
           commit("SET_TOKEN", resp.data.token)
           commit("SET_USER_ID", resp.data.userId)
           dispatch('toggleLoadingOverlay', false)
         })
         .catch(error => {
+          commit("INCREMENT_LOGIN_ATTEMPTS_AND_ENABLE_BUTTON")
           if( error.response ){
             commit('SET_LOGIN_ERROR_MSG', error.response.data); // => the response payload 
           }
