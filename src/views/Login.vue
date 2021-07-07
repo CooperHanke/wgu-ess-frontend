@@ -7,13 +7,14 @@
             <v-toolbar-title>Please Log In</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
-            <v-form>
+            <v-form ref="loginForm" v-model="valid">
               <v-text-field
                 prepend-icon="mdi-account"
                 name="username"
                 label="Login"
                 type="text"
                 v-model="username"
+                :rules="rules"
               ></v-text-field>
               <v-text-field
                 id="password"
@@ -22,18 +23,22 @@
                 label="Password"
                 type="password"
                 v-model="password"
+                :rules="rules"
               ></v-text-field>
             </v-form>
           </v-card-text>
           <v-card-actions>
+            <v-btn color="primary" v-show="passwordResetEnabled" @click="resetPassword" >REQUEST PASSWORD RESET</v-btn>
             <v-spacer></v-spacer>
-            <v-btn @click="performLogin" color="primary">Login</v-btn>
+            <v-btn @click="performLogin" color="primary" :disabled="!valid">Login</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
     </v-layout>
 
-    <LoginError />
+    <login-error />
+
+    <reset-password-dialog />
 
   </v-container>
 
@@ -42,14 +47,25 @@
 
 <script>
 import LoginError from '@/components/login/LoginError.vue'
+import ResetPasswordDialog from '@/components/login/ResetPasswordDialog.vue'
 export default {
   components: {
-    LoginError
+    LoginError,
+    ResetPasswordDialog
+  },
+  computed: {
+    passwordResetEnabled() {
+      return this.$store.state.auth.enablePasswordReset
+    }
   },
   data() {
     return {
       username: "",
-      password: ""
+      password: "",
+      rules: [
+        v => !!v || 'This field is required'
+      ],
+      valid: true
     };
   },
   methods: {
@@ -58,8 +74,11 @@ export default {
         username: this.username,
         password: this.password,
       });
-      //setTimeout( () => this.$router.push({ name: 'Dashboard' }), 500) // give the requests time to work
+      this.$refs.loginForm.reset()
     },
+    resetPassword() {
+      this.$store.dispatch("openResetPasswordDialog")
+    }
   },
 };
 </script>

@@ -38,6 +38,12 @@ export default {
   watch: {
     '$store.state.user.usesDarkMode': function() {
       this.$vuetify.theme.dark = this.$store.state.user.usesDarkMode
+    },
+    '$store.state.user.passwordReset': function() { // called when a user resets their own password
+      if (this.$store.state.user.passwordReset) {
+        this.$vuetify.theme.dark = false; // have to reset the theme manually, as store doesn't have access to it
+        this.$router.push({ name: "Login" });
+      }
     }
   }
 };

@@ -24,7 +24,6 @@ export default {
         return this.$store.state.appointment.data.name
       },
       set(name) {
-        console.log("set name to " + name)
         this.$store.commit('setAppointmentContact', name)
       }
     }

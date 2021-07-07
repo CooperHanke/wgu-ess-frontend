@@ -19,7 +19,7 @@
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-list-item-title> {{ item.title }} </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
@@ -34,6 +34,7 @@
             :key="item.title"
             link
             @click="switchReportView(item)"
+            color="primary"
           >
             <v-list-item-action>
               <v-icon></v-icon>
@@ -146,11 +147,7 @@ export default {
       this.$store.dispatch("logoutUser");
       this.$vuetify.theme.dark = false; // have to reset the theme manually, as store doesn't have access to it
       this.$router.push({ name: "Login" });
-    },
-    changePassword() {
-      this.$data.changePassword = !this.$data.changePassword
-      console.log('would have changed the password')
     }
-  },
+  }
 };
 </script>
