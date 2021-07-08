@@ -6,6 +6,9 @@
         :items="users"
         sort-by="user"
         class="elevation-1"
+        :search="search"
+        :loading="loading"
+        loading-text="Loading... Please wait"
       >
         <template v-slot:[`item.userStatus`]="{ item }">
           <v-chip
@@ -104,6 +107,9 @@ export default {
     },
     disableMessage() {
       return !this.user.isLocked ? ["disable", "enable"] : ["enable", "disable"]
+    },
+    loading() {
+      return this.$store.getters.usersLoading
     }
   },
   mounted() {

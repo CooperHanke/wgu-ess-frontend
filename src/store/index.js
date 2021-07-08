@@ -35,7 +35,8 @@ export default new Vuex.Store({
           userName: '',
           type: ''
         },
-        showDialog: false
+        showDialog: false,
+        usersLoading: false
       }
     },
     appointment: {
@@ -118,6 +119,9 @@ export default new Vuex.Store({
     },
     CLOSE_PASSWORD_RESET_DIALOG(state) {
       state.auth.resetPasswordDialog = false
+    },
+    SET_USER_LOADING_STATE(state, flag) {
+      state.ui.user.usersLoading = flag
     },
     LOAD_USERS(state, users) {
       state.users = users
@@ -377,8 +381,9 @@ export default new Vuex.Store({
     logoutUser({ commit }) {
       commit('LOGOUT_USER')
     },
-    loadUsers({ commit, dispatch, state}) {
-      dispatch('toggleLoadingOverlay', true)
+    loadUsers({ commit, state}) {
+      // dispatch('toggleLoadingOverlay', true)
+      commit("SET_USER_LOADING_STATE", true)
       axios({ url: `https://localhost:5001/api/users`, method: 'GET', headers: { 'Authorization': `Bearer ${state.auth.token}` } })
       .then(resp => {
         // here, check those flags and set a userStatus unique to UI
@@ -393,8 +398,9 @@ export default new Vuex.Store({
             user.userStatus = "enabled"
           }
         })
+        commit("SET_USER_LOADING_STATE", false)
         commit("LOAD_USERS", resp.data)
-        dispatch('toggleLoadingOverlay', false)
+        // dispatch('toggleLoadingOverlay', false)
       })
     },
     loadUserForEdit({ commit, dispatch, state }, userId) {
@@ -511,6 +517,11 @@ export default new Vuex.Store({
           dispatch("showSnackbar", `Unable to delete ${userData.userName} from system`)
           dispatch('toggleLoadingOverlay', false)
         })
+    }
+  },
+  getters: {
+    usersLoading(state) {
+      return state.ui.user.usersLoading
     }
   },
   modules: {
