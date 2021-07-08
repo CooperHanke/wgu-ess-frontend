@@ -294,6 +294,8 @@ export default new Vuex.Store({
       state.user = {}
       state.auth.token = null
       state.auth.userId = null
+      state.ui.activeDashboardPage = ''
+      state.ui.activeReportPage = ''
       localStorage.removeItem('token')
       localStorage.removeItem('userId')
     }
