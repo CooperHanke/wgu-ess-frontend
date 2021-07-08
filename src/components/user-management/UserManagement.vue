@@ -6,6 +6,7 @@
         :items="users"
         sort-by="user"
         class="elevation-1"
+        :search="search"
       >
         <template v-slot:[`item.userStatus`]="{ item }">
           <v-chip
