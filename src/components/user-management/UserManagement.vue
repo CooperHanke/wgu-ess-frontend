@@ -142,17 +142,20 @@ export default {
         text: "User Type",
         align: "start",
         sortable: false,
+        filterable: false,
         value: "type"
       },
       {
         text: "Status",
         align: "start",
         sortable: false,
+        filterable: false,
         value: "userStatus"
       },
       {
         text: "Actions",
         value: "actions",
+        filterable: false,
         sortable: false
       }
     ],
