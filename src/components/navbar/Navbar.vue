@@ -94,7 +94,7 @@ export default {
       }
     },
     userType() {
-      return this.$store.state.user.type;
+      return this.$store.getters["auth/userType"]
     }
   },
   data() {
@@ -130,13 +130,13 @@ export default {
   methods: {
     switchPageView(item) {
       if (!item.location) {
-        this.$store.commit("setActivePage", this.formatLink(item.title));
+        this.$store.commit("ui/SET_ACTIVE_DASHBOARD_PAGE", this.formatLink(item.title), { root: true });
       } else return;
     },
     switchReportView(item) {
       if (item.location) {
-        this.$store.commit("setActivePage", "reports");
-        this.$store.commit("setReportPage", item.location);
+        this.$store.commit("ui/SET_ACTIVE_DASHBOARD_PAGE", "reports", { root: true });
+        this.$store.commit("ui/SET_REPORT_PAGE", item.location, { root: true });
       } else return;
     },
     formatLink(link) {
@@ -144,9 +144,9 @@ export default {
       return temp.replace(/\s+/g, '-').toLowerCase();
     },
     logout() {
-      this.$store.dispatch("logoutUser");
+      this.$store.dispatch("auth/logoutUser", null, { root: true });
       this.$vuetify.theme.dark = false; // have to reset the theme manually, as store doesn't have access to it
-      this.$router.push({ name: "Login" });
+      // this.$router.push({ name: "Login" });
     }
   }
 };

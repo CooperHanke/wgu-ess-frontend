@@ -1,6 +1,6 @@
 <template>
   <v-snackbar
-      v-model="$store.state.ui.snackbar.isActive"
+      v-model="$store.getters['ui/isSnackbarActive']"
     >
       {{ text }}
 
@@ -21,12 +21,12 @@
 export default {
   computed: {
     text() {
-      return this.$store.state.ui.snackbar.message
+      return this.$store.getters['ui/snackbarMessage']
     }
   },
   methods: {
     closeSnackbar() {
-      this.$store.commit("CLOSE_SNACKBAR")
+      this.$store.commit("ui/CLOSE_SNACKBAR")
     }
   }
 }

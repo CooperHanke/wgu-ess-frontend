@@ -12,7 +12,7 @@
                   <v-text-field
                     v-model="password"
                     :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                    :rules="[passwordRules.required, passwordRules.min]"
+                    :rules="passwordRules"
                     :type="showPassword ? 'text' : 'password'"
                     label="New Password"
                     required
@@ -26,7 +26,7 @@
                   <v-text-field
                     v-model="passwordConfirm"
                     :append-icon="showPasswordConfirm ? 'mdi-eye' : 'mdi-eye-off'"
-                    :rules="[passwordRules.required, passwordRules.min]"
+                    :rules="passwordRules"
                     :type="showPasswordConfirm ? 'text' : 'password'"
                     label="Confirm New Password"
                     required
@@ -42,7 +42,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="cancelChangePassword">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="submitNewPassword">Submit</v-btn>
+          <v-btn color="blue darken-1" text @click="submitNewPassword" :disabled="!valid">Submit</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -69,7 +69,7 @@
         <v-list>
           <v-list-item>
               <v-switch 
-                v-model="$store.state.user.usesDarkMode"
+                v-model="$store.getters['ui/usesDarkMode']"
                 label="Enable dark mode"
                 @click="toggleDarkMode"
               >
@@ -90,13 +90,13 @@
 export default {
   computed: {
     firstName() {
-      return this.$store.state.user.firstName
-    },
+      return this.$store.getters['auth/firstName']
+    }, // getters for username,
     lastName() {
-      return this.$store.state.user.lastName
+      return this.$store.getters['auth/lastName']
     },
     userName() {
-      return `@${this.$store.state.user.userName}`
+      return `@${this.$store.getters['auth/userName']}`
     }
   },
   data() {
@@ -105,12 +105,13 @@ export default {
       dialogChangePassword: false,
       password: '',
       passwordConfirm: '',
-      passwordRules: {
-        required: value => !!value || 'Required.',
-        min: v => v.length >= 8 || 'Min 8 characters',
-      },
+      passwordRules: [
+        v => v.length >= 8 || 'Minimum 8 characters',
+        (this.password == this.passwordConfirm) || 'Passwords do not match'
+      ],
       showPassword: false,
-      showPasswordConfirm: false
+      showPasswordConfirm: false,
+      valid: true
     }
   },
   methods: {
@@ -119,10 +120,9 @@ export default {
       this.dialogChangePassword = true
     },
     toggleDarkMode() {
-      this.$store.dispatch("toggleDarkMode")
+      this.$store.dispatch("users/toggleDarkMode")
     },
     cancelChangePassword() {
-      // console.log(this.$refs.passwordChangeForm)
       this.dialogChangePassword = false,
       this.password = '',
       this.passwordConfirm = ''
@@ -130,9 +130,8 @@ export default {
     },
     submitNewPassword() {
       if (this.password === this.passwordConfirm) {
-        this.$store.dispatch("changeUserPassword", this.password)
+        this.$store.dispatch("users/changeUserPassword", this.password)
         this.$vuetify.theme.dark = false; // have to reset the theme manually, as store doesn't have access to it
-        this.$router.push({ name: "Login" });
       } else return
     }
   }

@@ -22,9 +22,14 @@ export default {
   // since we are loading data, let's get the appointments and contacts sorted at this higher level
   created() {
     // we should set the loading state based on if the user is logging in or not as well
-    this.$store.dispatch('getUserData', this.$store.state.auth.userId)
+    this.$store.dispatch('auth/getUserData', this.$store.getters['auth/userId'])
     this.$store.commit('initializeAppointments')
     this.$store.commit('initializeContacts')
+  },
+  computed: {
+    activePageInStore() {
+      return this.$store.getters['ui/currentPage']
+    }
   },
   data() {
     return {
@@ -32,8 +37,8 @@ export default {
     }
   },
   watch: {
-    '$store.state.ui.activeDashboardPage': function() {
-      this.activePage = this.$store.state.ui.activeDashboardPage
+    activePageInStore: function() {
+      this.activePage = this.$store.getters['ui/currentPage']
     }
   }
 };

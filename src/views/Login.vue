@@ -55,7 +55,7 @@ export default {
   },
   computed: {
     passwordResetEnabled() {
-      return this.$store.state.auth.enablePasswordReset
+      return this.$store.getters['auth/passwordResetEnabled']
     }
   },
   data() {
@@ -70,14 +70,14 @@ export default {
   },
   methods: {
     performLogin() {
-      this.$store.dispatch("attemptAuth", {
+      this.$store.dispatch("auth/attemptAuth", {
         username: this.username,
         password: this.password,
       });
       this.$refs.loginForm.reset()
     },
     resetPassword() {
-      this.$store.dispatch("openResetPasswordDialog")
+      this.$store.dispatch("auth/openResetPasswordDialog")
     }
   },
 };
