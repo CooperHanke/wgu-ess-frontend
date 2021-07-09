@@ -103,18 +103,18 @@ export default {
   },
   computed: {
     users() {
-      return this.$store.state.users
+      return this.$store.getters['users/users']
     },
     disableMessage() {
       return !this.user.isLocked ? ["disable", "enable"] : ["enable", "disable"]
     },
     loading() {
-      return this.$store.getters.usersLoading
+      return this.$store.getters['ui/usersLoading']
     }
   },
   mounted() {
     // load the user data from the store
-    this.$store.dispatch('loadUsers')
+    this.$store.dispatch('users/loadUsers', null, { root: true })
   },
   data: () => ({
     dialogDisable: false,
@@ -164,10 +164,10 @@ export default {
   }),
   methods: {
     editUser(userId) {
-      this.$store.dispatch("loadUserForEdit", userId)
+      this.$store.dispatch("users/loadUserForEdit", userId, { root: true })
     },
     addUser() {
-      this.$store.commit("TOGGLE_USER_DIALOG")
+      this.$store.commit("ui/TOGGLE_USER_DIALOG")
     },
     getColor( userStatus ) {
       switch(userStatus) {
@@ -199,11 +199,11 @@ export default {
     },
     lockUserAccount(user) {
       user.isLocked = !this.isDisabledOrLocked(user)
-      this.$store.dispatch("setLockStatus", user, true)
+      this.$store.dispatch("users/setLockStatus", user, { root: true })
       this.dialogDisable = false
     },
     deleteUserAccount(user) {
-      this.$store.dispatch("deleteUser", user)
+      this.$store.dispatch("users/deleteUser", user, { root: true })
       this.dialogDelete = false
     }
   }

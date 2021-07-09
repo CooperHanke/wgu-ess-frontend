@@ -29,18 +29,24 @@ export default {
       return this.$vuetify.breakpoint.mobile
     },
     username() {
-      return this.$store.state.user.username
+      return this.$store.getters['auth/userName']
     },
     loggedIn() {
-      return this.$store.state.auth.userId !== null
+      return this.$store.getters['auth/token'] !== null
+    },
+    darkMode() {
+      return this.$store.getters['auth/usesDarkMode']
+    },
+    passwordResetEnabled() {
+      return this.$store.getters['auth/passwordResetEnabled']
     }
   },
   watch: {
-    '$store.state.user.usesDarkMode': function() {
-      this.$vuetify.theme.dark = this.$store.state.user.usesDarkMode
+    darkMode: function() {
+      this.$vuetify.theme.dark = this.$store.getters['auth/usesDarkMode']
     },
-    '$store.state.user.passwordReset': function() { // called when a user resets their own password
-      if (this.$store.state.user.passwordReset) {
+    passwordResetEnabled: function() { // called when a user resets their own password
+      if (this.$store.getters['auth/passwordResetEnabled']) {
         this.$vuetify.theme.dark = false; // have to reset the theme manually, as store doesn't have access to it
         this.$router.push({ name: "Login" });
       }

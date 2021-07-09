@@ -17,12 +17,14 @@
               v-model="firstName"
               label="First Name"
               required
+              :rules="rules"
             ></v-text-field>
 
             <v-text-field
               v-model="lastName"
               label="Last Name"
               required
+              :rules="rules"
             ></v-text-field>
 
             <v-text-field
@@ -37,8 +39,8 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="submit" :disabled="!valid">Submit</v-btn>
+          <v-btn color="blue" text @click="close">Cancel</v-btn>
+          <v-btn color="blue" text @click="submit" :disabled="!valid">Submit</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -48,7 +50,7 @@
 export default {
   computed: {
     resetPasswordDialog() {
-      return this.$store.state.auth.resetPasswordDialog
+      return this.$store.getters['auth/resetPasswordDialog']
     }
   },
   data() {
@@ -57,14 +59,15 @@ export default {
       lastName: '',
       userName: '',
       rules: [
-        v => !!v || 'This field is required'
+        v => v.length >= 8 || 'Minimum 8 characters',
+        (this.password == this.passwordConfirm) || 'Passwords do not match'
       ],
       valid: true
     }
   },
   methods: {
     close() {
-      this.$store.dispatch("clearPasswordResetDialog")
+      this.$store.dispatch("auth/clearPasswordResetDialog")
     },
     submit() {
       const fields = {
@@ -72,7 +75,7 @@ export default {
         lastName: this.lastName,
         userName: this.userName
       }
-      this.$store.dispatch("submitPasswordResetRequest", fields)
+      this.$store.dispatch("auth/submitPasswordResetRequest", fields)
     }
   }
 }

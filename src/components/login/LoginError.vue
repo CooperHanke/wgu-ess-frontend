@@ -34,7 +34,7 @@
 export default {
   computed: {
     errorMessage() {
-      return this.$store.state.auth.loginFailedMessage === '' ? '' : this.$store.state.auth.loginFailedMessage
+      return this.$store.getters['auth/loginFailedMessage'] === '' ? '' : this.$store.getters['auth/loginFailedMessage']
     }
   },
   data() {
@@ -44,20 +44,20 @@ export default {
   },
   methods: {
     clearErrorState() {
-      this.$store.commit('CLEAR_LOGIN_ERRORS')
-      this.$store.dispatch('toggleLoginFailure', false)
+      this.$store.commit('auth/CLEAR_LOGIN_ERRORS')
+      this.$store.dispatch('auth/toggleLoginFailure', false, { root: true })
     }
   },
   watch: {
     "$store.state.auth.userId": function() {
-      if (this.$store.state.auth.userId !== null) {
-        this.$store.dispatch("toggleLoginFailure", false);
-        this.$store.dispatch("toggleLoadingOverlay", false);
+      if (this.$store.getters['auth/userId'] !== null) {
+        this.$store.dispatch("auth/toggleLoginFailure", false);
+        this.$store.dispatch("ui/toggleLoadingOverlay", false);
         this.$router.push({ name: "Dashboard" });
       }
     },
     "$store.state.auth.loginFailed": function() {
-      if (this.$store.state.auth.loginFailed === true) {
+      if (this.$store.getters['auth/loginFailed'] === true) {
         this.hasError = true
       } else this.hasError = false
     }

@@ -83,23 +83,28 @@
 <script>
 export default {
   computed: {
-    userData() {
-      return this.$store.state.ui.user.formItem
+    userData: {
+      get() {
+        return this.$store.getters['ui/userFormData']
+      },
+      set() {
+
+      }
     },
     sameUser() {
-      return this.$store.state.ui.user.formItem.id === this.$store.state.auth.userId
+      return this.$store.getters['ui/userFormData_UserId'] === this.$store.getters['auth/userId']
     },
     dialogHeader() {
-      return this.$store.state.ui.user.formItem.id
+      return this.$store.getters['ui/userFormData_UserId']
         ? "Edit User"
         : "New User";
     },
     showDialog: {
       get() {
-        return this.$store.state.ui.user.showDialog
+        return this.$store.getters['ui/showUserForm']
       },
       set() {
-        this.$store.commit("TOGGLE_USER_DIALOG")
+        this.$store.commit("ui/TOGGLE_USER_DIALOG")
       },
     },
     passwordRules() {
@@ -107,13 +112,16 @@ export default {
         v => v.length >= 8 || 'Minimum 8 characters',
         (this.password == this.passwordConfirm) || 'Passwords do not match'
       ]
-      if (!this.$store.state.ui.user.formItem.id) {
+      if (!this.$store.getters['ui/userFormData_UserId']) {
         return rules
-      } else if (this.$store.state.ui.user.formItem.id && this.password === '' && this.passwordConfirm === '') {
+      } else if (this.$store.getters['ui/userFormData_UserId'] && this.password === '' && this.passwordConfirm === '') {
         return []
       } else {
         return rules
       }
+    },
+    formData() {
+      return this.$store.getters['ui/userFormData']
     }
   },
 
@@ -136,24 +144,18 @@ export default {
 
   methods: {
     close() {
-      this.$store.commit("CLEAR_USER_FORM_DATA")
+      this.$store.commit("ui/CLEAR_USER_FORM_DATA")
       this.clearFormEntries()
       this.$refs.userForm.resetValidation()
-      this.$store.commit("TOGGLE_USER_DIALOG")
+      this.$store.commit("ui/TOGGLE_USER_DIALOG")
     },
-    deleteItemConfirm() {
-      this.appointments.splice(this.editedIndex, 1);
-      this.closeDelete();
-    },
-
     toggleDeleteDialog() {
       this.dialogDelete = !this.dialogDelete;
     },
-
     save() {
       this.$refs.userForm.validate()
       if (this.userData.id !== "") {
-        const id = this.$store.state.ui.user.formItem.id
+        const id = this.$store.getters['ui/userFormData_UserId']
         const editedUserData = {
           id,
           firstName: this.firstName,
@@ -168,7 +170,7 @@ export default {
         } else {
           delete editedUserData.password
         }
-        this.$store.dispatch("editUserSubmit", editedUserData)
+        this.$store.dispatch("users/editUserSubmit", editedUserData)
       } else {
         const newUserData = {
           firstName: this.firstName,
@@ -177,15 +179,13 @@ export default {
           userName: this.userName,
           password: this.password,
         }
-        this.$store.dispatch("newUserSubmit", newUserData)
+        this.$store.dispatch("users/newUserSubmit", newUserData)
       }
       this.close();
     },
-
     validPassword() {
       return (this.password !== '' && this.passwordConfirm !== '') && (this.password == this.passwordConfirm)
     },
-
     clearFormEntries() {
       this.firstName = ''
       this.lastName = ''
@@ -197,12 +197,12 @@ export default {
   },
 
   watch: {
-    "$store.state.ui.user.formItem": function() {
-      if (this.$store.state.ui.user.formItem.id !== '') {
-        this.firstName = this.$store.state.ui.user.formItem.firstName
-        this.lastName = this.$store.state.ui.user.formItem.lastName
-        this.type = this.$store.state.ui.user.formItem.type
-        this.userName = this.$store.state.ui.user.formItem.userName
+    formData: function() {
+      if (this.$store.getters['ui/userFormData'] !== '') {
+        this.firstName = this.userData.firstName
+        this.lastName = this.userData.lastName
+        this.type = this.userData.type
+        this.userName = this.userData.userName
       }
     }
   }
