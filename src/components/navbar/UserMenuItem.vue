@@ -6,7 +6,7 @@
         <v-card-title>Change Password for {{ userName }} </v-card-title>
         <v-card-text>
           <v-container>
-            <v-form ref="passwordChangeForm">
+            <v-form ref="passwordChangeForm" v-model="valid">
               <v-row>
                 <v-col>
                   <v-text-field
@@ -26,7 +26,7 @@
                   <v-text-field
                     v-model="passwordConfirm"
                     :append-icon="showPasswordConfirm ? 'mdi-eye' : 'mdi-eye-off'"
-                    :rules="passwordRules"
+                    :rules="confirmPasswordRules"
                     :type="showPasswordConfirm ? 'text' : 'password'"
                     label="Confirm New Password"
                     required
@@ -97,6 +97,9 @@ export default {
     },
     userName() {
       return `@${this.$store.getters['auth/userName']}`
+    },
+    confirmPasswordRules() {
+      return [(this.password === this.passwordConfirm) || "Passwords must match"]
     }
   },
   data() {
@@ -106,12 +109,11 @@ export default {
       password: '',
       passwordConfirm: '',
       passwordRules: [
-        v => v.length >= 8 || 'Minimum 8 characters',
-        (this.password == this.passwordConfirm) || 'Passwords do not match'
+        (v) => /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm.test(v) || "Must be at least 8 characters, and contain at least 1 lowercase letter, one uppercase letter, and a number. May contain special characters",
       ],
       showPassword: false,
       showPasswordConfirm: false,
-      valid: true
+      valid: false
     }
   },
   methods: {

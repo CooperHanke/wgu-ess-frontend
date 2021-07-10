@@ -1,9 +1,9 @@
 <template>
   <div>
     <v-dialog v-model="showDialog" max-width="800px" close-delay="0" persistent>
-      <v-card>
+      <v-card :loading="loading">
         <v-card-title>
-          <span class="headline">{{ dialogHeader }}</span>
+          <span class="headline" v-show="!loading">{{ dialogHeader }}</span>
         </v-card-title>
 
         <v-card-text>
@@ -61,10 +61,9 @@
                     v-model="passwordConfirm"
                     label="Confirm Password"
                     type="password"
-                    :rules="passwordRules"
+                    :rules="confirmPasswordRules"
                   ></v-text-field>
                 </v-col>
-
               </v-row>
             </v-container>
           </v-form>
@@ -73,7 +72,9 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-          <v-btn color="blue darken-1" text @click="save" :disabled="!valid"> Save </v-btn>
+          <v-btn color="blue darken-1" text @click="save" :disabled="!valid">
+            Save
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -85,74 +86,88 @@ export default {
   computed: {
     userData: {
       get() {
-        return this.$store.getters['users/user']
+        return this.$store.getters["users/user"];
       },
     },
     sameUser() {
-      return this.$store.getters['users/userId'] === this.$store.getters['auth/userId']
+      return (
+        this.$store.getters["users/userId"] ===
+        this.$store.getters["auth/userId"]
+      );
     },
     dialogHeader() {
-      return this.$store.getters['users/userId']
-        ? "Edit User"
-        : "New User";
+      return this.$store.getters["users/userId"] ? "Edit User" : "New User";
     },
     showDialog: {
       get() {
-        return this.$store.getters['users/showUserForm']
+        return this.$store.getters["users/showUserForm"];
       },
       set() {
-        this.$store.commit("users/TOGGLE_USER_DIALOG")
+        this.$store.commit("users/TOGGLE_USER_DIALOG");
       },
     },
     passwordRules() {
       const rules = [
-        v => v.length >= 8 || 'Minimum 8 characters',
-        (this.password == this.passwordConfirm) || 'Passwords do not match'
-      ]
-      if (!this.$store.getters['users/userId']) {
-        return rules
-      } else if (this.$store.getters['users/userId'] && this.password === '' && this.passwordConfirm === '') {
-        return []
+        (v) => /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm.test(v) || "Must be at least 8 characters, and contain at least 1 lowercase letter, one uppercase letter, and a number. May contain special characters",
+      ];
+      if (!this.$store.getters["users/userId"]) {
+        return rules;
+      } else if (
+        this.$store.getters["users/userId"] &&
+        this.password === "" &&
+        this.passwordConfirm === ""
+      ) {
+        return [];
       } else {
-        return rules
+        return rules;
       }
     },
+    confirmPasswordRules() {
+      if (!this.$store.getters["users/userId"]) {
+        return [(this.password === this.passwordConfirm) || "Passwords must match"]
+      } else if (this.$store.getters["users/userId"] && this.password !== '') {
+        return [(this.password === this.passwordConfirm) || "Passwords must match"]
+      } else return []
+    },
     formData() {
-      return this.$store.getters['users/user']
-    }
+      return this.$store.getters["users/user"];
+    },
+    loading: {
+      get() {
+        return this.$store.getters["users/editUserLoadingState"];
+      },
+    },
   },
 
   data() {
     return {
       dialogDelete: false,
-      types: ['Standard', 'Manager'],
-      firstName: '',
-      lastName: '',
-      type: '',
-      userName: '',
-      password: '',
-      passwordConfirm: '',
-      textRules: [
-        v => !!v || 'Required'
-      ],
-      valid: true
+      types: ["Standard", "Manager"],
+      firstName: "",
+      lastName: "",
+      type: "",
+      userName: "",
+      password: "",
+      passwordConfirm: "",
+      textRules: [(v) => !!v || "Required"],
+      valid: true,
     };
   },
 
   methods: {
     close() {
-      this.$store.commit("users/CLEAR_USER_FORM_DATA")
-      this.clearFormEntries()
-      this.$refs.userForm.resetValidation()
-      this.$store.commit("users/TOGGLE_USER_DIALOG")
+      this.$store.commit("users/CLEAR_USER_FORM_DATA");
+      this.clearFormEntries();
+      this.$refs.userForm.resetValidation();
+      this.$store.commit("users/TOGGLE_USER_DIALOG");
     },
     toggleDeleteDialog() {
       this.dialogDelete = !this.dialogDelete;
     },
     save() {
-      this.$refs.userForm.validate()
+      this.$refs.userForm.validate();
       if (this.userData.id !== "") {
-        const id = this.$store.getters['users/userId']
+        const id = this.$store.getters["users/userId"];
         const editedUserData = {
           id,
           firstName: this.firstName,
@@ -160,14 +175,14 @@ export default {
           type: this.type,
           userName: this.userName,
           isLocked: this.userData.isLocked,
-          needPasswordReset: this.userData.needPasswordReset
-        }
+          needPasswordReset: this.userData.needPasswordReset,
+        };
         if (this.validPassword()) {
-          editedUserData.password = this.password
+          editedUserData.password = this.password;
         } else {
-          delete editedUserData.password
+          delete editedUserData.password;
         }
-        this.$store.dispatch("users/editUserSubmit", editedUserData)
+        this.$store.dispatch("users/editUserSubmit", editedUserData);
       } else {
         const newUserData = {
           firstName: this.firstName,
@@ -175,33 +190,37 @@ export default {
           type: this.type,
           userName: this.userName,
           password: this.password,
-        }
-        this.$store.dispatch("users/newUserSubmit", newUserData)
+        };
+        this.$store.dispatch("users/newUserSubmit", newUserData);
       }
       this.close();
     },
     validPassword() {
-      return (this.password !== '' && this.passwordConfirm !== '') && (this.password == this.passwordConfirm)
+      return (
+        this.password !== "" &&
+        this.passwordConfirm !== "" &&
+        this.password == this.passwordConfirm
+      );
     },
     clearFormEntries() {
-      this.firstName = ''
-      this.lastName = ''
-      this.userName = ''
-      this.type = ''
-      this.password = ''
-      this.passwordConfirm = ''
-    }
+      this.firstName = "";
+      this.lastName = "";
+      this.userName = "";
+      this.type = "";
+      this.password = "";
+      this.passwordConfirm = "";
+    },
   },
 
   watch: {
-    formData: function() {
-      if (this.$store.getters['users/user'] !== '') {
-        this.firstName = this.userData.firstName
-        this.lastName = this.userData.lastName
-        this.type = this.userData.type
-        this.userName = this.userData.userName
+    formData: function () {
+      if (this.$store.getters["users/user"] !== "") {
+        this.firstName = this.userData.firstName;
+        this.lastName = this.userData.lastName;
+        this.type = this.userData.type;
+        this.userName = this.userData.userName;
       }
-    }
-  }
+    },
+  },
 };
 </script>

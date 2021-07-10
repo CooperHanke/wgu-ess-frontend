@@ -13,11 +13,15 @@ export default {
         type: ''
     },
     showDialog: false,
-    usersLoading: false
+    usersLoading: false,
+    userLoadingForEdit: false
   }),
   mutations: {
     SET_USER_LOADING_STATE(state, flag) {
       state.usersLoading = flag
+    },
+    SET_EDIT_USER_LOADING_STATE(state, flag) {
+      state.userLoadingForEdit = flag
     },
     LOAD_USERS(state, users) {
       state.allUsers = users
@@ -58,7 +62,6 @@ export default {
         })
     },
     loadUsers({ commit, rootGetters }) {
-      // dispatch('ui/toggleLoadingOverlay', true)
       commit("SET_USER_LOADING_STATE", true)
       axios({ url: `https://localhost:5001/api/users`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
@@ -76,17 +79,21 @@ export default {
           })
           commit("SET_USER_LOADING_STATE", false)
           commit("LOAD_USERS", resp.data)
-          // dispatch('ui/toggleLoadingOverlay', false)
         })
     },
     loadUserForEdit({ commit, dispatch, rootGetters }, userId) {
-      dispatch('ui/toggleLoadingOverlay', true, { root: true })
+      commit('SET_EDIT_USER_LOADING_STATE', true)
+      commit("TOGGLE_USER_DIALOG")
       axios({ url: `https://localhost:5001/api/users/${userId}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
           commit("SET_EDIT_USER_DATA", resp.data)
-          commit("TOGGLE_USER_DIALOG")
-          dispatch('ui/toggleLoadingOverlay', false, { root: true })
-        }) // finish out the catch block
+          commit('SET_EDIT_USER_LOADING_STATE', false)
+        }).catch(error => {
+          if (error.response) {
+            dispatch('ui/showSnackbar', error.response.data, { root: true })
+          }
+          commit('SET_EDIT_USER_LOADING_STATE', false)
+        })
     },
     newUserSubmit({ dispatch, rootGetters }, userData) {
       const newUser = {
@@ -205,6 +212,7 @@ export default {
     usersLoading: (state) => state.usersLoading,
     user: (state) => state.user,
     userId: (state) => state.user.id,
-    showUserForm: (state) => state.showDialog
+    showUserForm: (state) => state.showDialog,
+    editUserLoadingState: (state) => state.userLoadingForEdit
   }
 }
