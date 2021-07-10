@@ -89,7 +89,7 @@ export default {
         }) // finish out the catch block
     },
     newUserSubmit({ dispatch, rootGetters }, userData) {
-      var newUser = {
+      const newUser = {
         firstName: userData.firstName,
         lastName: userData.lastName,
         type: userData.type,

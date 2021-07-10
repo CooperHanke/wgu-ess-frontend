@@ -1,82 +1,80 @@
 <template>
   <div>
     <v-dialog v-model="showDialog" max-width="800px" close-delay="0" persistent>
-
       <template v-slot:activator="{ on, attrs }">
         <v-btn color="primary" class="mb-2" v-bind="attrs" v-on="on">
           New Contact
         </v-btn>
       </template>
 
-      <v-card>
+      <v-card :loading="loading">
         <v-card-title>
           <span class="headline">{{ dialogHeader }}</span>
         </v-card-title>
 
         <v-card-text>
           <v-container>
-            <v-row>
-              <v-col>
-                <v-text-field
-                  v-model="contact.firstName"
-                  label="First Name"
-                ></v-text-field>
-              </v-col>
-              <v-col>
-                <v-text-field
-                  v-model="contact.lastName"
-                  label="Last Name"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-text-field
-                  v-model="contact.address1"
-                  label="Address"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-text-field
-                  v-model="contact.address2"
-                  label="Address Line"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  v-model="contact.city"
-                  label="City"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  v-model="contact.state"
-                  label="State"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  v-model="contact.postalCode"
-                  label="Postal Code"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  v-model="contact.phoneNumber"
-                  label="Phone Number"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  v-model="contact.country"
-                  label="Country"
-                ></v-text-field>
-              </v-col>
-            </v-row>
+            <v-form>
+              <v-row>
+                <v-col>
+                  <v-text-field
+                    v-model="firstName"
+                    label="First Name"
+                  ></v-text-field>
+                </v-col>
+                <v-col>
+                  <v-text-field
+                    v-model="lastName"
+                    label="Last Name"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-text-field
+                    v-model="address1"
+                    label="Address Line 1"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-text-field
+                    v-model="address2"
+                    label="Address Line 2"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field v-model="city" label="City"></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field v-model="state" label="State"></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field
+                    v-model="postalCode"
+                    label="Postal Code"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field v-model="email" label="Email"></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field
+                    v-model="phoneNumber"
+                    label="Phone Number"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field
+                    v-model="country"
+                    label="Country"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-form>
           </v-container>
         </v-card-text>
 
@@ -87,7 +85,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    
   </div>
 </template>
 
@@ -95,36 +92,100 @@
 export default {
   computed: {
     dialogHeader() {
-      return this.$store.getters['contacts/contactId']
+      return this.$store.getters["contacts/contactId"]
         ? "Edit Contact"
         : "New Contact";
     },
     showDialog: {
       get() {
-        return this.$store.getters['contacts/showDialog']
+        return this.$store.getters["contacts/showDialog"];
       },
       set() {
-        this.$store.commit('contacts/TOGGLE_CONTACTS_DIALOG', true);
+        this.$store.commit("contacts/TOGGLE_CONTACTS_DIALOG", true);
       },
     },
-
     contact: {
       get() {
-        return this.$store.getters['contacts/contact']
+        return this.$store.getters["contacts/contact"];
       }
     },
+    loading: {
+      get() {
+        return this.$store.getters['contacts/contactLoadingForEdit']
+      }
+    }
+  },
+
+  data() {
+    return {
+      firstName: '',
+      lastName: '',
+      address1: '',
+      address2: '',
+      city: '',
+      state: '',
+      postalCode: '',
+      country: '',
+      phoneNumber: '',
+      email: '',
+    };
   },
 
   methods: {
     close() {
-      this.$store.commit('contacts/TOGGLE_CONTACTS_DIALOG', false);
-      // this.$store.commit("initializeContact"); // next, set the appointment to be a blank one
+      this.firstName = '',
+      this.lastName = '',
+      this.address1 = '',
+      this.address2 = '',
+      this.city = '',
+      this.state = '',
+      this.postalCode = '',
+      this.country = '',
+      this.phoneNumber = '',
+      this.email = '',
+      this.$store.commit('contacts/CLEAR_CONTACT')
+      this.$store.commit("contacts/TOGGLE_CONTACTS_DIALOG", false);
     },
 
     save() {
-      this.$store.commit("saveContact");
+      const contact = {
+        firstName: this.firstName,
+        lastName: this.lastName,
+        address1: this.address1,
+        address2: this.address2,
+        city: this.city,
+        state: this.state,
+        postalCode: this.postalCode,
+        country: this.country,
+        phoneNumber: this.phoneNumber,
+        email: this.email,
+        userId: this.$store.getters['auth/userId']
+      }
+      if (this.$store.getters['contacts/contactId']) {
+        this.$store.dispatch("contacts/saveExistingContact", contact)
+      } else {
+        this.$store.dispatch("contacts/saveNewContact", contact);
+      }
       this.close();
-    }
+    },
+  },
+
+  watch: {
+    contact: function() {
+      if (this.$store.getters['contacts/contactId']) {
+        this.firstName = this.contact.firstName,
+        this.lastName = this.contact.lastName,
+        this.address1 = this.contact.address1,
+        this.address2 = this.contact.address2,
+        this.city = this.contact.city,
+        this.state = this.contact.state,
+        this.postalCode = this.contact.postalCode,
+        this.country = this.contact.country,
+        this.phoneNumber = this.contact.phoneNumber,
+        this.email = this.contact.email
+      }
+    },
+
   }
-}
+};
 </script>

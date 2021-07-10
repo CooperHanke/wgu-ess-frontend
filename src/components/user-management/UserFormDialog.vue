@@ -87,9 +87,6 @@ export default {
       get() {
         return this.$store.getters['users/user']
       },
-      set() {
-
-      }
     },
     sameUser() {
       return this.$store.getters['users/userId'] === this.$store.getters['auth/userId']
