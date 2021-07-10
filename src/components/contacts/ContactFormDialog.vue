@@ -1,11 +1,13 @@
 <template>
   <div>
     <v-dialog v-model="showDialog" max-width="800px" close-delay="0" persistent>
+
       <template v-slot:activator="{ on, attrs }">
         <v-btn color="primary" class="mb-2" v-bind="attrs" v-on="on">
           New Contact
         </v-btn>
       </template>
+
       <v-card>
         <v-card-title>
           <span class="headline">{{ dialogHeader }}</span>
@@ -93,30 +95,30 @@
 export default {
   computed: {
     dialogHeader() {
-      return this.$store.state.contact.data.id > -1
+      return this.$store.getters['contacts/contactId']
         ? "Edit Contact"
         : "New Contact";
     },
     showDialog: {
       get() {
-        return this.$store.state.contact.showDialog;
+        return this.$store.getters['contacts/showDialog']
       },
       set() {
-        this.$store.commit("toggleContactDialog");
+        this.$store.commit('contacts/TOGGLE_CONTACTS_DIALOG', true);
       },
     },
 
     contact: {
       get() {
-        return this.$store.state.contact.data;
+        return this.$store.getters['contacts/contact']
       }
     },
   },
 
   methods: {
     close() {
-      this.$store.commit("toggleContactDialog"); // first, close the dialog box, so user doesn't see us change the dialog type
-      this.$store.commit("initializeContact"); // next, set the appointment to be a blank one
+      this.$store.commit('contacts/TOGGLE_CONTACTS_DIALOG', false);
+      // this.$store.commit("initializeContact"); // next, set the appointment to be a blank one
     },
 
     save() {

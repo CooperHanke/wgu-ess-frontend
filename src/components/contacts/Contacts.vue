@@ -6,6 +6,7 @@
         :items="contacts"
         sort-by="name"
         class="elevation-1"
+        :loading="loading"
       >
         <template v-slot:top>
           <v-toolbar flat>
@@ -19,7 +20,6 @@
             hide-details
             prepend-inner-icon="mdi-magnify"
             label="Search contacts..."
-            :loading="loading"
           ></v-text-field>
 
             <v-spacer></v-spacer>
@@ -90,10 +90,12 @@ export default {
         return this.$store.getters['contacts/contacts']
       },
       set() {
-        this.$store.commit("updateContacts")
-      }
+        this.$store.dispatch('contacts/loadContactsByLoggedInUser')
+      },
     },
-    loading: 
+    loading() {
+      return this.$store.getters['contacts/contactsLoading']
+    }
   },
 
   created() {
@@ -102,14 +104,14 @@ export default {
 
   methods: {
     initialize() {
-      this.$store.commit('initializeContacts')
-      this.contacts = this.$store.getters['contacts/contacts']
+      this.$store.dispatch('contacts/loadContactsByLoggedInUser')
+      // this.contacts = this.$store.getters['contacts/contacts']
     },
 
     editContact(contact) {
       const store = this.$store
-      store.commit('setContact', contact)
-      store.commit('toggleContactDialog')
+      store.dispatch('contacts/setContact', contact)
+      store.commit('contacts/TOGGLE_CONTACTS_DIALOG', true)
     },
 
     deleteContact(contact) {
