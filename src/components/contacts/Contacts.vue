@@ -19,6 +19,7 @@
             hide-details
             prepend-inner-icon="mdi-magnify"
             label="Search contacts..."
+            :loading="loading"
           ></v-text-field>
 
             <v-spacer></v-spacer>
@@ -38,6 +39,7 @@
         </template>
       </v-data-table>
     </v-sheet>
+
     <v-dialog v-model="dialogDelete" max-width="500px">
       <v-card>
         <v-card-title class="headline"
@@ -53,6 +55,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
   </div>
 </template>
 
@@ -84,22 +87,14 @@ export default {
   computed: {
     contacts: {
       get() {
-        return this.$store.state.contacts
+        return this.$store.getters['contacts/contacts']
       },
       set() {
         this.$store.commit("updateContacts")
       }
-    }
+    },
+    loading: 
   },
-
-  // watch: {
-  //   dialog(val) {
-  //     val || this.close();
-  //   },
-  //   dialogDelete(val) {
-  //     val || this.closeDelete();
-  //   },
-  // },
 
   created() {
     this.initialize();
@@ -108,7 +103,7 @@ export default {
   methods: {
     initialize() {
       this.$store.commit('initializeContacts')
-      this.contacts = this.$store.state.contacts
+      this.contacts = this.$store.getters['contacts/contacts']
     },
 
     editContact(contact) {

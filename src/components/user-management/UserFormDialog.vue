@@ -85,26 +85,26 @@ export default {
   computed: {
     userData: {
       get() {
-        return this.$store.getters['ui/userFormData']
+        return this.$store.getters['users/user']
       },
       set() {
 
       }
     },
     sameUser() {
-      return this.$store.getters['ui/userFormData_UserId'] === this.$store.getters['auth/userId']
+      return this.$store.getters['users/userId'] === this.$store.getters['auth/userId']
     },
     dialogHeader() {
-      return this.$store.getters['ui/userFormData_UserId']
+      return this.$store.getters['users/userId']
         ? "Edit User"
         : "New User";
     },
     showDialog: {
       get() {
-        return this.$store.getters['ui/showUserForm']
+        return this.$store.getters['users/showUserForm']
       },
       set() {
-        this.$store.commit("ui/TOGGLE_USER_DIALOG")
+        this.$store.commit("users/TOGGLE_USER_DIALOG")
       },
     },
     passwordRules() {
@@ -112,16 +112,16 @@ export default {
         v => v.length >= 8 || 'Minimum 8 characters',
         (this.password == this.passwordConfirm) || 'Passwords do not match'
       ]
-      if (!this.$store.getters['ui/userFormData_UserId']) {
+      if (!this.$store.getters['users/userId']) {
         return rules
-      } else if (this.$store.getters['ui/userFormData_UserId'] && this.password === '' && this.passwordConfirm === '') {
+      } else if (this.$store.getters['users/userId'] && this.password === '' && this.passwordConfirm === '') {
         return []
       } else {
         return rules
       }
     },
     formData() {
-      return this.$store.getters['ui/userFormData']
+      return this.$store.getters['users/user']
     }
   },
 
@@ -144,10 +144,10 @@ export default {
 
   methods: {
     close() {
-      this.$store.commit("ui/CLEAR_USER_FORM_DATA")
+      this.$store.commit("users/CLEAR_USER_FORM_DATA")
       this.clearFormEntries()
       this.$refs.userForm.resetValidation()
-      this.$store.commit("ui/TOGGLE_USER_DIALOG")
+      this.$store.commit("users/TOGGLE_USER_DIALOG")
     },
     toggleDeleteDialog() {
       this.dialogDelete = !this.dialogDelete;
@@ -155,7 +155,7 @@ export default {
     save() {
       this.$refs.userForm.validate()
       if (this.userData.id !== "") {
-        const id = this.$store.getters['ui/userFormData_UserId']
+        const id = this.$store.getters['users/userId']
         const editedUserData = {
           id,
           firstName: this.firstName,
@@ -198,7 +198,7 @@ export default {
 
   watch: {
     formData: function() {
-      if (this.$store.getters['ui/userFormData'] !== '') {
+      if (this.$store.getters['users/user'] !== '') {
         this.firstName = this.userData.firstName
         this.lastName = this.userData.lastName
         this.type = this.userData.type

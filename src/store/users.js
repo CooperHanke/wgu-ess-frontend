@@ -4,11 +4,37 @@ import router from '@/router/index.js'
 export default {
   namespaced: true,
   state: () => ({
-    allUsers: []
+    allUsers: [],
+    user: {
+        id: '',
+        firstName: '',
+        lastName: '',
+        userName: '',
+        type: ''
+    },
+    showDialog: false,
+    usersLoading: false
   }),
   mutations: {
+    SET_USER_LOADING_STATE(state, flag) {
+      state.usersLoading = flag
+    },
     LOAD_USERS(state, users) {
       state.allUsers = users
+    },
+    TOGGLE_USER_DIALOG(state) {
+      state.showDialog = !state.showDialog
+    },
+    SET_EDIT_USER_DATA(state, user) {
+      state.user = Object.assign({}, user)
+    },
+    SET_USER_ADD_OR_EDIT_FORM(state, user) {
+      if (user.id !== '') {
+        state.user = Object.assign({}, user)
+      }
+    },
+    CLEAR_USER_FORM_DATA(state) {
+      state.user = {}
     },
   },
   actions: {
@@ -33,7 +59,7 @@ export default {
     },
     loadUsers({ commit, rootGetters }) {
       // dispatch('ui/toggleLoadingOverlay', true)
-      commit("ui/SET_USER_LOADING_STATE", true, { root: true })
+      commit("SET_USER_LOADING_STATE", true)
       axios({ url: `https://localhost:5001/api/users`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
           // here, check those flags and set a userStatus unique to UI
@@ -48,7 +74,7 @@ export default {
               user.userStatus = "enabled"
             }
           })
-          commit("ui/SET_USER_LOADING_STATE", false, { root: true })
+          commit("SET_USER_LOADING_STATE", false)
           commit("LOAD_USERS", resp.data)
           // dispatch('ui/toggleLoadingOverlay', false)
         })
@@ -57,8 +83,8 @@ export default {
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
       axios({ url: `https://localhost:5001/api/users/${userId}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
-          commit("ui/SET_EDIT_USER_DATA", resp.data, { root: true })
-          commit("ui/TOGGLE_USER_DIALOG", null, { root: true })
+          commit("SET_EDIT_USER_DATA", resp.data)
+          commit("TOGGLE_USER_DIALOG")
           dispatch('ui/toggleLoadingOverlay', false, { root: true })
         }) // finish out the catch block
     },
@@ -175,6 +201,10 @@ export default {
     }
   },
   getters: {
-    users: (state) => state.allUsers
+    users: (state) => state.allUsers,
+    usersLoading: (state) => state.usersLoading,
+    user: (state) => state.user,
+    userId: (state) => state.user.id,
+    showUserForm: (state) => state.showDialog
   }
 }

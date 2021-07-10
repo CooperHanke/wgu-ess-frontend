@@ -36,9 +36,6 @@ export default {
     },
     darkMode() {
       return this.$store.getters['auth/usesDarkMode']
-    },
-    passwordResetEnabled() {
-      return this.$store.getters['auth/passwordResetEnabled']
     }
   },
   watch: {
@@ -48,7 +45,7 @@ export default {
     passwordResetEnabled: function() { // called when a user resets their own password
       if (this.$store.getters['auth/passwordResetEnabled']) {
         this.$vuetify.theme.dark = false; // have to reset the theme manually, as store doesn't have access to it
-        this.$router.push({ name: "Login" });
+        // this.$router.push({ name: "Login" });
       }
     }
   }

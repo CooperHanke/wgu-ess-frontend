@@ -23,8 +23,8 @@ export default {
   created() {
     // we should set the loading state based on if the user is logging in or not as well
     this.$store.dispatch('auth/getUserData', this.$store.getters['auth/userId'])
-    this.$store.commit('initializeAppointments')
-    this.$store.commit('initializeContacts')
+    // this.$store.commit('initializeAppointments')
+    // this.$store.commit('initializeContacts')
   },
   computed: {
     activePageInStore() {

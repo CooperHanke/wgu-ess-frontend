@@ -57,8 +57,6 @@ export default {
       state.currentUser = {}
       state.token = null
       state.userId = null
-      // commit("ui/SET_ACTIVE_DASHBOARD_PAGE", '', { root: true })
-      // commit("ui/SET_REPORT_PAGE", '', { root: true })
       localStorage.removeItem('token')
       localStorage.removeItem('userId')
     },
@@ -98,19 +96,13 @@ export default {
           dispatch('ui/toggleLoadingOverlay', false, { root: true })
       }) // finish out the catch block
     },
-    openResetPasswordDialog({ commit }) {
-      commit("OPEN_RESET_BUTTON_DIALOG")
-    },
-    clearPasswordResetDialog({ commit }) {
-      commit("CLOSE_PASSWORD_RESET_DIALOG")
-    },
     submitPasswordResetRequest({ commit, dispatch }, userData) {
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
       axios({ url: 'https://localhost:5001/api/users/auth/reset', data: userData, method: 'POST' })
         .then( () => {
           commit("CLEAR_LOGIN_ERRORS")
           commit("RESET_PASSWORD_BUTTON")
-          dispatch("clearPasswordResetDialog")
+          commit("CLOSE_PASSWORD_RESET_DIALOG")
           dispatch("ui/toggleLoadingOverlay", false, { root: true })
           dispatch("ui/showSnackbar", "If you have a user account in the system, a manager will be able to reach out to you with a new password", { root: true })
         })
@@ -135,6 +127,7 @@ export default {
     loginFailed: (state) => state.loginFailed,
     loginFailedMessage: (state) => state.loginFailedMessage,
     token: (state) => state.token,
-    currentUser: (state) => state.currentUser
+    currentUser: (state) => state.currentUser,
+    resetPasswordDialog: (state) => state.resetPasswordDialog
   }
 }

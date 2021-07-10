@@ -77,7 +77,7 @@ export default {
       this.$refs.loginForm.reset()
     },
     resetPassword() {
-      this.$store.dispatch("auth/openResetPasswordDialog")
+      this.$store.commit("auth/OPEN_RESET_BUTTON_DIALOG")
     }
   },
 };
