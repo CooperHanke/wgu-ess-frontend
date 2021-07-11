@@ -59,6 +59,7 @@ export default {
       state.userId = null
       localStorage.removeItem('token')
       localStorage.removeItem('userId')
+
     },
     ADD_PASSWORD_TO_USER_FOR_USER_CHANGE(state, password) {
       state.currentUser.password = password
@@ -112,6 +113,7 @@ export default {
     },
     logoutUser({ commit, dispatch }) {
       commit('LOGOUT_USER')
+      commit('contacts/CLEAR_CONTACTS_ON_LOGOUT', null, { root: true })
       dispatch('ui/resetUIforLogout', null, { root: true })
       router.push({ name: 'Login' })
     },

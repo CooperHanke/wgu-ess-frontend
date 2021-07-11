@@ -42,10 +42,10 @@
       </v-data-table>
     </v-sheet>
 
-    <v-dialog v-model="dialogDelete" max-width="500px">
+    <v-dialog v-model="dialogDelete" max-width="600px">
       <v-card>
         <v-card-title class="headline"
-          >Are you sure you want to delete this contact?</v-card-title
+          >Are you sure you want to delete {{ contactName }}?</v-card-title
         >
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -99,6 +99,9 @@ export default {
     loading() {
       return this.$store.getters['contacts/contactsLoading']
     },
+    contactName() {
+      return this.$store.getters['contacts/contactFullName']
+    }
   },
 
   created() {
@@ -121,11 +124,6 @@ export default {
       this.dialogDelete = true
     },
 
-    deleteConfirm() {
-      this.$store.commit('deleteContact')
-      this.toggleDeleteDialog()
-    },
-
     close() {
       this.$store.commit("toggleContactsDialog"); // first, close the dialog box, so user doesn't see us change the dialog type
       this.$store.commit("initializeContact"); // next, set the appointment to be a blank one
@@ -136,8 +134,13 @@ export default {
     },
 
     closeDelete() {
-      this.$store.commit("initializeContact");
-      this.toggleDeleteDialog()
+      this.$store.commit("contacts/CLEAR_CONTACT");
+      this.dialogDelete = !this.dialogDelete
+    },
+
+    deleteConfirm() {
+      this.$store.dispatch('contacts/deleteContact')
+      this.dialogDelete = !this.dialogDelete
     },
   },
 };

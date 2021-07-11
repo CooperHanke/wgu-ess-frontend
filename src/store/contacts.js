@@ -27,6 +27,9 @@ export default {
     },
     TOGGLE_CONTACTS_DIALOG(state, flag) {
       state.showDialog = flag
+    },
+    CLEAR_CONTACTS_ON_LOGOUT(state) {
+      state.contacts = []
     }
   },
   actions: {
@@ -97,6 +100,26 @@ export default {
           commit('CLEAR_CONTACT')
           dispatch('ui/toggleLoadingOverlay', false, { root: true })
         })
+    },
+    deleteContact({ dispatch, getters, rootGetters }) {
+      const contactName = getters.contactFullName
+      dispatch('ui/toggleLoadingOverlay', true, { root: true })
+      axios({
+        url: `https://localhost:5001/api/contacts/${getters.contactId}`,
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${rootGetters['auth/token']}`,
+        }
+      })
+        .then(() => {
+          dispatch('loadContactsByLoggedInUser')
+          dispatch("ui/showSnackbar", `Successfully deleted ${contactName} from the system`, { root: true })
+          dispatch('ui/toggleLoadingOverlay', false, { root: true })
+        })
+        .catch(() => {
+          dispatch("ui/showSnackbar", `Unable to delete ${contactName} from system`, { root: true })
+          dispatch('ui/toggleLoadingOverlay', false, { root: true })
+        })
     }
   },
   getters: {
@@ -105,6 +128,7 @@ export default {
     showDialog: (state) => state.showDialog,
     contactId: (state) => state.contact.id,
     contactsLoading: (state) => state.contactsLoading,
-    contactLoadingForEdit: (state) => state.contactLoadingForEdit
+    contactLoadingForEdit: (state) => state.contactLoadingForEdit,
+    contactFullName: (state) => state.contact.firstName + ' ' + state.contact.lastName
   }
 }

@@ -53,10 +53,10 @@
               </v-row>
               <v-row>
                 <v-col cols="12" sm="6" md="4">
-                  <v-text-field v-model="city" label="City" :rules="textRules" required></v-text-field>
+                  <v-text-field v-model="city" label="City" :rules="cityCountryStateRules" required></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
-                  <v-text-field v-model="state" label="State" :rules="textRules" required></v-text-field>
+                  <v-text-field v-model="state" label="State" :rules="cityCountryStateRules" required></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
                   <v-text-field
@@ -81,7 +81,7 @@
                   <v-text-field
                     v-model="country"
                     label="Country"
-                    :rules="textRules"
+                    :rules="cityCountryStateRules"
                     required
                   ></v-text-field>
                 </v-col>
@@ -153,7 +153,7 @@ export default {
         (v) => !!v || "This field is required",
         (v) => /[a-zA-Z]+[-]*[a-zA-Z]+/.test(v) || "Charaters, spaces, and dashes only in this field"
       ],
-      cityStateRules: [
+      cityCountryStateRules: [
         (v) => !!v || "This field is required",
         (v) => /[a-zA-Z ]$/.test(v) || 'Characters and spaces only in this field'
       ],
