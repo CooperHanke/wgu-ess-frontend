@@ -12,7 +12,7 @@
 
         <v-card-text>
           Please fill out this form with your correct first name, last name, and username that you log in with
-          <v-form>
+          <v-form ref="resetPasswordForm">
             <v-text-field
               v-model="firstName"
               label="First Name"
@@ -31,6 +31,7 @@
               v-model="userName"
               label="User Name"
               required
+              :rules="rules"
             ></v-text-field>
           </v-form>
         </v-card-text>
@@ -49,8 +50,13 @@
 <script>
 export default {
   computed: {
-    resetPasswordDialog() {
-      return this.$store.getters['auth/resetPasswordDialog']
+    resetPasswordDialog: {
+      get() {
+        return this.$store.getters['auth/resetPasswordDialog']
+      },
+      set() {
+        this.$store.commit('auth/OPEN_RESET_BUTTON_DIALOG')
+      }
     }
   },
   data() {
@@ -59,15 +65,20 @@ export default {
       lastName: '',
       userName: '',
       rules: [
-        v => v.length >= 8 || 'Minimum 8 characters',
-        (this.password == this.passwordConfirm) || 'Passwords do not match'
+        v => !!v || 'Field required'
       ],
       valid: true
     }
   },
   methods: {
     close() {
-      this.$store.dispatch("auth/clearPasswordResetDialog")
+      // resetPasswordForm
+      this.firstName = '',
+      this.lastName = '',
+      this.userName = '',
+      this.$refs.resetPasswordForm.resetValidation()
+      // clear the validations and form, then commit straight to store
+      this.$store.commit("auth/CLOSE_PASSWORD_RESET_DIALOG")
     },
     submit() {
       const fields = {
