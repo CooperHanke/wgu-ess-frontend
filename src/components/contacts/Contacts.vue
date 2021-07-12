@@ -6,6 +6,9 @@
         :items="contacts"
         sort-by="name"
         class="elevation-1"
+        :loading="loading"
+        loading-text="Loading... Please wait"
+        :search="search"
       >
         <template v-slot:top>
           <v-toolbar flat>
@@ -18,7 +21,7 @@
             single-line
             hide-details
             prepend-inner-icon="mdi-magnify"
-            label="Search contacts..."
+            label="Search contacts by first or last name..."
           ></v-text-field>
 
             <v-spacer></v-spacer>
@@ -28,31 +31,33 @@
           </v-toolbar>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-icon small class="mr-2" @click="editContact(item)">
+          <v-icon small class="mr-2" @click="editContact(item.id)">
             mdi-pencil
           </v-icon>
-          <v-icon small @click="deleteContact(item)"> mdi-delete </v-icon>
+          <v-icon small @click="deleteContact(item.id)"> mdi-delete </v-icon>
         </template>
         <template v-slot:no-data>
           No contacts are found
         </template>
       </v-data-table>
     </v-sheet>
-    <v-dialog v-model="dialogDelete" max-width="500px">
+
+    <v-dialog v-model="dialogDelete" max-width="600px">
       <v-card>
         <v-card-title class="headline"
-          >Are you sure you want to delete this item?</v-card-title
+          >Are you sure you want to delete {{ contactName }}?</v-card-title
         >
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="deleteContactConfirm"
+          <v-btn color="blue darken-1" text @click="deleteConfirm"
             >OK</v-btn
           >
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
     </v-dialog>
+
   </div>
 </template>
 
@@ -71,10 +76,11 @@ export default {
         value: "firstName",
       },
       { text: "Last Name", value: "lastName" },
-      { text: "Address", value: "address1" },
-      { text: "City", value: "city" },
-      { text: "Phone Number", value: "phoneNumber" },
-      { text: "Country", value: "country" },
+      { text: "Address", value: "address1", sortable: false  },
+      { text: "City", value: "city", sortable: false  },
+      { text: "Phone Number", value: "phoneNumber", sortable: false  },
+      { text: "Email", value: "email", sortable: false  },
+      { text: "Country", value: "country", sortable: false  },
 
       { text: "Actions", value: "actions", sortable: false },
     ],
@@ -84,22 +90,19 @@ export default {
   computed: {
     contacts: {
       get() {
-        return this.$store.state.contacts
+        return this.$store.getters['contacts/contacts']
       },
       set() {
-        this.$store.commit("updateContacts")
-      }
+        this.$store.dispatch('contacts/loadContactsByLoggedInUser')
+      },
+    },
+    loading() {
+      return this.$store.getters['contacts/contactsLoading']
+    },
+    contactName() {
+      return this.$store.getters['contacts/contactFullName']
     }
   },
-
-  // watch: {
-  //   dialog(val) {
-  //     val || this.close();
-  //   },
-  //   dialogDelete(val) {
-  //     val || this.closeDelete();
-  //   },
-  // },
 
   created() {
     this.initialize();
@@ -107,25 +110,18 @@ export default {
 
   methods: {
     initialize() {
-      this.$store.commit('initializeContacts')
-      this.contacts = this.$store.state.contacts
+      this.$store.dispatch('contacts/loadContactsByLoggedInUser')
     },
 
-    editContact(contact) {
+    editContact(contactId) {
       const store = this.$store
-      store.commit('setContact', contact)
-      store.commit('toggleContactDialog')
+      store.dispatch('contacts/setContact', contactId)
+      store.commit('contacts/TOGGLE_CONTACTS_DIALOG', true)
     },
 
-    deleteContact(contact) {
-      this.$store.commit('setContact', contact)
-      console.log(contact.name)
+    deleteContact(contactId) {
+      this.$store.dispatch('contacts/setContact', contactId)
       this.dialogDelete = true
-    },
-
-    deleteContactConfirm() {
-      this.$store.commit('deleteContact')
-      this.toggleDeleteDialog()
     },
 
     close() {
@@ -138,8 +134,13 @@ export default {
     },
 
     closeDelete() {
-      this.$store.commit("initializeContact");
-      this.toggleDeleteDialog()
+      this.$store.commit("contacts/CLEAR_CONTACT");
+      this.dialogDelete = !this.dialogDelete
+    },
+
+    deleteConfirm() {
+      this.$store.dispatch('contacts/deleteContact')
+      this.dialogDelete = !this.dialogDelete
     },
   },
 };

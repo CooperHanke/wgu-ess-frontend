@@ -109,12 +109,12 @@ export default {
       return !this.user.isLocked ? ["disable", "enable"] : ["enable", "disable"]
     },
     loading() {
-      return this.$store.getters['ui/usersLoading']
+      return this.$store.getters['users/usersLoading']
     }
   },
   mounted() {
     // load the user data from the store
-    this.$store.dispatch('users/loadUsers', null, { root: true })
+    this.$store.dispatch('users/loadUsers')
   },
   data: () => ({
     dialogDisable: false,
@@ -164,10 +164,10 @@ export default {
   }),
   methods: {
     editUser(userId) {
-      this.$store.dispatch("users/loadUserForEdit", userId, { root: true })
+      this.$store.dispatch("users/loadUserForEdit", userId)
     },
     addUser() {
-      this.$store.commit("ui/TOGGLE_USER_DIALOG")
+      this.$store.commit("users/TOGGLE_USER_DIALOG")
     },
     getColor( userStatus ) {
       switch(userStatus) {
