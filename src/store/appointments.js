@@ -1,4 +1,5 @@
 import axios from 'axios'
+import moment from 'moment'
 
 export default {
   namespaced: true,
@@ -33,11 +34,20 @@ export default {
   actions: {
     loadAppointmentsByLoggedInUser({ commit, dispatch, rootGetters }) {
       commit("SET_APPOINTMENTS_LOADING_STATE", true)
+      dispatch('contacts/loadContactsByLoggedInUser', null, { root: true })
       axios({ url: `https://localhost:5001/api/appointments/user/${rootGetters['auth/userId']}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
           resp.data.forEach(appointment => {
+            // create the contact's name as we have the data
             const contact = rootGetters['contacts/contacts'].find(contact => contact.id === appointment.contactId)
             appointment.name = contact.firstName + ' ' + contact.lastName
+            // parse the date and time from the server
+            const originStartDate = appointment.startDate
+            const originEndDate = appointment.endDate
+            appointment.startDate = moment(originStartDate).format('l')
+            appointment.startTime = moment(originStartDate).format('LT')
+            appointment.endDate = moment(originEndDate).format('l')
+            appointment.endTime = moment(originEndDate).format('LT')
           });
           commit("SET_APPOINTMENTS", resp.data)
           commit("SET_APPOINTMENTS_LOADING_STATE", false)

@@ -22,8 +22,6 @@ export default {
   created() {
     // we should set the loading state based on if the user is logging in or not as well
     this.$store.dispatch('auth/getUserData', this.$store.getters['auth/userId'])
-    this.$store.dispatch('contacts/loadContactsByLoggedInUser')
-    this.$store.dispatch('appointments/loadAppointmentsByLoggedInUser')
   },
   computed: {
     activePageInStore() {

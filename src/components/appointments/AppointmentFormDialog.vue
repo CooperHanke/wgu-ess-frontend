@@ -212,7 +212,6 @@ export default {
         contactId: this.$store.getters['appointments/contactId'],
         userId: this.$store.getters['auth/userId']
       }
-      console.table(appointment)
       if (this.$store.getters['appointments/appointmentId']) {
         this.$store.dispatch("appointments/saveExistingAppointment", appointment)
       } else {
