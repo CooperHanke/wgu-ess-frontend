@@ -124,11 +124,6 @@ export default {
       this.dialogDelete = true
     },
 
-    close() {
-      this.$store.commit("toggleContactsDialog"); // first, close the dialog box, so user doesn't see us change the dialog type
-      this.$store.commit("initializeContact"); // next, set the appointment to be a blank one
-    },
-
     toggleDeleteDialog() {
       this.dialogDelete = !this.dialogDelete
     },

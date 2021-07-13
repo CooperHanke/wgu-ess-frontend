@@ -8,6 +8,7 @@
       class="elevation-1"
       :loading="loading"
       loading-text="Loading... Please wait"
+      :search="search"
     >
       <template v-slot:top>
         <v-toolbar flat>
@@ -68,17 +69,17 @@ export default {
       {
         text: "Contact Name",
         align: "start",
-        sortable: false,
+        sortable: true,
         value: "name",
       },
-      { text: "Title", value: "title" },
+      { text: "Title", value: "title", sortable: true, filterable: true },
       { text: "Description", value: "description" },
-      { text: "Location", value: "location" },
-      { text: "Type", value: "type" },
+      { text: "Location", value: "location", sortable: true, filterable: true },
+      { text: "Type", value: "type", sortable: true },
       { text: "Start Date", value: "startDate", sortable: false, filterable: false },
       { text: "Start Time", value: "startTime", sortable: false, filterable: false },
-      { text: "End Date", value: "endDate", sortable: false, filterable: false },
-      { text: "End Time", value: "endTime", sortable: false, filterable: false },
+      { text: "End Date", value: "endDate", sortable: true, filterable: false },
+      { text: "End Time", value: "endTime", sortable: true, filterable: false },
       { text: "Actions", value: "actions", sortable: false, filterable: false },
     ],
     search: ''
@@ -110,7 +111,6 @@ export default {
     editAppointment(appointmentId) {
       const store = this.$store
       store.commit('setAppointment', appointmentId); // set the appointment in state
-      // store.commit('setAppointmentContact', appointment.name) // set the contact for the appointment in question
       store.commit('appointments/TOGGLE_APPOINTMENTS_DIALOG', true)
     },
 
@@ -127,15 +127,6 @@ export default {
     toggleDeleteDialog() {
       this.dialogDelete = !this.dialogDelete
     }
-    
-    // save() {
-    //   if (this.editedIndex > -1) {
-    //     Object.assign(this.appointments[this.editedIndex], this.editedItem);
-    //   } else {
-    //     this.appointments.push(this.editedItem);
-    //   }
-    //   this.close();
-    // },
   },
 };
 </script>

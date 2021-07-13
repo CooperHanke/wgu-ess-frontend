@@ -6,7 +6,8 @@
           New Appointment
         </v-btn>
       </template>
-      <v-card>
+
+      <v-card :loading="loading">
         <v-card-title>
           <span class="headline">{{ dialogHeader }}</span>
         </v-card-title>
@@ -145,12 +146,22 @@ export default {
         this.$store.commit("appointments/TOGGLE_APPOINTMENTS_DIALOG", true);
       },
     },
-
+    loading: {
+      get() {
+        return this.$store.getters['appointments/appointmentLoadingForEdit']
+      }
+    },
     appointment: {
       get() {
-        return this.$store.getters["appointments/appointment"];
+        return this.$store.getters["appointments/appointment"]
       },
     },
+    startDateTime() {
+      return new Date(this.startDate + ' ' + this.startTime).toJSON()
+    },
+    endDateTime() {
+      return new Date(this.endDate + ' ' + this.endTime).toJSON()
+    }
   },
 
   data() {
@@ -164,7 +175,6 @@ export default {
       startTime: '12:30',
       endDate: '',
       endTime: '12:30',
-      contactId: '',
       dialogDelete: false,
       startDatePicker: false,
       endDatePicker: false
@@ -177,7 +187,6 @@ export default {
       this.$store.commit("appointments/CLEAR_APPOINTMENT");
       this.$store.commit("appointments/TOGGLE_APPOINTMENTS_DIALOG", false);
     },
-
     toggleStartDatePicker() {
       this.startDatePicker = false;
     },
@@ -188,13 +197,27 @@ export default {
       this.appointments.splice(this.editedIndex, 1);
       this.closeDelete();
     },
-
     toggleDeleteDialog() {
       this.dialogDelete = !this.dialogDelete;
     },
-
     save() {
-      this.$store.commit("saveAppointment");
+      const appointment = {
+        title: this.title,
+        description: this.description,
+        location: this.location,
+        url: this.url,
+        type: this.type,
+        startDate: this.startDateTime,
+        endDate: this.endDateTime,
+        contactId: this.$store.getters['appointments/contactId'],
+        userId: this.$store.getters['auth/userId']
+      }
+      console.table(appointment)
+      if (this.$store.getters['appointments/appointmentId']) {
+        this.$store.dispatch("appointments/saveExistingAppointment", appointment)
+      } else {
+        this.$store.dispatch("appointments/saveNewAppointment", appointment);
+      }
       this.close();
     },
   },

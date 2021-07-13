@@ -45,9 +45,9 @@ export default {
         })
         .catch(error => {
           if (error.response) {
+            commit("SET_CONTACTS_LOADING_STATE", false)
             dispatch('ui/showSnackbar', error.response.data, { root: true })
           }
-          dispatch('ui/toggleLoadingOverlay', false, { root: true })
         })
     },
     saveNewContact({ commit, dispatch, rootGetters }, contact) {

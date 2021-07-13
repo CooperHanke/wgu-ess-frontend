@@ -7,7 +7,8 @@ export default {
     appointment: {},
     showDialog: false,
     appointmentsLoading: false,
-    appointmentLoadingForEdit: false
+    appointmentLoadingForEdit: false,
+    contactId: ''
   }),
   mutations: {
     SET_APPOINTMENT(state, appointment) {
@@ -26,10 +27,7 @@ export default {
       state.showDialog = flag
     },
     SET_CONTACT_FOR_APPOINTMENT(state, contactId) {
-      state.appointment.contactId = contactId
-    },
-    CLEAR_APPOINTMENT_CONTACT(state) {
-      state.appointment.contactId = ''
+      state.contactId = contactId
     }
   },
   actions: {
@@ -37,8 +35,28 @@ export default {
       commit("SET_APPOINTMENTS_LOADING_STATE", true)
       axios({ url: `https://localhost:5001/api/appointments/user/${rootGetters['auth/userId']}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
-          commit("SET_APPOINTMENTS_LOADING_STATE", false)
+          resp.data.forEach(appointment => {
+            const contact = rootGetters['contacts/contacts'].find(contact => contact.id === appointment.contactId)
+            appointment.name = contact.firstName + ' ' + contact.lastName
+          });
           commit("SET_APPOINTMENTS", resp.data)
+          commit("SET_APPOINTMENTS_LOADING_STATE", false)
+        })
+        .catch(error => {
+          if (error.response) {
+            dispatch('ui/showSnackbar', error.response.data, { root: true })
+            commit("SET_APPOINTMENTS_LOADING_STATE", false)
+          }
+        })
+    },
+    saveNewAppointment({ commit, dispatch, rootGetters }, appointment) {
+      dispatch('ui/toggleLoadingOverlay', true, { root: true })
+      axios({ url: `https://localhost:5001/api/appointments`, method: 'POST', data: appointment, headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
+        .then(() => {
+          dispatch('ui/showSnackbar', `Successfully added new appointment to the system`, { root: true })
+          commit('CLEAR_APPOINTMENT')
+          dispatch('loadAppointmentsByLoggedInUser')
+          dispatch('ui/toggleLoadingOverlay', false, { root: true })
         })
         .catch(error => {
           if (error.response) {
@@ -55,6 +73,6 @@ export default {
     appointmentId: (state) => state.appointment.id,
     appointmentsLoading: (state) => state.appointmentsLoading,
     appointmentLoadingForEdit: (state) => state.appointmentLoadingForEdit,
-    appointmentContact: (state) => state.appointment.firstName + ' ' + state.appointment.lastName
+    contactId: (state) => state.contactId
   }
 }

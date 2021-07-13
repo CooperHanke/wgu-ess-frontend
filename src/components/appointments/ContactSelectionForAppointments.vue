@@ -23,7 +23,7 @@ export default {
     },
     select: {
       get() {
-        return this.$store.getters["appointments/appointmentContact"];
+        return this.contacts.find(contact => contact.id === this.$store.getters['appointments/contactId'])
       },
       set(id) {
         this.$store.commit("appointments/SET_CONTACT_FOR_APPOINTMENT", id);
