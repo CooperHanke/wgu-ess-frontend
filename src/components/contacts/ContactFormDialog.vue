@@ -166,17 +166,7 @@ export default {
 
   methods: {
     close() {
-      this.firstName = '',
-      this.lastName = '',
-      this.address1 = '',
-      this.address2 = '',
-      this.city = '',
-      this.state = '',
-      this.postalCode = '',
-      this.country = '',
-      this.phoneNumber = '',
-      this.email = '',
-      this.$refs.contactForm.resetValidation()
+      this.$refs.contactForm.reset()
       this.$store.commit('contacts/CLEAR_CONTACT')
       this.$store.commit("contacts/TOGGLE_CONTACTS_DIALOG", false);
     },

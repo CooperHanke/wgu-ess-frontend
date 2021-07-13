@@ -6,6 +6,8 @@
       :items="appointments"
       sort-by="startTime"
       class="elevation-1"
+      :loading="loading"
+      loading-text="Loading... Please wait"
     >
       <template v-slot:top>
         <v-toolbar flat>
@@ -73,11 +75,11 @@ export default {
       { text: "Description", value: "description" },
       { text: "Location", value: "location" },
       { text: "Type", value: "type" },
-      { text: "Start Date", value: "startDate", sortable: false },
-      { text: "Start Time", value: "startTime", sortable: false },
-      { text: "End Date", value: "endDate", sortable: false },
-      { text: "End Time", value: "endTime", sortable: false },
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "Start Date", value: "startDate", sortable: false, filterable: false },
+      { text: "Start Time", value: "startTime", sortable: false, filterable: false },
+      { text: "End Date", value: "endDate", sortable: false, filterable: false },
+      { text: "End Time", value: "endTime", sortable: false, filterable: false },
+      { text: "Actions", value: "actions", sortable: false, filterable: false },
     ],
     search: ''
   }),
@@ -85,19 +87,14 @@ export default {
   computed: {
     appointments: {
       get() {
-        return this.$store.state.appointments
+        return this.$store.getters['appointments/appointments']
       },
       set() {
-        // this.$store.commit("")
-      }
-    },
-    appointment: {
-      get() {
-        return this.$store.state.appointment
+        this.$store.dispatch('appointments/loadAppointmentsByLoggedInUser')
       },
-      set(payload) {
-        this.$store.commit("setAppointment", payload)
-      }
+    },
+    loading() {
+      return this.$store.getters['appointments/appointmentsLoading']
     },
   },
 
@@ -107,15 +104,14 @@ export default {
 
   methods: {
     initialize() {
-      this.$store.commit('initializeAppointments')
-      this.appointments = this.$store.state.appointments
+      this.$store.dispatch('appointments/loadAppointmentsByLoggedInUser')
     },
 
-    editAppointment(appointment) {
+    editAppointment(appointmentId) {
       const store = this.$store
-      store.commit('setAppointment', appointment); // set the appointment in state
-      store.commit('setAppointmentContact', appointment.name) // set the contact for the appointment in question
-      store.commit('toggleAppointmentDialog')
+      store.commit('setAppointment', appointmentId); // set the appointment in state
+      // store.commit('setAppointmentContact', appointment.name) // set the contact for the appointment in question
+      store.commit('appointments/TOGGLE_APPOINTMENTS_DIALOG', true)
     },
 
     deleteAppointment(appointment) {

@@ -13,151 +13,105 @@
 
         <v-card-text>
           <v-container>
-            <v-row>
-              <v-col cols="12" sm="6" md="4">
-                <contact-selection-for-appointments />
-              </v-col>
+            <v-form ref="appointmentForm">
+              <v-row>
+                <v-col cols="6">
+                  <v-text-field v-model="title" label="Title"></v-text-field>
+                </v-col>
 
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  v-model="appointment.title"
-                  label="Title"
-                ></v-text-field>
-              </v-col>
+                <v-col cols="6">
+                  <contact-selection-for-appointments />
+                </v-col>
 
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  v-model="appointment.description"
-                  label="Description"
-                ></v-text-field>
-              </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    v-model="description"
+                    label="Description"
+                  ></v-text-field>
+                </v-col>
 
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  v-model="appointment.location"
-                  label="Location"
-                ></v-text-field>
-              </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field
+                    v-model="location"
+                    label="Location"
+                  ></v-text-field>
+                </v-col>
 
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  v-model="appointment.type"
-                  label="Type"
-                ></v-text-field>
-              </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field v-model="type" label="Type"></v-text-field>
+                </v-col>
 
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  v-model="appointment.url"
-                  label="URL"
-                ></v-text-field>
-              </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field v-model="url" label="URL"></v-text-field>
+                </v-col>
 
-              <v-col cols="12" sm="6" md="4">
-                <v-menu
-                  v-model="startDatePicker"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="appointment.startDate"
-                      label="Start Date"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
-                    v-model="appointment.startDate"
-                    no-title
-                    @input="toggleStartDatePicker"
-                  ></v-date-picker>
-                </v-menu>
-              </v-col>
+                <v-col cols="6">
+                  <v-menu
+                    v-model="startDatePicker"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="startDate"
+                        label="Start Date"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="startDate"
+                      no-title
+                      @input="toggleStartDatePicker"
+                    ></v-date-picker>
+                  </v-menu>
+                </v-col>
 
-              <v-col cols="12" sm="6" md="4">
-                <v-menu
-                  v-model="startTimePicker"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  max-width="290px"
-                  min-width="290px"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="appointment.startTime"
-                      label="Start Time"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-time-picker
-                    v-if="startTimePicker"
-                    v-model="appointment.startTime"
-                    full-width
-                    @click:minute="toggleStartTimePicker"
-                  ></v-time-picker>
-                </v-menu>
-              </v-col>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="startTime"
+                    label="Start Time"
+                    type="time"
+                  ></v-text-field>
+                </v-col>
 
-              <v-col cols="12" sm="6" md="4">
-                <v-menu
-                  v-model="endDatePicker"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="appointment.endDate"
-                      label="Ending Date"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
-                    v-model="appointment.endDate"
-                    no-title
-                    @input="toggleEndDatePicker"
-                  ></v-date-picker>
-                </v-menu>
-              </v-col>
+                <v-col cols="6">
+                  <v-menu
+                    v-model="endDatePicker"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="endDate"
+                        label="Ending Date"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="endDate"
+                      no-title
+                      @input="toggleEndDatePicker"
+                    ></v-date-picker>
+                  </v-menu>
+                </v-col>
 
-              <v-col cols="12" sm="6" md="4">
-                <v-menu
-                  v-model="endTimePicker"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  max-width="290px"
-                  min-width="290px"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="appointment.endTime"
-                      label="End Time"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-time-picker
-                    v-if="endTimePicker"
-                    v-model="appointment.endTime"
-                    full-width
-                    @click:minute="toggleEndTimePicker"
-                  ></v-time-picker>
-                </v-menu>
-              </v-col>
-
-            </v-row>
+                <v-col cols="6">
+                  <v-text-field
+                    v-model="endTime"
+                    label="End Time"
+                    type="time"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-form>
           </v-container>
         </v-card-text>
 
@@ -172,88 +126,71 @@
 </template>
 
 <script>
-import ContactSelectionForAppointments from '@/components/appointments/ContactSelectionForAppointments.vue'
+import ContactSelectionForAppointments from "@/components/appointments/ContactSelectionForAppointments.vue";
 export default {
   components: {
-    ContactSelectionForAppointments
+    ContactSelectionForAppointments,
   },
   computed: {
     dialogHeader() {
-      return this.$store.state.appointment.data.id > -1
+      return this.$store.getters["appointments/appointmentId"]
         ? "Edit Appointment"
         : "New Appointment";
     },
     showDialog: {
       get() {
-        return this.$store.state.appointment.showDialog;
+        return this.$store.getters["appointments/showDialog"];
       },
       set() {
-        this.$store.commit("toggleAppointmentDialog");
+        this.$store.commit("appointments/TOGGLE_APPOINTMENTS_DIALOG", true);
       },
     },
 
     appointment: {
       get() {
-        return this.$store.state.appointment.data;
-      }
+        return this.$store.getters["appointments/appointment"];
+      },
     },
-
-    contacts: {
-      get() {
-        return this.$store.state.contacts
-      }
-    },
-
   },
 
   data() {
     return {
+      title: '',
+      description: '',
+      location: '',
+      url: '',
+      type: '',
+      startDate: '',
+      startTime: '12:30',
+      endDate: '',
+      endTime: '12:30',
+      contactId: '',
       dialogDelete: false,
       startDatePicker: false,
-      startTimePicker: false,
-      endDatePicker: false,
-      endTimePicker: false,
+      endDatePicker: false
     };
-  },
-
-  watch: {
-    dialog(val) {
-      val || this.close();
-    },
-    dialogDelete(val) {
-      val || this.toggleDeleteDialog();
-    },
   },
 
   methods: {
     close() {
-      this.$store.commit("toggleAppointmentDialog"); // first, close the dialog box, so user doesn't see us change the dialog type
-      this.$store.commit("initializeAppointment"); // next, set the appointment to be a blank one
+      this.$refs.appointmentForm.reset();
+      this.$store.commit("appointments/CLEAR_APPOINTMENT");
+      this.$store.commit("appointments/TOGGLE_APPOINTMENTS_DIALOG", false);
     },
 
     toggleStartDatePicker() {
       this.startDatePicker = false;
     },
-
-    toggleStartTimePicker() {
-      this.startTimePicker = false;
-    },
-
     toggleEndDatePicker() {
       this.endDatePicker = false;
     },
-
-    toggleEndTimePicker() {
-      this.endTimePicker = false;
-    },
-
     deleteItemConfirm() {
       this.appointments.splice(this.editedIndex, 1);
       this.closeDelete();
     },
 
     toggleDeleteDialog() {
-      this.dialogDelete = !this.dialogDelete
+      this.dialogDelete = !this.dialogDelete;
     },
 
     save() {

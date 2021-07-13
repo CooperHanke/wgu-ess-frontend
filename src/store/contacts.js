@@ -37,6 +37,9 @@ export default {
       commit("SET_CONTACTS_LOADING_STATE", true)
       axios({ url: `https://localhost:5001/api/contacts/user/${rootGetters['auth/userId']}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
+          resp.data.forEach(contact => {
+            contact.name = contact.firstName + ' ' + contact.lastName
+          });
           commit("SET_CONTACTS_LOADING_STATE", false)
           commit("SET_CONTACTS", resp.data)
         })
