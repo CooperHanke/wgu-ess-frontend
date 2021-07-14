@@ -38,7 +38,7 @@ export default {
     loadAppointmentsByLoggedInUser({ commit, dispatch, rootGetters }) {
       commit("SET_APPOINTMENTS_LOADING_STATE", true)
       dispatch('contacts/loadContactsByLoggedInUser', null, { root: true })
-      axios({ url: `https://localhost:5001/api/appointments/user/${rootGetters['auth/userId']}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
+      axios({ url: `appointments/user/${rootGetters['auth/userId']}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
           resp.data.forEach(appointment => {
             // create the contact's name as we have the data
@@ -64,7 +64,7 @@ export default {
     },
     saveNewAppointment({ commit, dispatch, rootGetters }, appointment) {
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
-      axios({ url: `https://localhost:5001/api/appointments`, method: 'POST', data: appointment, headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
+      axios({ url: 'appointments', method: 'POST', data: appointment, headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(() => {
           dispatch('ui/showSnackbar', `Successfully added new appointment to the system`, { root: true })
           commit('CLEAR_APPOINTMENT')
@@ -80,7 +80,7 @@ export default {
     },
     setAppointment({ commit, dispatch, rootGetters }, appointmentId) {
       commit('SET_EDIT_APPOINTMENT_LOADING_STATE', true)
-      axios({ url: `https://localhost:5001/api/appointments/${appointmentId}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
+      axios({ url: `appointments/${appointmentId}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
           let appointment = resp.data
           const originStartDate = appointment.startDate

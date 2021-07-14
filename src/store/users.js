@@ -47,7 +47,7 @@ export default {
       let user = rootGetters['auth/currentUser']
       user.usesDarkMode = !user.usesDarkMode
       axios({ 
-        url: `https://localhost:5001/api/users/${rootGetters['auth/userId']}`, 
+        url: `users/${rootGetters['auth/userId']}`, 
         data: user, 
         method: 'PUT', 
         headers: {
@@ -63,7 +63,7 @@ export default {
     },
     loadUsers({ commit, rootGetters }) {
       commit("SET_USER_LOADING_STATE", true)
-      axios({ url: `https://localhost:5001/api/users`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
+      axios({ url: 'users', method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
           // here, check those flags and set a userStatus unique to UI
           resp.data.forEach(user => {
@@ -84,7 +84,7 @@ export default {
     loadUserForEdit({ commit, dispatch, rootGetters }, userId) {
       commit('SET_EDIT_USER_LOADING_STATE', true)
       commit("TOGGLE_USER_DIALOG")
-      axios({ url: `https://localhost:5001/api/users/${userId}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
+      axios({ url: `users/${userId}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
           commit("SET_EDIT_USER_DATA", resp.data)
           commit('SET_EDIT_USER_LOADING_STATE', false)
@@ -105,7 +105,7 @@ export default {
         password: userData.password
       }
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
-      axios({ url: `https://localhost:5001/api/users`, method: 'POST', data: newUser, headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
+      axios({ url: 'users', method: 'POST', data: newUser, headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(() => {
           dispatch('ui/showSnackbar', `Successfully added ${userData.userName} to system`, { root: true })
           dispatch('loadUsers')
@@ -121,7 +121,7 @@ export default {
     editUserSubmit({ dispatch, rootGetters }, userData) {
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
       axios({
-        url: `https://localhost:5001/api/users/${rootGetters['auth/userId']}`,
+        url: `users/${rootGetters['auth/userId']}`,
         data: userData,
         method: 'PUT',
         headers: {
@@ -146,7 +146,7 @@ export default {
       commit("auth/ADD_PASSWORD_TO_USER_FOR_USER_CHANGE", password, { root: true })
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
       axios({
-        url: `https://localhost:5001/api/users/${rootGetters['auth/userId']}`,
+        url: `users/${rootGetters['auth/userId']}`,
         data: rootGetters['auth/currentUser'],
         method: 'PUT',
         headers: {
@@ -169,7 +169,7 @@ export default {
       const message = userData.isLocked ? ["locked", "from logging in"] : ["unlocked", "for logging in"]
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
       axios({
-        url: `https://localhost:5001/api/users/${userData.id}`,
+        url: `users/${userData.id}`,
         data: userData,
         method: 'PUT',
         headers: {
@@ -189,7 +189,7 @@ export default {
     deleteUser({ dispatch, rootGetters }, userData) {
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
       axios({
-        url: `https://localhost:5001/api/users/${userData.id}`,
+        url: `users/${userData.id}`,
         data: userData.id,
         method: 'DELETE',
         headers: {

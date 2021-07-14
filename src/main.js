@@ -8,7 +8,8 @@ import Axios from 'axios'
 Vue.config.productionTip = false
 
 // import axios into Vue's context so we don't need to keep calling it
-Vue.prototype.$http = Axios;
+Vue.prototype.$http = Axios
+Axios.defaults.baseURL = process.env.VUE_APP_API_ENDPOINT
 
 const oldToken = localStorage.getItem('token')
 const lastUserId = localStorage.getItem('userId')
@@ -16,7 +17,7 @@ const lastUserId = localStorage.getItem('userId')
 // if the token and lastUserId are there, try to use them and set them to the store if token and user id are still good
 // since vue isn't completely loaded at this time, we have to call axios a different way
 if (oldToken !== null && lastUserId !== null) {
-  Axios.get(`https://localhost:5001/api/users/${lastUserId}`, { headers: { 'Authorization': `Bearer ${oldToken}` } })
+  Axios.get(`/users/${lastUserId}`, { headers: { 'Authorization': `Bearer ${oldToken}` } })
     .then(resp => {
         store.state.auth.currentUser = resp.data // if the user is still valid, load the user's data now
       })

@@ -72,7 +72,7 @@ export default {
     attemptAuth({ commit, dispatch }, credentials) {
       commit('TOGGLE_LOGIN_FAILED', false)
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
-      axios({ url: 'https://localhost:5001/api/users/auth', data: credentials, method: 'POST' })
+      axios({ url: '/users/auth', data: credentials, method: 'POST' })
         .then(resp => {
           commit("CLEAR_LOGIN_ERRORS")
           commit("RESET_PASSWORD_BUTTON")
@@ -91,7 +91,7 @@ export default {
     },
     getUserData({ commit, dispatch, state }, userId) {
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
-      axios({ url: `https://localhost:5001/api/users/${userId}`, method: 'GET', headers: { 'Authorization': `Bearer ${state.token}` } })
+      axios({ url: `users/${userId}`, method: 'GET', headers: { 'Authorization': `Bearer ${state.token}` } })
         .then(resp => {
           commit("SET_USER", resp.data)
           dispatch('ui/toggleLoadingOverlay', false, { root: true })
@@ -99,7 +99,7 @@ export default {
     },
     submitPasswordResetRequest({ commit, dispatch }, userData) {
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
-      axios({ url: 'https://localhost:5001/api/users/auth/reset', data: userData, method: 'POST' })
+      axios({ url: '/users/auth/reset', data: userData, method: 'POST' })
         .then( () => {
           commit("CLEAR_LOGIN_ERRORS")
           commit("RESET_PASSWORD_BUTTON")
