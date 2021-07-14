@@ -32,17 +32,18 @@
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon small class="mr-2" @click="editAppointment(item.id)"> mdi-pencil </v-icon>
-        <v-icon small @click="deleteAppointment(item.id)"> mdi-delete </v-icon>
+        <v-icon small @click="deleteAppointment(item)"> mdi-delete </v-icon>
       </template>
       <template v-slot:no-data>
         No appointments are found
       </template>
     </v-data-table>
   </v-sheet>
-  <v-dialog v-model="dialogDelete" max-width="500px">
+
+  <v-dialog v-model="dialogDelete" max-width="800px">
       <v-card>
         <v-card-title class="headline"
-          >Are you sure you want to delete this item?</v-card-title
+          >Are you sure you want to delete the appointment with {{ contactName }}?</v-card-title
         >
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -64,6 +65,7 @@ export default {
     AppointmentFormDialog
   },
   data: () => ({
+    contactName: '',
     dialogDelete: false,
     headers: [
       {
@@ -96,7 +98,7 @@ export default {
     },
     loading() {
       return this.$store.getters['appointments/appointmentsLoading']
-    },
+    }
   },
 
   created() {
@@ -105,29 +107,29 @@ export default {
 
   methods: {
     initialize() {
-      if (!this.$store.getters['contacts/contacts']) {
-        this.$store.dispatch('contacts/loadContactsByLoggedInUser')
-      }
       this.$store.dispatch('appointments/loadAppointmentsByLoggedInUser')
     },
 
     editAppointment(appointmentId) {
       const store = this.$store
-      store.dispatch('appointments/setAppointment', appointmentId); // set the appointment in state
+      store.dispatch('appointments/setAppointment', appointmentId)
       store.commit('appointments/TOGGLE_APPOINTMENTS_DIALOG', true)
     },
 
     deleteAppointment(appointment) {
-      this.$store.commit('setAppointment', appointment)
+      this.contactName = appointment.name
+      this.$store.dispatch('appointments/setAppointment', appointment.id)
       this.dialogDelete = true;
     },
 
     deleteAppointmentConfirm() {
       this.$store.commit('deleteAppointment')
+      this.contactName = ''
       this.toggleDeleteDialog();
     },
 
     toggleDeleteDialog() {
+      this.contactName = ''
       this.dialogDelete = !this.dialogDelete
     }
   },
