@@ -35,21 +35,24 @@ export default {
   actions: {
     loadContactsByLoggedInUser({ commit, dispatch, rootGetters }) {
       commit("SET_CONTACTS_LOADING_STATE", true)
-      axios({ url: `https://localhost:5001/api/contacts/user/${rootGetters['auth/userId']}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
+      axios({ url: `contacts/user/${rootGetters['auth/userId']}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
+          resp.data.forEach(contact => {
+            contact.name = contact.firstName + ' ' + contact.lastName
+          });
           commit("SET_CONTACTS_LOADING_STATE", false)
           commit("SET_CONTACTS", resp.data)
         })
         .catch(error => {
           if (error.response) {
+            commit("SET_CONTACTS_LOADING_STATE", false)
             dispatch('ui/showSnackbar', error.response.data, { root: true })
           }
-          dispatch('ui/toggleLoadingOverlay', false, { root: true })
         })
     },
     saveNewContact({ commit, dispatch, rootGetters }, contact) {
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
-      axios({ url: `https://localhost:5001/api/contacts`, method: 'POST', data: contact, headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
+      axios({ url: 'contacts', method: 'POST', data: contact, headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(() => {
           dispatch('ui/showSnackbar', `Successfully added ${contact.firstName} ${contact.lastName} to system`, { root: true })
           commit('CLEAR_CONTACT')
@@ -65,7 +68,7 @@ export default {
     },
     setContact({ commit, dispatch, rootGetters }, contactId) {
       commit('SET_EDIT_CONTACT_LOADING_STATE', true)
-      axios({ url: `https://localhost:5001/api/contacts/${contactId}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
+      axios({ url: `contacts/${contactId}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
           commit("SET_CONTACT", Object.assign({}, resp.data))
           commit('SET_EDIT_CONTACT_LOADING_STATE', false)
@@ -77,8 +80,9 @@ export default {
         })
     },
     saveExistingContact({ commit, dispatch, getters, rootGetters }, contact) {
+      dispatch('ui/toggleLoadingOverlay', true, { root: true })
       axios({
-        url: `https://localhost:5001/api/contacts/${getters.contactId}`,
+        url: `contacts/${getters.contactId}`,
         data: contact,
         method: 'PUT',
         headers: {
@@ -105,7 +109,7 @@ export default {
       const contactName = getters.contactFullName
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
       axios({
-        url: `https://localhost:5001/api/contacts/${getters.contactId}`,
+        url: `contacts/${getters.contactId}`,
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${rootGetters['auth/token']}`,
