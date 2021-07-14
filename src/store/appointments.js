@@ -126,6 +126,25 @@ export default {
           dispatch('ui/toggleLoadingOverlay', false, { root: true })
         })
     },
+    deleteAppointment({ dispatch, getters, rootGetters }) {
+      dispatch('ui/toggleLoadingOverlay', true, { root: true })
+      axios({
+        url: `appointments/${getters.appointmentId}`,
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${rootGetters['auth/token']}`,
+        }
+      })
+        .then(() => {
+          dispatch('loadAppointmentsByLoggedInUser')
+          dispatch("ui/showSnackbar", 'Successfully deleted the appointment', { root: true })
+          dispatch('ui/toggleLoadingOverlay', false, { root: true })
+        })
+        .catch(() => {
+          dispatch("ui/showSnackbar", 'Unable to delete the appointment', { root: true })
+          dispatch('ui/toggleLoadingOverlay', false, { root: true })
+        })
+    }
   },
   getters: {
     appointment: (state) => state.appointment,

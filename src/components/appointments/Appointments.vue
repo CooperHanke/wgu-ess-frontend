@@ -123,8 +123,7 @@ export default {
     },
 
     deleteAppointmentConfirm() {
-      this.$store.commit('deleteAppointment')
-      this.contactName = ''
+      this.$store.dispatch('appointments/deleteAppointment')
       this.toggleDeleteDialog();
     },
 
