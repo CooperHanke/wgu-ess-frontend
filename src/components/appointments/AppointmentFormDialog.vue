@@ -14,10 +14,10 @@
 
         <v-card-text>
           <v-container>
-            <v-form ref="appointmentForm">
+            <v-form ref="appointmentForm" v-model="valid">
               <v-row>
                 <v-col cols="6">
-                  <v-text-field v-model="title" label="Title"></v-text-field>
+                  <v-text-field v-model="title" label="Title" :rules="textRules"></v-text-field>
                 </v-col>
 
                 <v-col cols="6">
@@ -28,6 +28,7 @@
                   <v-text-field
                     v-model="description"
                     label="Description"
+                    :rules="textRules"
                   ></v-text-field>
                 </v-col>
 
@@ -35,15 +36,16 @@
                   <v-text-field
                     v-model="location"
                     label="Location"
+                    :rules="textRules"
                   ></v-text-field>
                 </v-col>
 
                 <v-col cols="12" sm="6" md="4">
-                  <v-text-field v-model="type" label="Type"></v-text-field>
+                  <v-text-field v-model="type" label="Type" :rules="textRules"></v-text-field>
                 </v-col>
 
                 <v-col cols="12" sm="6" md="4">
-                  <v-text-field v-model="url" label="URL"></v-text-field>
+                  <v-text-field v-model="url" label="URL" :rules="urlRules"></v-text-field>
                 </v-col>
 
                 <v-col cols="6">
@@ -61,6 +63,7 @@
                         readonly
                         v-bind="attrs"
                         v-on="on"
+                        :rules="filled"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -76,6 +79,7 @@
                     v-model="startTime"
                     label="Start Time"
                     type="time"
+                    :rules="filled"
                   ></v-text-field>
                 </v-col>
 
@@ -94,6 +98,7 @@
                         readonly
                         v-bind="attrs"
                         v-on="on"
+                        :rules="filled"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -109,6 +114,7 @@
                     v-model="endTime"
                     label="End Time"
                     type="time"
+                    :rules="filled"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -119,7 +125,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-          <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+          <v-btn color="blue darken-1" text @click="save" :disabled="!valid"> Save </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -163,6 +169,9 @@ export default {
     },
     endDateTime() {
       return new Date(this.endDate + ' ' + this.endTime).toJSON()
+    },
+    hasContactId() {
+      return this.$store.getters["appointments/contactId"] !== null || this.$store.getters["appointments/contactId"] !== ''
     }
   },
 
@@ -179,7 +188,16 @@ export default {
       endTime: '',
       dialogDelete: false,
       startDatePicker: false,
-      endDatePicker: false
+      endDatePicker: false,
+      urlRules: [(v) => /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_.~#?&//=]*)/g.test(v) || 'Please enter a valid URL, including the protocol (http/https)'],
+      textRules: [
+        (v) => !!v || "This field is required",
+        (v) => /^[a-zA-Z0-9-\s]+$/g.test(v) || "Uppercase charaters, spaces, dashes, and numbers only in this field"
+      ],
+      filled: [
+        (v) => !!v || "This field is required"
+      ],
+      valid: false
     };
   },
 
@@ -234,6 +252,12 @@ export default {
         this.startTime = moment(this.appointment.startTime, ['h:mm A']).format('HH:mm'),
         this.endDate = this.appointment.endDate,
         this.endTime = moment(this.appointment.endTime, ['h:mm A']).format('HH:mm')
+      }
+    },
+    hasContactId: function() {
+      console.log(this.contactId)
+      if (this.contactId === null || this.contactId === '') {
+        this.valid = false
       }
     }
   }

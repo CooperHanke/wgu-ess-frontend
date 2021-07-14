@@ -33,35 +33,41 @@ export default {
     },
     SET_EDIT_APPOINTMENT_LOADING_STATE(state, flag) {
       state.appointmentLoadingForEdit = flag
+    },
+    CLEAR_APPOINTMENTS_ON_LOGOUT(state) {
+      state.appointments = []
+      state.appointment = {}
+      state.contactId
     }
   },
   actions: {
     loadAppointmentsByLoggedInUser({ commit, dispatch, rootGetters }) {
       commit("SET_APPOINTMENTS_LOADING_STATE", true)
-      dispatch('contacts/loadContactsByLoggedInUser', null, { root: true })
-      axios({ url: `appointments/user/${rootGetters['auth/userId']}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
-        .then(resp => {
-          resp.data.forEach(appointment => {
-            // create the contact's name as we have the data
-            const contact = rootGetters['contacts/contacts'].find(contact => contact.id === appointment.contactId)
-            appointment.name = contact.firstName + ' ' + contact.lastName
-            // parse the date and time from the server
-            const originStartDate = appointment.startDate
-            const originEndDate = appointment.endDate
-            appointment.startDate = moment(originStartDate).format('l')
-            appointment.startTime = moment(originStartDate).format('LT')
-            appointment.endDate = moment(originEndDate).format('l')
-            appointment.endTime = moment(originEndDate).format('LT')
-          });
-          commit("SET_APPOINTMENTS", resp.data)
-          commit("SET_APPOINTMENTS_LOADING_STATE", false)
-        })
-        .catch(error => {
-          if (error.response) {
-            dispatch('ui/showSnackbar', error.response.data, { root: true })
+      dispatch('contacts/loadContactsByLoggedInUser', null, { root: true }).then(() => 
+        axios({ url: `appointments/user/${rootGetters['auth/userId']}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
+          .then(resp => {
+            resp.data.forEach(appointment => {
+              // create the contact's name as we have the data
+              const contact = rootGetters['contacts/contacts'].find(contact => contact.id === appointment.contactId)
+              appointment.name = contact.firstName + ' ' + contact.lastName
+              // parse the date and time from the server
+              const originStartDate = appointment.startDate
+              const originEndDate = appointment.endDate
+              appointment.startDate = moment(originStartDate).format('l')
+              appointment.startTime = moment(originStartDate).format('LT')
+              appointment.endDate = moment(originEndDate).format('l')
+              appointment.endTime = moment(originEndDate).format('LT')
+            });
+            commit("SET_APPOINTMENTS", resp.data)
             commit("SET_APPOINTMENTS_LOADING_STATE", false)
-          }
-        })
+          })
+          .catch(error => {
+            if (error.response) {
+              dispatch('ui/showSnackbar', error.response.data, { root: true })
+              commit("SET_APPOINTMENTS_LOADING_STATE", false)
+            }
+          })
+      )
     },
     saveNewAppointment({ commit, dispatch, rootGetters }, appointment) {
       dispatch('ui/toggleLoadingOverlay', true, { root: true })

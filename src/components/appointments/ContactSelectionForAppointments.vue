@@ -7,6 +7,7 @@
     item-value="id"
     no-data-text="No contacts available. Please add one to create an appointment."
     required
+    :rules="filled"
   ></v-select>
 </template>
 
@@ -30,5 +31,10 @@ export default {
       },
     },
   },
+  data() {
+    return {
+      filled: [(v) => !!v || "This field is required"]
+    }
+  }
 };
 </script>

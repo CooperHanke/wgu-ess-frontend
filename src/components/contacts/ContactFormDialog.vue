@@ -14,7 +14,7 @@
 
         <v-card-text>
           <v-container>
-            <v-form ref="contactForm">
+            <v-form ref="contactForm" v-model="valid">
               <v-row>
                 <v-col>
                   <v-text-field
@@ -93,7 +93,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-          <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+          <v-btn color="blue darken-1" text @click="save" :disabled="!valid"> Save </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -160,7 +160,8 @@ export default {
       postalCodeRules: [
         (v) => !!v || "This field is required",
         (v) => /^[A-Z0-9-\s]+$/g.test(v) || "Uppercase charaters, spaces, dashes, and numbers only in this field"
-      ]
+      ],
+      valid: true
     };
   },
 
