@@ -20,6 +20,7 @@ export default {
     },
     CLEAR_APPOINTMENT(state) {
       state.appointment = {}
+      state.contactId
     },
     SET_APPOINTMENTS_LOADING_STATE(state, flag) {
       state.appointmentsLoading = flag
@@ -98,7 +99,33 @@ export default {
           }
           commit('SET_EDIT_APPOINTMENT_LOADING_STATE', false)
         })
-    }
+    },
+    saveExistingAppointment({ commit, dispatch, getters, rootGetters }, appointment) {
+      dispatch('ui/toggleLoadingOverlay', true, { root: true })
+      axios({
+        url: `appointments/${getters.appointmentId}`,
+        data: appointment,
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${rootGetters['auth/token']}`,
+        }
+      })
+        .then(() => {
+          dispatch("ui/showSnackbar", `Successfully edited existing appointment on system`, { root: true })
+          commit('CLEAR_APPOINTMENT')
+          dispatch('loadAppointmentsByLoggedInUser')
+          dispatch('ui/toggleLoadingOverlay', false, { root: true })
+        })
+        .catch(error => {
+          if (error.response) {
+            dispatch('ui/showSnackbar', error.response.data)
+          } else {
+            dispatch("ui/showSnackbar", `Unable to update the appointment`, { root: true })
+          }
+          commit('CLEAR_CONTACT')
+          dispatch('ui/toggleLoadingOverlay', false, { root: true })
+        })
+    },
   },
   getters: {
     appointment: (state) => state.appointment,

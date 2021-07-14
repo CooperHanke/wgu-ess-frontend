@@ -80,6 +80,7 @@ export default {
         })
     },
     saveExistingContact({ commit, dispatch, getters, rootGetters }, contact) {
+      dispatch('ui/toggleLoadingOverlay', true, { root: true })
       axios({
         url: `contacts/${getters.contactId}`,
         data: contact,
