@@ -68,13 +68,14 @@ export default {
     contactName: '',
     dialogDelete: false,
     headers: [
-      {
-        text: "Contact Name",
+      { 
+        text: "Title", 
+        value: "title",
         align: "start",
-        sortable: true,
-        value: "name",
+        sortable: true, 
+        filterable: true 
       },
-      { text: "Title", value: "title", sortable: true, filterable: true },
+      { text: "Contact Name", sortable: true, value: "name", filterable: true },
       { text: "Description", value: "description" },
       { text: "Location", value: "location", sortable: true, filterable: true },
       { text: "Type", value: "type", sortable: true },
