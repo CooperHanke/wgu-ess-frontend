@@ -19,12 +19,8 @@ export default {
     Reports,
     UserManagement
   },
-  // since we are loading data, let's get the appointments and contacts sorted at this higher level
   created() {
-    // we should set the loading state based on if the user is logging in or not as well
     this.$store.dispatch('auth/getUserData', this.$store.getters['auth/userId'])
-    // this.$store.commit('initializeAppointments')
-    // this.$store.commit('initializeContacts')
   },
   computed: {
     activePageInStore() {

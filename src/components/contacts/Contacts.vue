@@ -76,13 +76,13 @@ export default {
         value: "firstName",
       },
       { text: "Last Name", value: "lastName" },
-      { text: "Address", value: "address1", sortable: false  },
-      { text: "City", value: "city", sortable: false  },
-      { text: "Phone Number", value: "phoneNumber", sortable: false  },
-      { text: "Email", value: "email", sortable: false  },
-      { text: "Country", value: "country", sortable: false  },
+      { text: "Address", value: "address1", sortable: false, filterable: false, },
+      { text: "City", value: "city", sortable: false, filterable: false, },
+      { text: "Phone Number", value: "phoneNumber", sortable: false, filterable: false,  },
+      { text: "Email", value: "email", sortable: false, filterable: false,  },
+      { text: "Country", value: "country", sortable: false, filterable: false,  },
 
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "Actions", value: "actions", sortable: false, filterable: false, },
     ],
     search: ''
   }),
@@ -122,11 +122,6 @@ export default {
     deleteContact(contactId) {
       this.$store.dispatch('contacts/setContact', contactId)
       this.dialogDelete = true
-    },
-
-    close() {
-      this.$store.commit("toggleContactsDialog"); // first, close the dialog box, so user doesn't see us change the dialog type
-      this.$store.commit("initializeContact"); // next, set the appointment to be a blank one
     },
 
     toggleDeleteDialog() {
