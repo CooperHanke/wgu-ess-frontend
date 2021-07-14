@@ -31,8 +31,8 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small class="mr-2" @click="editAppointment(item)"> mdi-pencil </v-icon>
-        <v-icon small @click="deleteAppointment(item)"> mdi-delete </v-icon>
+        <v-icon small class="mr-2" @click="editAppointment(item.id)"> mdi-pencil </v-icon>
+        <v-icon small @click="deleteAppointment(item.id)"> mdi-delete </v-icon>
       </template>
       <template v-slot:no-data>
         No appointments are found
@@ -105,12 +105,15 @@ export default {
 
   methods: {
     initialize() {
+      if (!this.$store.getters['contacts/contacts']) {
+        this.$store.dispatch('contacts/loadContactsByLoggedInUser')
+      }
       this.$store.dispatch('appointments/loadAppointmentsByLoggedInUser')
     },
 
     editAppointment(appointmentId) {
       const store = this.$store
-      store.commit('setAppointment', appointmentId); // set the appointment in state
+      store.dispatch('appointments/setAppointment', appointmentId); // set the appointment in state
       store.commit('appointments/TOGGLE_APPOINTMENTS_DIALOG', true)
     },
 

@@ -29,6 +29,9 @@ export default {
     },
     SET_CONTACT_FOR_APPOINTMENT(state, contactId) {
       state.contactId = contactId
+    },
+    SET_EDIT_APPOINTMENT_LOADING_STATE(state, flag) {
+      state.appointmentLoadingForEdit = flag
     }
   },
   actions: {
@@ -73,6 +76,27 @@ export default {
             dispatch('ui/showSnackbar', error.response.data, { root: true })
           }
           dispatch('ui/toggleLoadingOverlay', false, { root: true })
+        })
+    },
+    setAppointment({ commit, dispatch, rootGetters }, appointmentId) {
+      commit('SET_EDIT_APPOINTMENT_LOADING_STATE', true)
+      axios({ url: `https://localhost:5001/api/appointments/${appointmentId}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
+        .then(resp => {
+          let appointment = resp.data
+          const originStartDate = appointment.startDate
+          const originEndDate = appointment.endDate
+          appointment.startDate = moment(originStartDate).format('l')
+          appointment.startTime = moment(originStartDate).format('LT')
+          appointment.endDate = moment(originEndDate).format('l')
+          appointment.endTime = moment(originEndDate).format('LT')
+          commit("SET_APPOINTMENT", Object.assign({}, appointment))
+          commit("SET_CONTACT_FOR_APPOINTMENT", appointment.contactId)
+          commit('SET_EDIT_APPOINTMENT_LOADING_STATE', false)
+        }).catch(error => {
+          if (error.response) {
+            dispatch('ui/showSnackbar', error.response.data, { root: true })
+          }
+          commit('SET_EDIT_APPOINTMENT_LOADING_STATE', false)
         })
     }
   },

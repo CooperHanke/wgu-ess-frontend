@@ -127,7 +127,9 @@
 </template>
 
 <script>
-import ContactSelectionForAppointments from "@/components/appointments/ContactSelectionForAppointments.vue";
+import ContactSelectionForAppointments from "@/components/appointments/ContactSelectionForAppointments.vue"
+import moment from 'moment'
+
 export default {
   components: {
     ContactSelectionForAppointments,
@@ -172,9 +174,9 @@ export default {
       url: '',
       type: '',
       startDate: '',
-      startTime: '12:30',
+      startTime: '',
       endDate: '',
-      endTime: '12:30',
+      endTime: '',
       dialogDelete: false,
       startDatePicker: false,
       endDatePicker: false
@@ -220,5 +222,20 @@ export default {
       this.close();
     },
   },
+  watch: {
+    appointment: function() {
+      if (this.$store.getters['appointments/appointmentId']) {
+        this.title = this.appointment.title,
+        this.description = this.appointment.description,
+        this.location = this.appointment.location,
+        this.url = this.appointment.url,
+        this.type = this.appointment.type,
+        this.startDate = this.appointment.startDate,
+        this.startTime = moment(this.appointment.startTime, ['h:mm A']).format('HH:mm'),
+        this.endDate = this.appointment.endDate,
+        this.endTime = moment(this.appointment.endTime, ['h:mm A']).format('HH:mm')
+      }
+    }
+  }
 };
 </script>
