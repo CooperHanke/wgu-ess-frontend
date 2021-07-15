@@ -51,12 +51,23 @@ export default {
               const contact = rootGetters['contacts/contacts'].find(contact => contact.id === appointment.contactId)
               appointment.name = contact.firstName + ' ' + contact.lastName
               // parse the date and time from the server
-              const originStartDate = appointment.startDate
-              const originEndDate = appointment.endDate
-              appointment.startDate = moment(originStartDate).format('l')
-              appointment.startTime = moment(originStartDate).format('LT')
-              appointment.endDate = moment(originEndDate).format('l')
-              appointment.endTime = moment(originEndDate).format('LT')
+              appointment.startDateTime = appointment.startDate
+              appointment.endDateTime = appointment.endDate
+              // format the data into something useful to our application
+              appointment.startDate = moment(appointment.startDateTime).format('l')
+              appointment.startTime = moment(appointment.startDateTime).format('LT')
+              appointment.endDate = moment(appointment.endDateTime).format('l')
+              appointment.endTime = moment(appointment.endDateTime).format('LT')
+
+              appointment.startDateTimeDisplay = appointment.startDate + ' ' + appointment.startTime
+              appointment.endDateTimeDisplay = appointment.endDate + ' ' + appointment.endTime
+
+              if (appointment.needReminder) {
+                appointment.reminderTime = moment(appointment.reminderTime).format('LT')
+              } else {
+                appointment.reminderTime = ''
+              }
+
             });
             commit("SET_APPOINTMENTS", resp.data)
             commit("SET_APPOINTMENTS_LOADING_STATE", false)
@@ -90,12 +101,13 @@ export default {
       axios({ url: `appointments/${appointmentId}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
           let appointment = resp.data
-          const originStartDate = appointment.startDate
-          const originEndDate = appointment.endDate
-          appointment.startDate = moment(originStartDate).format('l')
-          appointment.startTime = moment(originStartDate).format('LT')
-          appointment.endDate = moment(originEndDate).format('l')
-          appointment.endTime = moment(originEndDate).format('LT')
+          appointment.startDateTime = appointment.startDate
+          appointment.endDateTime = appointment.endDate
+          appointment.reminderTime = moment(appointment.reminderTime).format('LT')
+          appointment.startDate = moment(appointment.startDateTime).format('l')
+          appointment.startTime = moment(appointment.startDateTime).format('LT')
+          appointment.endDate = moment(appointment.endDateTime).format('l')
+          appointment.endTime = moment(appointment.endDateTime).format('LT')
           commit("SET_APPOINTMENT", Object.assign({}, appointment))
           commit("SET_CONTACT_FOR_APPOINTMENT", appointment.contactId)
           commit('SET_EDIT_APPOINTMENT_LOADING_STATE', false)
@@ -132,7 +144,7 @@ export default {
           dispatch('ui/toggleLoadingOverlay', false, { root: true })
         })
     },
-    deleteAppointment({ dispatch, getters, rootGetters }) {
+    deleteAppointment({ commit, dispatch, getters, rootGetters }) {
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
       axios({
         url: `appointments/${getters.appointmentId}`,
@@ -142,6 +154,7 @@ export default {
         }
       })
         .then(() => {
+          commit('CLEAR_APPOINTMENT')
           dispatch('loadAppointmentsByLoggedInUser')
           dispatch("ui/showSnackbar", 'Successfully deleted the appointment', { root: true })
           dispatch('ui/toggleLoadingOverlay', false, { root: true })

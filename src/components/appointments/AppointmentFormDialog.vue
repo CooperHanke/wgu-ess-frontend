@@ -230,8 +230,8 @@ export default {
     startDateTimeRules() {
       if (this.startTime || this.startDate) {
         return [
+          v => !!v || "Start date and time are required",
          () => this.isStartTimeBeforeNow() ||  "Start date and time should not be before right now",
-
         ]
       } else return []
     }
@@ -295,6 +295,8 @@ export default {
         type: this.type,
         startDate: this.startDateTime,
         endDate: this.endDateTime,
+        needReminder: this.enableReminder,
+        reminderTime: this.reminderDateTime,
         contactId: this.$store.getters["appointments/contactId"],
         userId: this.$store.getters["auth/userId"],
       };
@@ -315,7 +317,11 @@ export default {
       return moment(this.reminderDateTime).isSameOrBefore(this.startDateTime)
     },
     isStartTimeBeforeNow() {
-      return moment().isBefore(this.startDateTime)
+      if (this.startDate && this.startTime) {
+        return moment().isSameOrBefore(this.startDateTime)
+      } else if (moment(this.startDate).day() == moment().day() && !this.startTime) {
+        return true
+      } else return true
     },
     isValidUrl(v) {
       const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
@@ -330,19 +336,17 @@ export default {
   watch: {
     appointment: function () {
       if (this.$store.getters["appointments/appointmentId"]) {
-        (this.title = this.appointment.title),
-          (this.description = this.appointment.description),
-          (this.location = this.appointment.location),
-          (this.url = this.appointment.url),
-          (this.type = this.appointment.type),
-          (this.startDate = this.appointment.startDate),
-          (this.startTime = moment(this.appointment.startTime, [
-            "h:mm A",
-          ]).format("HH:mm")),
-          (this.endDate = this.appointment.endDate),
-          (this.endTime = moment(this.appointment.endTime, ["h:mm A"]).format(
-            "HH:mm"
-          ));
+        this.title = this.appointment.title,
+        this.description = this.appointment.description,
+        this.location = this.appointment.location,
+        this.url = this.appointment.url,
+        this.type = this.appointment.type,
+        this.startDate = this.appointment.startDate,
+        this.startTime = moment(this.appointment.startTime, ["h:mm A"]).format("HH:mm"),
+        this.endDate = this.appointment.endDate,
+        this.endTime = moment(this.appointment.endTime, ["h:mm A"]).format("HH:mm"),
+        this.enableReminder = this.appointment.needReminder,
+        this.reminderTime = moment(this.appointment.reminderTime, ["h:mm A"]).format("HH:mm")
       }
     },
     hasContactId: function () {
