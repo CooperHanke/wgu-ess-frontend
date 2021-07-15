@@ -19,8 +19,8 @@ const lastUserId = localStorage.getItem('userId')
 if (oldToken !== null && lastUserId !== null) {
   Axios.get(`/users/${lastUserId}`, { headers: { 'Authorization': `Bearer ${oldToken}` } })
     .then(resp => {
-        store.state.auth.currentUser = resp.data // if the user is still valid, load the user's data now
-      })
+      store.state.auth.currentUser = resp.data // if the user is still valid, load the user's data now
+    })
     .catch( () => {
       localStorage.removeItem('token')
       localStorage.removeItem('userId')
