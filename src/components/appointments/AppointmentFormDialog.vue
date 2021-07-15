@@ -75,7 +75,7 @@
                         readonly
                         v-bind="attrs"
                         v-on="on"
-                        :rules="filled"
+                        :rules="startDateTimeRules"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -91,7 +91,7 @@
                     v-model="startTime"
                     label="Start Time"
                     type="time"
-                    :rules="filled"
+                    :rules="startDateTimeRules"
                   ></v-text-field>
                 </v-col>
 
@@ -126,7 +126,7 @@
                     v-model="endTime"
                     label="End Time"
                     type="time"
-                    :rules="filled"
+                    :rules="endTimeRules"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -135,14 +135,16 @@
                 <v-col cols="4">
                   <v-checkbox
                     v-model="enableReminder"
-                    label="Enable Reminder?"
+                    label="Enable Reminder"
                   ></v-checkbox>
                 </v-col>
                 <v-col v-show="this.enableReminder" cols="4">
                   <v-text-field
                     label="Reminder time on start date?"
+                    v-model="reminderTime"
                     value=""
                     type="time"
+                    :rules="reminderTimeRules"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -200,12 +202,39 @@ export default {
     endDateTime() {
       return new Date(this.endDate + " " + this.endTime).toJSON();
     },
+    reminderDateTime() {
+      return new Date(this.startDate + " " + this.reminderTime).toJSON();
+    },
     hasContactId() {
       return (
         this.$store.getters["appointments/contactId"] !== null ||
         this.$store.getters["appointments/contactId"] !== ""
       );
     },
+    reminderTimeRules() {
+      if (this.enableReminder) {
+        return [
+          (v) => !!v || "Time is required for a reminder",
+          () => this.checkReminderTime() || "Reminder should not be after the appointment",
+        ];
+      } else return []
+    },
+    endTimeRules() {
+      if (this.startDateTime) {
+        return [
+          (v) => !!v || "End time is required",
+          () => this.checkEndDateTime() || "Must end later than the start time and date"
+        ]
+      } else return []
+    },
+    startDateTimeRules() {
+      if (this.startTime || this.startDate) {
+        return [
+         () => this.isStartTimeBeforeNow() ||  "Start date and time should not be before right now",
+
+        ]
+      } else return []
+    }
   },
 
   data() {
@@ -223,6 +252,7 @@ export default {
       startDatePicker: false,
       endDatePicker: false,
       enableReminder: false,
+      reminderTime: "",
       urlRules: [
         (v) =>
           /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_.~#?&//=]*)/g.test(
@@ -281,6 +311,15 @@ export default {
       }
       this.close();
     },
+    checkEndDateTime() {
+      return moment(this.endDateTime).isSameOrAfter(this.startDateTime)
+    },
+    checkReminderTime() {
+      return moment(this.reminderDateTime).isSameOrBefore(this.startDateTime)
+    },
+    isStartTimeBeforeNow() {
+      return moment().isBefore(this.startDateTime)
+    }
   },
   watch: {
     appointment: function () {
@@ -301,11 +340,10 @@ export default {
       }
     },
     hasContactId: function () {
-      console.log(this.contactId);
       if (this.contactId === null || this.contactId === "") {
         this.valid = false;
       }
-    },
+    }
   },
 };
 </script>
