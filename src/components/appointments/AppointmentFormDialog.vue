@@ -254,10 +254,7 @@ export default {
       enableReminder: false,
       reminderTime: "",
       urlRules: [
-        (v) =>
-          /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_.~#?&//=]*)/g.test(
-            v
-          ) || "Please enter a valid URL, including the protocol (http/https)",
+        (v) => this.isValidUrl(v) || "Please enter a valid web address",
       ],
       textRules: [
         (v) => !!v || "This field is required",
@@ -319,6 +316,15 @@ export default {
     },
     isStartTimeBeforeNow() {
       return moment().isBefore(this.startDateTime)
+    },
+    isValidUrl(v) {
+      const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+        '(\\#[-a-z\\d_]*)?$','i') // fragment locator
+      return !!pattern.test(v)
     }
   },
   watch: {
