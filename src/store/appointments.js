@@ -9,7 +9,8 @@ export default {
     showDialog: false,
     appointmentsLoading: false,
     appointmentLoadingForEdit: false,
-    contactId: ''
+    contactId: '',
+    reminders: []
   }),
   mutations: {
     SET_APPOINTMENT(state, appointment) {
@@ -38,11 +39,15 @@ export default {
       state.appointments = []
       state.appointment = {}
       state.contactId
+    },
+    SET_REMINDERS(state, reminders) {
+      state.reminders = reminders
     }
   },
   actions: {
     loadAppointmentsByLoggedInUser({ commit, dispatch, rootGetters }) {
       commit("SET_APPOINTMENTS_LOADING_STATE", true)
+      let reminders = []
       dispatch('contacts/loadContactsByLoggedInUser', null, { root: true }).then(() => 
         axios({ url: `appointments/user/${rootGetters['auth/userId']}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
           .then(resp => {
@@ -51,13 +56,27 @@ export default {
               const contact = rootGetters['contacts/contacts'].find(contact => contact.id === appointment.contactId)
               appointment.name = contact.firstName + ' ' + contact.lastName
               // parse the date and time from the server
-              const originStartDate = appointment.startDate
-              const originEndDate = appointment.endDate
-              appointment.startDate = moment(originStartDate).format('l')
-              appointment.startTime = moment(originStartDate).format('LT')
-              appointment.endDate = moment(originEndDate).format('l')
-              appointment.endTime = moment(originEndDate).format('LT')
+              appointment.startDateTime = appointment.startDate
+              appointment.endDateTime = appointment.endDate
+              // format the data into something useful to our application
+              appointment.startDate = moment(appointment.startDateTime).format('l')
+              appointment.startTime = moment(appointment.startDateTime).format('LT')
+              appointment.endDate = moment(appointment.endDateTime).format('l')
+              appointment.endTime = moment(appointment.endDateTime).format('LT')
+
+              appointment.startDateTimeDisplay = appointment.startDate + ' ' + appointment.startTime
+              appointment.endDateTimeDisplay = appointment.endDate + ' ' + appointment.endTime
+
+              if (appointment.needReminder) {
+                if (moment().isSameOrAfter(appointment.reminderTime)) {
+                  reminders.push(appointment)
+                }
+                appointment.reminderTime = moment(appointment.reminderTime).format('LT')
+              } else {
+                appointment.reminderTime = ''
+              }
             });
+            commit("SET_REMINDERS", reminders)
             commit("SET_APPOINTMENTS", resp.data)
             commit("SET_APPOINTMENTS_LOADING_STATE", false)
           })
@@ -90,12 +109,13 @@ export default {
       axios({ url: `appointments/${appointmentId}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
         .then(resp => {
           let appointment = resp.data
-          const originStartDate = appointment.startDate
-          const originEndDate = appointment.endDate
-          appointment.startDate = moment(originStartDate).format('l')
-          appointment.startTime = moment(originStartDate).format('LT')
-          appointment.endDate = moment(originEndDate).format('l')
-          appointment.endTime = moment(originEndDate).format('LT')
+          appointment.startDateTime = appointment.startDate
+          appointment.endDateTime = appointment.endDate
+          appointment.reminderTime = moment(appointment.reminderTime).format('LT')
+          appointment.startDate = moment(appointment.startDateTime).format('l')
+          appointment.startTime = moment(appointment.startDateTime).format('LT')
+          appointment.endDate = moment(appointment.endDateTime).format('l')
+          appointment.endTime = moment(appointment.endDateTime).format('LT')
           commit("SET_APPOINTMENT", Object.assign({}, appointment))
           commit("SET_CONTACT_FOR_APPOINTMENT", appointment.contactId)
           commit('SET_EDIT_APPOINTMENT_LOADING_STATE', false)
@@ -106,10 +126,12 @@ export default {
           commit('SET_EDIT_APPOINTMENT_LOADING_STATE', false)
         })
     },
-    saveExistingAppointment({ commit, dispatch, getters, rootGetters }, appointment) {
-      dispatch('ui/toggleLoadingOverlay', true, { root: true })
+    saveExistingAppointment({ commit, dispatch, rootGetters }, appointment) {
+      if (!appointment.isReminder) {
+        dispatch('ui/toggleLoadingOverlay', true, { root: true })
+      }
       axios({
-        url: `appointments/${getters.appointmentId}`,
+        url: `appointments/${appointment.id}`,
         data: appointment,
         method: 'PUT',
         headers: {
@@ -128,11 +150,32 @@ export default {
           } else {
             dispatch("ui/showSnackbar", `Unable to update the appointment`, { root: true })
           }
-          commit('CLEAR_CONTACT')
-          dispatch('ui/toggleLoadingOverlay', false, { root: true })
+          if (!appointment.isReminder) {
+            commit('CLEAR_CONTACT')
+            dispatch('ui/toggleLoadingOverlay', false, { root: true })
+          }
         })
     },
-    deleteAppointment({ dispatch, getters, rootGetters }) {
+    dismissReminder({ dispatch, rootGetters }, reminder) {
+      const appointment = {
+        id: reminder.id,
+        title: reminder.title,
+        description: reminder.description,
+        location: reminder.location,
+        url: reminder.url,
+        type: reminder.type,
+        startDate: reminder.startDateTime,
+        endDate: reminder.endDateTime,
+        needReminder: false,
+        reminderTime: reminder.reminderDateTime,
+        contactId: reminder.contactId,
+        userId: rootGetters["auth/userId"]
+      }
+      appointment.isReminder = true
+      dispatch('saveExistingAppointment', appointment)
+      dispatch("ui/showSnackbar", `Dismissed reminder at ${reminder.startTime}`, { root: true })
+    },
+    deleteAppointment({ commit, dispatch, getters, rootGetters }) {
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
       axios({
         url: `appointments/${getters.appointmentId}`,
@@ -142,6 +185,7 @@ export default {
         }
       })
         .then(() => {
+          commit('CLEAR_APPOINTMENT')
           dispatch('loadAppointmentsByLoggedInUser')
           dispatch("ui/showSnackbar", 'Successfully deleted the appointment', { root: true })
           dispatch('ui/toggleLoadingOverlay', false, { root: true })
@@ -159,6 +203,7 @@ export default {
     appointmentId: (state) => state.appointment.id,
     appointmentsLoading: (state) => state.appointmentsLoading,
     appointmentLoadingForEdit: (state) => state.appointmentLoadingForEdit,
-    contactId: (state) => state.contactId
+    contactId: (state) => state.contactId,
+    reminders: (state) => state.reminders
   }
 }

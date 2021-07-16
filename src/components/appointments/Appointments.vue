@@ -4,7 +4,7 @@
     <v-data-table
       :headers="headers"
       :items="appointments"
-      sort-by="startTime"
+      sort-by="startDate"
       class="elevation-1"
       :loading="loading"
       loading-text="Loading... Please wait"
@@ -79,10 +79,9 @@ export default {
       { text: "Description", value: "description" },
       { text: "Location", value: "location", sortable: true, filterable: true },
       { text: "Type", value: "type", sortable: true },
-      { text: "Start Date", value: "startDate", sortable: false, filterable: false },
-      { text: "Start Time", value: "startTime", sortable: false, filterable: false },
-      { text: "End Date", value: "endDate", sortable: true, filterable: false },
-      { text: "End Time", value: "endTime", sortable: true, filterable: false },
+      { text: "Appointment Start", value: "startDateTimeDisplay", sortable: true, filterable: true },
+      { text: "Appointment End", value: "endDateTimeDisplay", sortable: true, filterable: true },
+      { text: "Reminder Time", value: "reminderTime", sortable: true, filterable: false },
       { text: "Actions", value: "actions", sortable: false, filterable: false },
     ],
     search: ''
@@ -131,7 +130,7 @@ export default {
     toggleDeleteDialog() {
       this.contactName = ''
       this.dialogDelete = !this.dialogDelete
-    }
+    },
   },
 };
 </script>
