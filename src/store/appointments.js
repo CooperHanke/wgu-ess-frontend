@@ -9,7 +9,8 @@ export default {
     showDialog: false,
     appointmentsLoading: false,
     appointmentLoadingForEdit: false,
-    contactId: ''
+    contactId: '',
+    reminders: []
   }),
   mutations: {
     SET_APPOINTMENT(state, appointment) {
@@ -38,11 +39,15 @@ export default {
       state.appointments = []
       state.appointment = {}
       state.contactId
+    },
+    SET_REMINDERS(state, reminders) {
+      state.reminders = reminders
     }
   },
   actions: {
     loadAppointmentsByLoggedInUser({ commit, dispatch, rootGetters }) {
       commit("SET_APPOINTMENTS_LOADING_STATE", true)
+      let reminders = []
       dispatch('contacts/loadContactsByLoggedInUser', null, { root: true }).then(() => 
         axios({ url: `appointments/user/${rootGetters['auth/userId']}`, method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
           .then(resp => {
@@ -63,12 +68,13 @@ export default {
               appointment.endDateTimeDisplay = appointment.endDate + ' ' + appointment.endTime
 
               if (appointment.needReminder) {
+                reminders.push(appointment)
                 appointment.reminderTime = moment(appointment.reminderTime).format('LT')
               } else {
                 appointment.reminderTime = ''
               }
-
             });
+            commit("SET_REMINDERS", reminders)
             commit("SET_APPOINTMENTS", resp.data)
             commit("SET_APPOINTMENTS_LOADING_STATE", false)
           })
@@ -172,6 +178,7 @@ export default {
     appointmentId: (state) => state.appointment.id,
     appointmentsLoading: (state) => state.appointmentsLoading,
     appointmentLoadingForEdit: (state) => state.appointmentLoadingForEdit,
-    contactId: (state) => state.contactId
+    contactId: (state) => state.contactId,
+    reminders: (state) => state.reminders
   }
 }

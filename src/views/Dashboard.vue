@@ -23,6 +23,8 @@ export default {
   },
   created() {
     this.$store.dispatch('auth/getUserData', this.$store.getters['auth/userId'])
+    this.$store.dispatch('contacts/loadContactsByLoggedInUser')
+    this.$store.dispatch('appointments/loadAppointmentsByLoggedInUser')
   },
   computed: {
     activePageInStore() {
