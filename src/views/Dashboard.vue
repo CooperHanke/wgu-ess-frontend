@@ -21,8 +21,17 @@ export default {
     UserManagement,
     Welcome
   },
+  mounted: function () {
+    window.setInterval(() => {
+      if (this.$store.getters['auth/userId']) {
+        this.$store.dispatch('appointments/loadAppointmentsByLoggedInUser')
+      }
+    }, 15000)
+  },
   created() {
     this.$store.dispatch('auth/getUserData', this.$store.getters['auth/userId'])
+    this.$store.dispatch('contacts/loadContactsByLoggedInUser')
+    this.$store.dispatch('appointments/loadAppointmentsByLoggedInUser')
   },
   computed: {
     activePageInStore() {

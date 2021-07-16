@@ -77,6 +77,9 @@ export default {
           commit("RESET_PASSWORD_BUTTON")
           commit("SET_TOKEN", resp.data.token)
           commit("SET_USER_ID", resp.data.userId)
+          dispatch("contacts/loadContactsByLoggedInUser", false, { root: true }).then( () => {
+            dispatch("appointments/loadAppointmentsByLoggedInUser", false, { root: true })
+          })
           dispatch('ui/toggleLoadingOverlay', false, { root: true })
         })
         .catch(error => {
