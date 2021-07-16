@@ -43,7 +43,7 @@
             </v-list-item-content>
 
             <v-btn icon>
-              <v-icon @click="triggerTest(item)"> mdi-bell-off </v-icon>
+              <v-icon @click="dismissReminder(item.reminder)"> mdi-bell-off </v-icon>
             </v-btn>
 
           </v-list-item>
@@ -62,6 +62,7 @@ export default {
       let dataToShow = [{ header: "Reminders" }]
       reminders.forEach(reminder => {
         dataToShow.push({
+          reminder: reminder,
           title: `You have an appointment at ${reminder.startTime}`,
           subtitle: `<span class="text--primary">With ${reminder.name}</span>`
         })
@@ -83,8 +84,8 @@ export default {
     };
   },
   methods: {
-    triggerTest(item) {
-      this.$store.dispatch("ui/showSnackbar", `Dismissed ${item.title}`)
+    dismissReminder(reminder) {
+      this.$store.dispatch('appointments/dismissReminder', reminder)
     },
     playSound () {
       var audio = new Audio(notification);

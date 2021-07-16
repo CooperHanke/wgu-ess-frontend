@@ -68,7 +68,6 @@ export default {
               appointment.endDateTimeDisplay = appointment.endDate + ' ' + appointment.endTime
 
               if (appointment.needReminder) {
-                console.log(appointment.reminderTime)
                 if (moment().isSameOrAfter(appointment.reminderTime)) {
                   reminders.push(appointment)
                 }
@@ -127,10 +126,10 @@ export default {
           commit('SET_EDIT_APPOINTMENT_LOADING_STATE', false)
         })
     },
-    saveExistingAppointment({ commit, dispatch, getters, rootGetters }, appointment) {
+    saveExistingAppointment({ commit, dispatch, rootGetters }, appointment) {
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
       axios({
-        url: `appointments/${getters.appointmentId}`,
+        url: `appointments/${appointment.id}`,
         data: appointment,
         method: 'PUT',
         headers: {
@@ -152,6 +151,24 @@ export default {
           commit('CLEAR_CONTACT')
           dispatch('ui/toggleLoadingOverlay', false, { root: true })
         })
+    },
+    dismissReminder({ dispatch, rootGetters }, reminder) {
+      const appointment = {
+        id: reminder.id,
+        title: reminder.title,
+        description: reminder.description,
+        location: reminder.location,
+        url: reminder.url,
+        type: reminder.type,
+        startDate: reminder.startDateTime,
+        endDate: reminder.endDateTime,
+        needReminder: false,
+        reminderTime: reminder.reminderDateTime,
+        contactId: reminder.contactId,
+        userId: rootGetters["auth/userId"]
+      }
+      dispatch('saveExistingAppointment', appointment)
+      dispatch("ui/showSnackbar", `Dismissed reminder at ${reminder.startTime}`, { root: true })
     },
     deleteAppointment({ commit, dispatch, getters, rootGetters }) {
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
