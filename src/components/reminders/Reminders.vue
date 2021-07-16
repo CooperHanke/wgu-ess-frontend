@@ -54,6 +54,7 @@
 </template>
 
 <script>
+import notification from '@/assets/notification.wav'
 export default {
   computed: {
     reminders() {
@@ -78,27 +79,22 @@ export default {
   data() {
     return {
       remindersDialogOpen: false,
-      // items: [{ header: "Reminders" }],
-      // reminders: [
-      //   {
-      //     header: "Reminders",
-      //   },
-      //   {
-      //     title: "You have an appointment at 6:30 PM",
-      //     subtitle: `<span class="text--primary">7/15/2021 6:00 PM</span>`,
-      //   },
-      //   { divider: true, inset: true },
-      //   {
-      //     title: "You have an appointment at 6:30 PM",
-      //     subtitle: `<span class="text--primary">7/15/2021 6:00 PM</span>`,
-      //   },
-      // ],
+      localQuantity: 0
     };
   },
   methods: {
     triggerTest(item) {
       this.$store.dispatch("ui/showSnackbar", `Dismissed ${item.title}`)
     },
+    playSound () {
+      var audio = new Audio(notification);
+      audio.play();
+    }
   },
+  watch: {
+    hasReminders: function() {
+      this.playSound()
+    }
+  }
 };
 </script>

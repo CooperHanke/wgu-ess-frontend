@@ -68,7 +68,10 @@ export default {
               appointment.endDateTimeDisplay = appointment.endDate + ' ' + appointment.endTime
 
               if (appointment.needReminder) {
-                reminders.push(appointment)
+                console.log(appointment.reminderTime)
+                if (moment().isSameOrAfter(appointment.reminderTime)) {
+                  reminders.push(appointment)
+                }
                 appointment.reminderTime = moment(appointment.reminderTime).format('LT')
               } else {
                 appointment.reminderTime = ''
