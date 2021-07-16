@@ -287,7 +287,7 @@ export default {
       this.dialogDelete = !this.dialogDelete;
     },
     save() {
-      const appointment = {
+      let appointment = {
         title: this.title,
         description: this.description,
         location: this.location,
@@ -301,6 +301,7 @@ export default {
         userId: this.$store.getters["auth/userId"],
       };
       if (this.$store.getters["appointments/appointmentId"]) {
+        appointment.id = this.$store.getters["appointments/appointmentId"]
         this.$store.dispatch(
           "appointments/saveExistingAppointment",
           appointment

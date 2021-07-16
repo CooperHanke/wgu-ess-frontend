@@ -127,7 +127,9 @@ export default {
         })
     },
     saveExistingAppointment({ commit, dispatch, rootGetters }, appointment) {
-      dispatch('ui/toggleLoadingOverlay', true, { root: true })
+      if (!appointment.isReminder) {
+        dispatch('ui/toggleLoadingOverlay', true, { root: true })
+      }
       axios({
         url: `appointments/${appointment.id}`,
         data: appointment,
@@ -148,8 +150,10 @@ export default {
           } else {
             dispatch("ui/showSnackbar", `Unable to update the appointment`, { root: true })
           }
-          commit('CLEAR_CONTACT')
-          dispatch('ui/toggleLoadingOverlay', false, { root: true })
+          if (!appointment.isReminder) {
+            commit('CLEAR_CONTACT')
+            dispatch('ui/toggleLoadingOverlay', false, { root: true })
+          }
         })
     },
     dismissReminder({ dispatch, rootGetters }, reminder) {
@@ -167,6 +171,7 @@ export default {
         contactId: reminder.contactId,
         userId: rootGetters["auth/userId"]
       }
+      appointment.isReminder = true
       dispatch('saveExistingAppointment', appointment)
       dispatch("ui/showSnackbar", `Dismissed reminder at ${reminder.startTime}`, { root: true })
     },

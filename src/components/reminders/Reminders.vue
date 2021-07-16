@@ -80,7 +80,6 @@ export default {
   data() {
     return {
       remindersDialogOpen: false,
-      localQuantity: 0
     };
   },
   methods: {
@@ -93,8 +92,10 @@ export default {
     }
   },
   watch: {
-    hasReminders: function() {
-      this.playSound()
+    quantity: function(oldVal, newVal) {
+      if (this.hasReminders && (newVal < oldVal)) {
+        this.playSound()
+      }
     }
   }
 };
