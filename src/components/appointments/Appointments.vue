@@ -136,7 +136,6 @@ export default {
     customSort(items, index, isDesc) {
       items.sort((a, b) => {
         if (index[0] === 'startDateTimeDisplay' || index[0] === 'endDateTimeDisplay') {
-          console.log(index[0])
           if (!isDesc[0]) {
               return new Date(b[index]) - new Date(a[index]);
           } else {
