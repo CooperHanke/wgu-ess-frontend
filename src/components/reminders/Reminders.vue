@@ -11,7 +11,7 @@
     </template>
 
     <v-card v-if="!hasReminders">
-      <v-card-text>No appointments to show</v-card-text>
+      <v-card-text>No upcoming reminders</v-card-text>
     </v-card>
 
     <v-card v-else width="450" class="mx-auto">
