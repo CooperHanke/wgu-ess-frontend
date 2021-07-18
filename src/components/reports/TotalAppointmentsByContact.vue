@@ -16,6 +16,9 @@
         <v-toolbar-title>Total Contacts: {{total}}</v-toolbar-title>
       </v-toolbar>
     </template>
+    <template v-slot:no-data>
+      No contacts are registered
+    </template>
     </v-data-table>
   </v-sheet>
 </template>

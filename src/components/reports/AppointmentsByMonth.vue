@@ -18,6 +18,9 @@
           <v-toolbar-title>Total Appointments: {{total}}</v-toolbar-title>
         </v-toolbar>
       </template>
+      <template v-slot:no-data>
+        No appointments are registered
+    </template>
     </v-data-table>
   </v-sheet>
 </template>
@@ -70,7 +73,7 @@ export default {
   methods: {
     appointmentsByMonth() {
       this.loading = true
-      
+
       let appointments = this.appointments;
       let results = [];
 
