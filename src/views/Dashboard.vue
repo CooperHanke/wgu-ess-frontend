@@ -36,6 +36,9 @@ export default {
   computed: {
     activePageInStore() {
       return this.$store.getters['ui/currentPage']
+    },
+    isManager() {
+      return this.$store.getters['auth/userType'] === 'Manager'
     }
   },
   data() {
@@ -46,6 +49,11 @@ export default {
   watch: {
     activePageInStore: function() {
       this.activePage = this.$store.getters['ui/currentPage']
+    },
+    isManager: function() {
+      this.$store.dispatch('users/loadUsers')
+      this.$store.dispatch('contacts/loadAllContacts')
+      this.$store.dispatch('appointments/loadAllAppointments')
     }
   }
 };
