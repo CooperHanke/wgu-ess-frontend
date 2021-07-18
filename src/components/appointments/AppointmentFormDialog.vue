@@ -287,6 +287,8 @@ export default {
       this.dialogDelete = !this.dialogDelete;
     },
     save() {
+      const reminderDateTime = this.enableReminder ? this.reminderDateTime : this.startDateTime
+      const needReminder = this.enableReminder ? true : false // found werid issue where this value could be null
       let appointment = {
         title: this.title,
         description: this.description,
@@ -295,8 +297,8 @@ export default {
         type: this.type,
         startDate: this.startDateTime,
         endDate: this.endDateTime,
-        needReminder: this.enableReminder,
-        reminderTime: this.reminderDateTime,
+        needReminder: needReminder,
+        reminderTime: reminderDateTime,
         contactId: this.$store.getters["appointments/contactId"],
         userId: this.$store.getters["auth/userId"],
       };

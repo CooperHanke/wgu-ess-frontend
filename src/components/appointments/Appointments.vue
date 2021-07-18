@@ -5,6 +5,7 @@
       :headers="headers"
       :items="appointments"
       sort-by="startDate"
+      :custom-sort="customSort"
       class="elevation-1"
       :loading="loading"
       loading-text="Loading... Please wait"
@@ -131,6 +132,29 @@ export default {
       this.contactName = ''
       this.dialogDelete = !this.dialogDelete
     },
+
+    customSort(items, index, isDesc) {
+      items.sort((a, b) => {
+        if (index[0] === 'startDateTimeDisplay' || index[0] === 'endDateTimeDisplay') {
+          if (!isDesc[0]) {
+              return new Date(b[index]) - new Date(a[index]);
+          } else {
+              return new Date(a[index]) - new Date(b[index]);
+          }
+        }
+        else {
+          if(typeof a[index] !== 'undefined'){
+            if (!isDesc[0]) {
+                return a[index].toLowerCase().localeCompare(b[index].toLowerCase());
+            }
+            else {
+                return b[index].toLowerCase().localeCompare(a[index].toLowerCase());
+            }
+          }
+        }
+      });
+      return items;
+    }
   },
 };
 </script>

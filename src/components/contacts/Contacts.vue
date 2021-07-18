@@ -4,7 +4,7 @@
       <v-data-table
         :headers="headers"
         :items="contacts"
-        sort-by="name"
+        sort-by="lastName"
         class="elevation-1"
         :loading="loading"
         loading-text="Loading... Please wait"
