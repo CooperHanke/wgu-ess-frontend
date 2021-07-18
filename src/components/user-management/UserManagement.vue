@@ -33,6 +33,8 @@
           ></v-text-field>
 
             <v-spacer></v-spacer>
+            <v-toolbar-title>Total Registered Users: {{total}}</v-toolbar-title>
+            <v-spacer></v-spacer>
             
             <user-form-dialog />
 
@@ -110,6 +112,9 @@ export default {
     },
     loading() {
       return this.$store.getters['users/usersLoading']
+    },
+    total() {
+      return this.users.length
     }
   },
   mounted() {

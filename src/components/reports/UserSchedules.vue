@@ -14,8 +14,6 @@
         <v-toolbar flat>
           <v-toolbar-title>User Schedules</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-toolbar-title>Total Registered Users: {{total}}</v-toolbar-title>
         </v-toolbar>
       </template>
     </v-data-table>
@@ -45,9 +43,6 @@ export default {
       get() {
         return this.$store.getters['users/users']
       }
-    },
-    total() {
-      return this.allUsers.length
     }
   },
   data() {
