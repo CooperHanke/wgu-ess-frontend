@@ -54,7 +54,7 @@ export default {
           text: "Count",
           sortable: true,
           value: "count",
-          align: "right",
+          align: "center",
         },
         {
           text: "Total for Month",
@@ -63,12 +63,14 @@ export default {
           align: "right",
         },
       ],
-      loading: true,
+      loading: false,
       reportItems: [],
     };
   },
   methods: {
     appointmentsByMonth() {
+      this.loading = true
+      
       let appointments = this.appointments;
       let results = [];
 
