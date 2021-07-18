@@ -16,6 +16,10 @@
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-toolbar-title>Total Appointments: {{total}}</v-toolbar-title>
+
+          <v-divider v-if="isManager" class="mx-4" inset vertical></v-divider>
+          <v-spacer v-if="isManager"></v-spacer>
+          <v-toolbar-title v-if="isManager">Total Appointments In System: {{totalAllAppointments}}</v-toolbar-title>
         </v-toolbar>
       </template>
       <template v-slot:no-data>
@@ -37,6 +41,12 @@ export default {
     },
     total() {
       return this.appointments.length
+    },
+    isManager() {
+      return this.$store.getters['auth/userType'] === 'Manager'
+    },
+    totalAllAppointments() {
+      return this.$store.getters['appointments/allAppointments'].length
     }
   },
   data() {
