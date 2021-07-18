@@ -6,6 +6,7 @@ export default {
     contact: {},
     showDialog: false,
     contacts: [],
+    allContacts: [],
     contactsLoading: false,
     contactLoadingForEdit: false
   }),
@@ -30,6 +31,11 @@ export default {
     },
     CLEAR_CONTACTS_ON_LOGOUT(state) {
       state.contacts = []
+      state.allContacts = []
+      state.contact = {}
+    },
+    SET_ALL_CONTACTS(state, contacts) {
+      state.allContacts = contacts
     }
   },
   actions: {
@@ -124,7 +130,18 @@ export default {
           dispatch("ui/showSnackbar", `Unable to delete ${contactName} from system`, { root: true })
           dispatch('ui/toggleLoadingOverlay', false, { root: true })
         })
-    }
+    },
+    loadAllContacts({ commit, dispatch, rootGetters }) {
+      axios({ url: 'contacts', method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
+        .then(resp => {
+          commit("SET_ALL_CONTACTS", resp.data)
+        })
+        .catch(error => {
+          if (error.response) {
+            dispatch('ui/showSnackbar', error.response.data, { root: true })
+          }
+        })
+    },
   },
   getters: {
     contact: (state) => state.contact,
@@ -133,6 +150,7 @@ export default {
     contactId: (state) => state.contact.id,
     contactsLoading: (state) => state.contactsLoading,
     contactLoadingForEdit: (state) => state.contactLoadingForEdit,
-    contactFullName: (state) => state.contact.firstName + ' ' + state.contact.lastName
+    contactFullName: (state) => state.contact.firstName + ' ' + state.contact.lastName,
+    allContacts: (state) => state.allContacts
   }
 }

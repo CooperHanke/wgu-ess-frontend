@@ -8,9 +8,11 @@ export default {
     appointment: {},
     showDialog: false,
     appointmentsLoading: false,
+    allAppointmentsLoading: false,
     appointmentLoadingForEdit: false,
     contactId: '',
-    reminders: []
+    reminders: [],
+    allAppointments: []
   }),
   mutations: {
     SET_APPOINTMENT(state, appointment) {
@@ -38,10 +40,13 @@ export default {
     CLEAR_APPOINTMENTS_ON_LOGOUT(state) {
       state.appointments = []
       state.appointment = {}
-      state.contactId
+      state.contactId = null
     },
     SET_REMINDERS(state, reminders) {
       state.reminders = reminders
+    },
+    SET_ALL_APPOINTMENTS(state, appointments) {
+      state.allAppointments = appointments
     }
   },
   actions: {
@@ -194,7 +199,32 @@ export default {
           dispatch("ui/showSnackbar", 'Unable to delete the appointment', { root: true })
           dispatch('ui/toggleLoadingOverlay', false, { root: true })
         })
-    }
+    },
+    loadAllAppointments({ commit, dispatch, rootGetters }) {
+      axios({ url: 'appointments', method: 'GET', headers: { 'Authorization': `Bearer ${rootGetters['auth/token']}` } })
+        .then(resp => {
+          resp.data.forEach(appointment => {
+            // parse the date and time from the server
+            appointment.startDateTime = appointment.startDate
+            appointment.endDateTime = appointment.endDate
+            // format the data into something useful to our application
+            appointment.startDate = moment(appointment.startDateTime).format('l')
+            appointment.startTime = moment(appointment.startDateTime).format('LT')
+            appointment.endDate = moment(appointment.endDateTime).format('l')
+            appointment.endTime = moment(appointment.endDateTime).format('LT')
+
+            appointment.startDateTimeDisplay = appointment.startDate + ' ' + appointment.startTime
+            appointment.endDateTimeDisplay = appointment.endDate + ' ' + appointment.endTime
+          });
+          
+          commit("SET_ALL_APPOINTMENTS", resp.data)
+        })
+        .catch(error => {
+          if (error.response) {
+            dispatch('ui/showSnackbar', error.response.data, { root: true })
+          }
+        })
+    },
   },
   getters: {
     appointment: (state) => state.appointment,
@@ -204,6 +234,7 @@ export default {
     appointmentsLoading: (state) => state.appointmentsLoading,
     appointmentLoadingForEdit: (state) => state.appointmentLoadingForEdit,
     contactId: (state) => state.contactId,
-    reminders: (state) => state.reminders
+    reminders: (state) => state.reminders,
+    allAppointments: (state) => state.allAppointments
   }
 }
