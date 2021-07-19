@@ -23,7 +23,8 @@ export default {
     },
     CLEAR_APPOINTMENT(state) {
       state.appointment = {}
-      state.contactId
+      state.appointment.appointmentId = null
+      state.contactId = null
     },
     SET_APPOINTMENTS_LOADING_STATE(state, flag) {
       state.appointmentsLoading = flag

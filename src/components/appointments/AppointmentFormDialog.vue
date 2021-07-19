@@ -173,6 +173,9 @@ export default {
     ContactSelectionForAppointments,
   },
   computed: {
+    appointments() {
+      return this.$store.getters['appointments/appointments']
+    },
     dialogHeader() {
       return this.$store.getters["appointments/appointmentId"]
         ? "Edit Appointment"
@@ -263,15 +266,18 @@ export default {
           "Uppercase charaters, spaces, dashes, and numbers only in this field",
       ],
       filled: [(v) => !!v || "This field is required"],
-      valid: false,
+      valid: true,
     };
   },
 
   methods: {
     close() {
-      this.$refs.appointmentForm.reset();
+      this.resetForm()
       this.$store.commit("appointments/CLEAR_APPOINTMENT");
       this.$store.commit("appointments/TOGGLE_APPOINTMENTS_DIALOG", false);
+    },
+    resetForm() {
+      this.$refs.appointmentForm.reset();
     },
     toggleStartDatePicker() {
       this.startDatePicker = false;
@@ -279,39 +285,59 @@ export default {
     toggleEndDatePicker() {
       this.endDatePicker = false;
     },
-    deleteItemConfirm() {
-      this.appointments.splice(this.editedIndex, 1);
-      this.closeDelete();
-    },
     toggleDeleteDialog() {
       this.dialogDelete = !this.dialogDelete;
     },
     save() {
-      const reminderDateTime = this.enableReminder ? this.reminderDateTime : this.startDateTime
-      const needReminder = this.enableReminder ? true : false // found werid issue where this value could be null
-      let appointment = {
-        title: this.title,
-        description: this.description,
-        location: this.location,
-        url: this.url,
-        type: this.type,
-        startDate: this.startDateTime,
-        endDate: this.endDateTime,
-        needReminder: needReminder,
-        reminderTime: reminderDateTime,
-        contactId: this.$store.getters["appointments/contactId"],
-        userId: this.$store.getters["auth/userId"],
-      };
-      if (this.$store.getters["appointments/appointmentId"]) {
-        appointment.id = this.$store.getters["appointments/appointmentId"]
-        this.$store.dispatch(
-          "appointments/saveExistingAppointment",
-          appointment
-        );
-      } else {
-        this.$store.dispatch("appointments/saveNewAppointment", appointment);
+      // check to ensure based on current data, the appointment doesn't collide with another one
+      let hasError = false
+      // startTime cannot be the start of another appointment if that appointment has not ended
+      this.appointments.forEach(appointment => {
+        const startTime = moment(this.startDate + " " + this.startTime)
+        const endTime = moment(this.endDate + " " + this.endTime)
+        const appointmentStartTime = moment(appointment.startDateTime)
+        const appointmentEndTime = moment(appointment.endDateTime)
+
+        // check that appointment doesn't start before an existing appointment is over, unless it starts when the other one ends
+        if (startTime.isBetween(appointmentStartTime, appointmentEndTime, null, '[]') && !startTime.isSame(appointmentEndTime)
+          || endTime.isBetween(appointmentStartTime, appointmentEndTime, null, '[]') && !endTime.isSame(appointmentStartTime)
+          || appointmentStartTime.isBetween(startTime, endTime, null, '[]') && !appointmentStartTime.isSame(endTime)
+          || appointmentEndTime.isBetween(startTime, endTime, null, '[]') && !appointmentEndTime.isSame(startTime)
+          || endTime.isSameOrBefore(startTime)
+          || startTime.isSameOrAfter(endTime)) {
+          console.log('should not have saved')
+          hasError = true
+          this.$store.dispatch('ui/showSnackbar', "Check your appontment to make sure it doesn't during another one")
+        }
+      });
+
+      if (!hasError) {
+        const reminderDateTime = this.enableReminder ? this.reminderDateTime : this.startDateTime
+        const needReminder = this.enableReminder ? true : false // found werid issue where this value could be null
+        let appointment = {
+          title: this.title,
+          description: this.description,
+          location: this.location,
+          url: this.url,
+          type: this.type,
+          startDate: this.startDateTime,
+          endDate: this.endDateTime,
+          needReminder: needReminder,
+          reminderTime: reminderDateTime,
+          contactId: this.$store.getters["appointments/contactId"],
+          userId: this.$store.getters["auth/userId"],
+        };
+        if (this.$store.getters["appointments/appointmentId"]) {
+          appointment.id = this.$store.getters["appointments/appointmentId"]
+          this.$store.dispatch(
+            "appointments/saveExistingAppointment",
+            appointment
+          );
+        } else {
+          this.$store.dispatch("appointments/saveNewAppointment", appointment);
+        }
+        this.close();
       }
-      this.close();
     },
     checkEndDateTime() {
       return moment(this.endDateTime).isSameOrAfter(this.startDateTime)
@@ -350,6 +376,8 @@ export default {
         this.endTime = moment(this.appointment.endTime, ["h:mm A"]).format("HH:mm"),
         this.enableReminder = this.appointment.needReminder,
         this.reminderTime = moment(this.appointment.reminderTime, ["h:mm A"]).format("HH:mm")
+      } else {
+        this.resetForm()
       }
     },
     hasContactId: function () {
