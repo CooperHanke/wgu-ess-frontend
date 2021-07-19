@@ -3,7 +3,7 @@
     <v-data-table
       :headers="headers"
       :items="reportItems"
-      :items-per-page="5"
+      :items-per-page="-1"
       class="elevation-1"
       :loading="loading"
       sort-by="lastName"

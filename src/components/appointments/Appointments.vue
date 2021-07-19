@@ -4,12 +4,13 @@
     <v-data-table
       :headers="headers"
       :items="appointments"
-      sort-by="startDate"
+      sort-by="startDateTime"
       :custom-sort="customSort"
       class="elevation-1"
       :loading="loading"
       loading-text="Loading... Please wait"
       :search="search"
+      :sort-desc.sync="sortDesc"
     >
       <template v-slot:top>
         <v-toolbar flat>
@@ -85,7 +86,8 @@ export default {
       { text: "Reminder Time", value: "reminderTime", sortable: true, filterable: false },
       { text: "Actions", value: "actions", sortable: false, filterable: false },
     ],
-    search: ''
+    search: '',
+    sortDesc: false
   }),
 
   computed: {
