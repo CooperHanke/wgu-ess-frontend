@@ -132,7 +132,7 @@ export default {
           commit('SET_EDIT_APPOINTMENT_LOADING_STATE', false)
         })
     },
-    saveExistingAppointment({ commit, dispatch, rootGetters }, appointment, purpose) {
+    saveExistingAppointment({ commit, dispatch, rootGetters }, appointment) {
       if (!appointment.isReminder) {
         dispatch('ui/toggleLoadingOverlay', true, { root: true })
       }
@@ -145,7 +145,7 @@ export default {
         }
       })
         .then(() => {
-          if (purpose !== 'reminder') {
+          if (!appointment.isReminder) {
             dispatch("ui/showSnackbar", `Successfully edited existing appointment on system`, { root: true })
           }
           commit('CLEAR_APPOINTMENT')
@@ -180,8 +180,8 @@ export default {
         userId: rootGetters["auth/userId"]
       }
       appointment.isReminder = true
-      dispatch('saveExistingAppointment', appointment, 'reminder')
-      dispatch("ui/showSnackbar", `Dismissed reminder at ${reminder.startTime}`, { root: true })
+      dispatch('saveExistingAppointment', appointment)
+      dispatch("ui/showSnackbar", `Dismissed reminder at ${reminder.startTime} with ${reminder.name}`, { root: true })
     },
     deleteAppointment({ commit, dispatch, getters, rootGetters }) {
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
