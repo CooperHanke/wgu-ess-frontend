@@ -136,7 +136,7 @@ export default {
       get() {
         return this.$store.getters["users/editUserLoadingState"];
       },
-    },
+    }
   },
 
   data() {
@@ -176,6 +176,7 @@ export default {
           userName: this.userName,
           isLocked: this.userData.isLocked,
           needPasswordReset: this.userData.needPasswordReset,
+          usesDarkMode: this.userData.usesDarkMode
         };
         if (this.validPassword()) {
           editedUserData.password = this.password;
