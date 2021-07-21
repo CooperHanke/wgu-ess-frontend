@@ -305,7 +305,6 @@ export default {
           || appointmentEndTime.isBetween(startTime, endTime, null, '[]') && !appointmentEndTime.isSame(startTime)
           || endTime.isSameOrBefore(startTime)
           || startTime.isSameOrAfter(endTime)) {
-          console.log('should not have saved')
           hasError = true
           this.$store.dispatch('ui/showSnackbar', "Check your appontment to make sure it doesn't during another one")
         }
@@ -370,10 +369,10 @@ export default {
         this.location = this.appointment.location,
         this.url = this.appointment.url,
         this.type = this.appointment.type,
-        this.startDate = this.appointment.startDate,
+        this.startDate = moment(this.appointment.startDate).format("YYYY-MM-DD"),
         this.startTime = moment(this.appointment.startTime, ["h:mm A"]).format("HH:mm"),
-        this.endDate = this.appointment.endDate,
         this.endTime = moment(this.appointment.endTime, ["h:mm A"]).format("HH:mm"),
+        this.endDate = moment(this.appointment.startDate).format("YYYY-MM-DD"),
         this.enableReminder = this.appointment.needReminder,
         this.reminderTime = moment(this.appointment.reminderTime, ["h:mm A"]).format("HH:mm")
       } else {
