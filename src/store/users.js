@@ -101,7 +101,7 @@ export default {
         lastName: userData.lastName,
         type: userData.type,
         userName: userData.userName,
-        UsesDarkMode: false,
+        usesDarkMode: false,
         password: userData.password
       }
       dispatch('ui/toggleLoadingOverlay', true, { root: true })
