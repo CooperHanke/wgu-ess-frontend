@@ -69,7 +69,7 @@
         <v-list>
           <v-list-item>
               <v-switch 
-                v-model="$store.getters['ui/usesDarkMode']"
+                v-model="usesDarkMode"
                 label="Enable dark mode"
                 @click="toggleDarkMode"
               >
@@ -100,6 +100,9 @@ export default {
     },
     confirmPasswordRules() {
       return [(this.password === this.passwordConfirm) || "Passwords must match"]
+    },
+    usesDarkMode() {
+      return this.$store.getters['auth/usesDarkMode']
     }
   },
   data() {

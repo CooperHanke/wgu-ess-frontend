@@ -166,7 +166,7 @@ export default {
     },
     save() {
       this.$refs.userForm.validate();
-      if (this.userData.id !== "") {
+      if (this.userData.id) {
         const id = this.$store.getters["users/userId"];
         const editedUserData = {
           id,
